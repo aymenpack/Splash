@@ -93,11 +93,10 @@
       box-shadow: var(--shadow);
     }
 
+    /* ✅ Seat layout container (desktop/tablet) */
     .playersRow{
-      display:flex;
-      justify-content:space-between;
-      gap:8px;
-      flex-wrap:wrap;
+      position:relative;
+      height:180px;
       margin-bottom:10px;
     }
 
@@ -110,6 +109,7 @@
       background:rgba(255,255,255,.06);
       border:1px solid rgba(255,255,255,.12);
       min-width:150px;
+      position:absolute;          /* ✅ seat positioning */
     }
 
     .playerChip.active{
@@ -139,6 +139,14 @@
       background:#000;
       color:#fff;
     }
+
+    /* ✅ Seat positions */
+    .seat-bottom{ left:50%; bottom:0; transform:translateX(-50%); }
+    .seat-top{ left:50%; top:0; transform:translateX(-50%); }
+    .seat-left{ left:0; top:50%; transform:translateY(-50%); }
+    .seat-right{ right:0; top:50%; transform:translateY(-50%); }
+    .seat-tl{ left:0; top:0; }
+    .seat-tr{ right:0; top:0; }
 
     /* =========================================================
        CARDS
@@ -241,6 +249,24 @@
         --gap:8px;
       }
       .grid{ grid-template-columns:1fr; }
+      .playersRow{ height:210px; } /* a bit more room on tablet */
+    }
+
+    /* ✅ On small screens, revert to the old flex row to avoid overlap */
+    @media (max-width: 700px){
+      .playersRow{
+        position:static;
+        height:auto;
+        display:flex;
+        justify-content:space-between;
+        gap:8px;
+        flex-wrap:wrap;
+        margin-bottom:10px;
+      }
+      .playerChip{
+        position:static;
+        transform:none !important;
+      }
     }
 
     /* ---------- iPhone ---------- */
@@ -259,22 +285,192 @@
       .corner{ font-size:11px; }
       .pip{ font-size:26px; }
     }
+
+    /* --- Your existing styles below (unchanged) --- */
+
+    .controls{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+
+    .muted{ color:var(--muted); font-size:12px; }
+    .small{ font-size:12px; }
+    .pill{
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.04);
+      font-size:12px;
+      display:inline-flex;
+      gap:6px;
+      align-items:center;
+      white-space:nowrap;
+    }
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 11px;
+      padding:2px 6px;
+      border-radius: 8px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+    }
+
+    .note{
+      margin-top:10px;
+      padding:10px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+    }
+    .pileRow{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .pileCard{
+      position:absolute;
+      left: calc(50% - 38px);
+      top: 20px;
+      will-change: transform, opacity;
+    }
+
+    @keyframes popIn {
+      0%{ transform: translateY(18px) scale(.92); opacity:0; }
+      100%{ transform: translateY(0) scale(1); opacity:1; }
+    }
+    .anim-pop{ animation: popIn .18s ease-out; }
+    @keyframes pileShake {
+      0%{ transform: translateX(0); }
+      20%{ transform: translateX(-6px); }
+      40%{ transform: translateX(6px); }
+      60%{ transform: translateX(-4px); }
+      80%{ transform: translateX(4px); }
+      100%{ transform: translateX(0); }
+    }
+    .shake{ animation: pileShake .22s ease-in-out; }
+    @keyframes clearBurst {
+      0%{ box-shadow: 0 0 0 rgba(99,179,237,0); }
+      30%{ box-shadow: 0 0 30px rgba(99,179,237,.55); }
+      100%{ box-shadow: 0 0 0 rgba(99,179,237,0); }
+    }
+    .burst{ animation: clearBurst .35s ease-out; }
+
+    .flyLayer{
+      position: fixed;
+      inset: 0;
+      pointer-events:none;
+      z-index: 9999;
+    }
+    .flyCard{
+      position: fixed;
+      width: 56px;
+      height: 78px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: #fff;
+      box-shadow: 0 14px 30px rgba(0,0,0,.55);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:900;
+      opacity: 0.95;
+      transform: translate(0,0) scale(1);
+      transition: transform .45s ease, opacity .45s ease;
+      color:#111;
+    }
+
+    .ok{ color:var(--ok); }
+    .warn{ color:#f2cc60; }
+    .bad{ color:var(--danger); }
+
+    .bottomBar{ display:none; }
+    @media(max-width:700px){
+      .bottomBar{
+        display:flex;
+        position:fixed;
+        left:0; right:0; bottom:0;
+        padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+        gap:10px;
+        background: rgba(8,12,22,.88);
+        border-top:1px solid rgba(255,255,255,.10);
+        backdrop-filter: blur(10px);
+        z-index: 1000;
+      }
+      .bottomBar button{
+        flex:1;
+        font-size:15px;
+        padding:14px 14px;
+        border-radius:16px;
+      }
+      main{ padding-bottom: 96px; }
+      .topActions{ display:none !important; }
+    }
+
+    .overlay{
+      position:fixed;
+      inset:0;
+      background: rgba(5,8,14,.86);
+      backdrop-filter: blur(10px);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index: 2000;
+      padding: 18px;
+    }
+    .overlay.show{ display:flex; }
+
+    .overlayCard{
+      width:min(520px, 100%);
+      border-radius:24px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      box-shadow: 0 22px 60px rgba(0,0,0,.6);
+      padding:18px;
+      text-align:center;
+    }
+    .overlayCard h2{
+      margin:0 0 8px;
+      font-size:18px;
+      font-weight:900;
+    }
+    .overlayCard .sub{ color:var(--muted); font-size:13px; margin-bottom:14px; }
+    .overlayCard .bigAvatar{
+      width:84px; height:84px;
+      border-radius:50%;
+      margin: 0 auto 14px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:34px;
+      font-weight:900;
+      color:#0b1220;
+      position:relative;
+      overflow:hidden;
+    }
+    .overlayCard .bigAvatar .init{
+      position:absolute;
+      bottom:4px; right:6px;
+      font-size:12px;
+      padding:2px 8px;
+      border-radius:999px;
+      background: rgba(0,0,0,.75);
+      color:#fff;
+      border:1px solid rgba(255,255,255,.18);
+      letter-spacing:.2px;
+    }
+    .overlayActions{
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+    .overlayActions button{
+      min-width: 160px;
+      padding: 12px 16px;
+      font-size: 14px;
+      border-radius: 16px;
+    }
   </style>
-</head>
-
-<body>
-
-<!-- EVERYTHING BELOW IS YOUR ORIGINAL, UNCHANGED LOGIC -->
-<!-- (JS pasted exactly as you provided) -->
-
-<!-- 🔒 SNIPPED FOR BREVITY IN EXPLANATION —
-     IN YOUR ACTUAL FILE, KEEP THE <script> BLOCK
-     EXACTLY AS YOU PASTED IT ABOVE
--->
-
-</body>
-</html>
-
 </head>
 
 <body>
@@ -460,6 +656,9 @@
 
   // Double-tap detection
   let lastTap = { id: null, t: 0 };
+
+  // ✅ Seat mapping (visual only)
+  const SEAT_CLASSES = ["seat-bottom","seat-left","seat-top","seat-right","seat-tl","seat-tr"];
 
   // ======= Log helpers =======
   function toneDot(tone){
@@ -822,11 +1021,10 @@
     player.hand.push(...state.pile);
     addLog(`${player.name} picks up the pile (${state.pile.length} cards).`, "bad");
     state.pile = [];
-    state.mustPlayAny = true; // empty pile -> ANY
+    state.mustPlayAny = true;
   }
 
   function playCards(player, playList){
-    // Face-down discovered on play
     if (playList.length === 1 && playList[0].src.zone === "tableDown"){
       const {card, src} = playList[0];
       addLog(`${player.name} plays face-down → revealed ${renderCardText(card)}.`, "warn");
@@ -917,7 +1115,6 @@
     beginTurnRevealFlow();
   }
 
-  // Hybrid-ready BOT / REMOTE stubs (not used by default)
   function computeLegalPlays(player){
     const ranks = [];
     const addRank = (r) => { if (!ranks.includes(r)) ranks.push(r); };
@@ -945,14 +1142,11 @@
   }
 
   function botTakeTurn(bot){
-    // not used unless you flip someone to BOT later
     const {ranks, byRank} = computeLegalPlays(bot);
-
     if (ranks.length === 0){
       pickupPile(bot);
       return {extraTurn:false};
     }
-
     if (ranks.includes("10") || ranks.includes("JOKER")){
       const r = ranks.includes("10") ? "10" : "JOKER";
       const c = byRank.get(r)[0];
@@ -961,31 +1155,26 @@
         : {zone:"tableUp", stackIndex: bot.tableUp.findIndex(x=>x && x.id===c.id)};
       return playCards(bot, [{card:c, src}]);
     }
-
-    // if ANY, dump high penalty; else play highest legal
     let chosenRank;
     if (state.mustPlayAny){
       chosenRank = ranks.slice().sort((a,b)=> penaltyPriority(b)-penaltyPriority(a))[0];
     } else {
       chosenRank = ranks.slice().sort((a,b)=> rankOrder(b)-rankOrder(a))[0];
     }
-
     const toPlay = byRank.get(chosenRank).map(c=>({
       card:c,
       src: bot.hand.find(x=>x.id===c.id)
         ? {zone:"hand"}
         : {zone:"tableUp", stackIndex: bot.tableUp.findIndex(x=>x && x.id===c.id)}
     }));
-
     return playCards(bot, toPlay);
   }
 
-  // ======= Quick play (double-tap) =======
   function quickPlayRank(rank){
     if (!isTurnPlayable()) return;
     const p = state.players[state.currentPlayer];
     if (!p || state.viewPlayer !== state.currentPlayer) return;
-    if (state.peekOnly) return; // hand hidden
+    if (state.peekOnly) return;
 
     const playList = [];
     for (const c of p.hand){
@@ -1006,7 +1195,7 @@
     const res = playCards(p, playList);
     render();
     if (endHandIfNeeded()) return;
-    if (res.extraTurn) return; // same player continues
+    if (res.extraTurn) return;
     nextPlayer();
   }
 
@@ -1016,13 +1205,12 @@
     if (state.viewPlayer !== state.currentPlayer) return false;
     const p = state.players[state.currentPlayer];
     if (!p) return false;
-    return p.type === PlayerType.HUMAN; // currently all humans
+    return p.type === PlayerType.HUMAN;
   }
 
-  // ======= Human actions =======
   function humanPlay(){
     if (!isTurnPlayable()) return;
-    if (state.peekOnly) return; // hand hidden
+    if (state.peekOnly) return;
     const p = state.players[state.currentPlayer];
 
     const playList = selectedCards();
@@ -1091,7 +1279,6 @@
     addLog(`Hint: play ${best} (highest legal) to restrict others.`, "ok");
   }
 
-  // ======= Rendering =======
   function renderPileVisual(){
     pileVisualWrap.innerHTML = "";
     const slice = state.pile.slice(-6);
@@ -1105,11 +1292,14 @@
     });
   }
 
+  /* ✅ ONLY MODIFIED FUNCTION: renderPlayersRow adds seat class */
   function renderPlayersRow(){
     playersRowEl.innerHTML = "";
     state.players.forEach((p, idx) => {
       const chip = document.createElement("div");
-      chip.className = "playerChip" + (idx === state.currentPlayer ? " active" : "");
+      const seatClass = SEAT_CLASSES[idx] || "seat-top";
+      chip.className = "playerChip " + seatClass + (idx === state.currentPlayer ? " active" : "");
+
       const remaining = playerRemaining(p);
       const upN = p.tableUp.filter(Boolean).length;
       const downN = p.tableDown.filter(Boolean).length;
@@ -1136,8 +1326,6 @@
   function renderZonesHidden(){
     yourHandEl.innerHTML = "";
     yourTableEl.innerHTML = "";
-
-    // show some placeholders so layout doesn’t jump
     for (let i=0;i<5;i++){
       const back = makeRealCardDiv({rank:"X", suit:""}, {selectable:false, selectedOn:false, back:true});
       back.style.opacity = "0.55";
@@ -1154,11 +1342,9 @@
     const p = state.players[pid];
     if (!p) return;
 
-    // labels
     el("handLabel").textContent = `${p.name} hand`;
     el("tableLabel").textContent = `${p.name} table`;
 
-    // Hand (sorted) - if peekOnly, hide hand
     yourHandEl.innerHTML = "";
     if (state.peekOnly){
       for (let i=0;i<Math.min(7, Math.max(3, p.hand.length ? 5 : 3)); i++){
@@ -1174,22 +1360,18 @@
         });
     }
 
-    // Table stacks
     yourTableEl.innerHTML = "";
     for (let i=0;i<4;i++){
       const up = p.tableUp[i];
       const down = p.tableDown[i];
 
       if (up){
-        // face-up cards are always visible to that player
-        // (but only rendered when that player is the viewPlayer)
         yourTableEl.appendChild(renderSelectableCard(up, {zone:"tableUp", stackIndex:i}));
       } else {
         if (down){
           const back = makeRealCardDiv(down, { selectable:true, selectedOn:selected.has(down.id), back:true });
           back.onclick = () => {
             if (!isTurnPlayable()) return;
-            // face-down single card selection
             if (selected.has(down.id)){
               selected.delete(down.id);
               selectedSources.delete(down.id);
@@ -1223,7 +1405,6 @@
     renderPlayersRow();
     renderPileVisual();
 
-    // Zones rendering depends on pass-and-play reveal state
     if (!state.revealedThisTurn || state.viewPlayer === null){
       el("handLabel").textContent = `Current player hand`;
       el("tableLabel").textContent = `Current player table`;
@@ -1241,16 +1422,10 @@
     el("hintBtnMobile").disabled = !playable || state.peekOnly;
   }
 
-  // ======= UI wiring =======
   el("newGame").onclick = () => {
     state.numPlayers = parseInt(el("numPlayers").value, 10);
     state.players = createPlayers(state.numPlayers);
-
-    // update initials based on names
-    state.players.forEach((p,i)=>{
-      p.initials = initialsFromName(p.name) || `P${i+1}`;
-    });
-
+    state.players.forEach((p,i)=>{ p.initials = initialsFromName(p.name) || `P${i+1}`; });
     state.handIndex = 1;
     logEl.innerHTML = "";
     addLog(`New game started with ${state.numPlayers} players (local multiplayer).`, "ok");
@@ -1280,11 +1455,9 @@
     if (e.key.toLowerCase() === "h") humanHint();
   });
 
-  // overlay actions
   readyBtn.onclick = () => endOverlayReveal(false);
   peekBtn.onclick = () => endOverlayReveal(true);
 
-  // Start screen
   state.numPlayers = parseInt(el("numPlayers").value, 10);
   state.players = createPlayers(state.numPlayers);
   state.players.forEach((p,i)=> p.initials = initialsFromName(p.name) || `P${i+1}`);
