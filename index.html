@@ -6,9 +6,6 @@
   <title>Splash Practice</title>
 
   <style>
-    /* =========================================================
-       ROOT VARIABLES (DESKTOP DEFAULTS)
-       ========================================================= */
     :root{
       --bg:#0b1220;
       --table1:#12204a;
@@ -21,7 +18,6 @@
       --muted:rgba(230,237,247,.72);
       --shadow:0 10px 26px rgba(0,0,0,.45);
 
-      /* Sizing */
       --card-w:76px;
       --card-h:110px;
       --avatar:44px;
@@ -29,11 +25,7 @@
       --gap:10px;
     }
 
-    /* =========================================================
-       GLOBAL
-       ========================================================= */
     *{ box-sizing:border-box; }
-
     body{
       margin:0;
       color:#e6edf7;
@@ -65,8 +57,10 @@
       padding:8px 12px;
       border-radius:12px;
       font-size:13px;
+      outline:none;
     }
 
+    button{ cursor:pointer; }
     button.primary{ background:rgba(99,179,237,.22); border-color:rgba(99,179,237,.45); }
     button.danger{ background:rgba(255,123,114,.18); border-color:rgba(255,123,114,.45); }
     button:disabled{ opacity:.5; cursor:not-allowed; }
@@ -83,8 +77,32 @@
       gap:12px;
     }
 
+    .controls{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+
+    .muted{ color:var(--muted); font-size:12px; }
+    .small{ font-size:12px; }
+    .pill{
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.04);
+      font-size:12px;
+      display:inline-flex;
+      gap:6px;
+      align-items:center;
+      white-space:nowrap;
+    }
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 11px;
+      padding:2px 6px;
+      border-radius: 8px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.05);
+    }
+
     /* =========================================================
-       TABLE + PLAYERS
+       TABLE
        ========================================================= */
     .table{
       background: linear-gradient(180deg, var(--table1), var(--table2));
@@ -93,7 +111,11 @@
       box-shadow: var(--shadow);
     }
 
-    /* ✅ Seat layout container (desktop/tablet) */
+    /* =========================================================
+       PLAYERS — SEATS (NEW)
+       ========================================================= */
+
+    /* Desktop/tablet: seat map */
     .playersRow{
       position:relative;
       height:180px;
@@ -109,13 +131,20 @@
       background:rgba(255,255,255,.06);
       border:1px solid rgba(255,255,255,.12);
       min-width:150px;
-      position:absolute;          /* ✅ seat positioning */
+      position:absolute;
     }
 
     .playerChip.active{
       outline:2px solid var(--accent);
       box-shadow:0 0 16px rgba(99,179,237,.45);
     }
+
+    .seat-bottom{ left:50%; bottom:0; transform:translateX(-50%); }
+    .seat-top{ left:50%; top:0; transform:translateX(-50%); }
+    .seat-left{ left:0; top:50%; transform:translateY(-50%); }
+    .seat-right{ right:0; top:50%; transform:translateY(-50%); }
+    .seat-tl{ left:0; top:0; transform:none; }
+    .seat-tr{ right:0; top:0; transform:none; }
 
     .avatar{
       width:var(--avatar);
@@ -140,13 +169,22 @@
       color:#fff;
     }
 
-    /* ✅ Seat positions */
-    .seat-bottom{ left:50%; bottom:0; transform:translateX(-50%); }
-    .seat-top{ left:50%; top:0; transform:translateX(-50%); }
-    .seat-left{ left:0; top:50%; transform:translateY(-50%); }
-    .seat-right{ right:0; top:50%; transform:translateY(-50%); }
-    .seat-tl{ left:0; top:0; }
-    .seat-tr{ right:0; top:0; }
+    /* Mobile: fall back to the old row layout to avoid overlap */
+    @media (max-width: 700px){
+      .playersRow{
+        position:static;
+        height:auto;
+        display:flex;
+        justify-content:space-between;
+        gap:8px;
+        flex-wrap:wrap;
+        margin-bottom:10px;
+      }
+      .playerChip{
+        position:static;
+        transform:none !important;
+      }
+    }
 
     /* =========================================================
        CARDS
@@ -181,10 +219,22 @@
       font-size:32px;
     }
 
+    .subpip{
+      position:absolute;
+      left:50%; top:50%;
+      transform:translate(-50%,-50%);
+      font-size:12px;
+      opacity:.75;
+      margin-top:30px;
+      letter-spacing:.6px;
+      font-weight:800;
+    }
+
     .c.back{
       background:linear-gradient(135deg,#1b2a55,#0b1220);
       border:2px dashed rgba(255,255,255,.45);
     }
+    .c.illegal{ opacity:.55; }
 
     /* =========================================================
        ZONES
@@ -193,6 +243,10 @@
       margin:10px 0 6px;
       font-size:12px;
       color:var(--muted);
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
     }
 
     .hand{ display:flex; gap:var(--gap); flex-wrap:wrap; }
@@ -204,114 +258,8 @@
     }
 
     /* =========================================================
-       PILE
+       NOTE / PILE
        ========================================================= */
-    .pileVisualWrap{
-      width:100%;
-      height:var(--pile-h);
-      border-radius:16px;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(0,0,0,.18);
-      margin-top:8px;
-      position:relative;
-    }
-
-    /* =========================================================
-       SIDE PANEL
-       ========================================================= */
-    .panel{
-      background:rgba(255,255,255,.04);
-      border-radius:18px;
-      padding:12px;
-    }
-
-    .log{
-      background:rgba(0,0,0,.35);
-      border-radius:14px;
-      padding:8px;
-      font-family:ui-monospace,monospace;
-      font-size:12px;
-      max-height:300px;
-      overflow:auto;
-    }
-
-    /* =========================================================
-       RESPONSIVE BREAKPOINTS
-       ========================================================= */
-
-    /* ---------- iPad ---------- */
-    @media (max-width: 900px){
-      :root{
-        --card-w:68px;
-        --card-h:100px;
-        --avatar:40px;
-        --pile-h:130px;
-        --gap:8px;
-      }
-      .grid{ grid-template-columns:1fr; }
-      .playersRow{ height:210px; } /* a bit more room on tablet */
-    }
-
-    /* ✅ On small screens, revert to the old flex row to avoid overlap */
-    @media (max-width: 700px){
-      .playersRow{
-        position:static;
-        height:auto;
-        display:flex;
-        justify-content:space-between;
-        gap:8px;
-        flex-wrap:wrap;
-        margin-bottom:10px;
-      }
-      .playerChip{
-        position:static;
-        transform:none !important;
-      }
-    }
-
-    /* ---------- iPhone ---------- */
-    @media (max-width: 480px){
-      :root{
-        --card-w:60px;
-        --card-h:88px;
-        --avatar:36px;
-        --pile-h:110px;
-        --gap:6px;
-      }
-
-      header h1{ font-size:14px; }
-      select,button{ font-size:12px; padding:7px 10px; }
-      .log{ max-height:200px; font-size:11px; }
-      .corner{ font-size:11px; }
-      .pip{ font-size:26px; }
-    }
-
-    /* --- Your existing styles below (unchanged) --- */
-
-    .controls{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-
-    .muted{ color:var(--muted); font-size:12px; }
-    .small{ font-size:12px; }
-    .pill{
-      padding:4px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(255,255,255,.04);
-      font-size:12px;
-      display:inline-flex;
-      gap:6px;
-      align-items:center;
-      white-space:nowrap;
-    }
-    .kbd{
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size: 11px;
-      padding:2px 6px;
-      border-radius: 8px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.05);
-    }
-
     .note{
       margin-top:10px;
       padding:10px;
@@ -326,6 +274,18 @@
       gap:10px;
       flex-wrap:wrap;
     }
+
+    .pileVisualWrap{
+      width:100%;
+      height:var(--pile-h);
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.18);
+      margin-top:8px;
+      position:relative;
+      overflow:hidden;
+    }
+
     .pileCard{
       position:absolute;
       left: calc(50% - 38px);
@@ -338,6 +298,7 @@
       100%{ transform: translateY(0) scale(1); opacity:1; }
     }
     .anim-pop{ animation: popIn .18s ease-out; }
+
     @keyframes pileShake {
       0%{ transform: translateX(0); }
       20%{ transform: translateX(-6px); }
@@ -347,6 +308,7 @@
       100%{ transform: translateX(0); }
     }
     .shake{ animation: pileShake .22s ease-in-out; }
+
     @keyframes clearBurst {
       0%{ box-shadow: 0 0 0 rgba(99,179,237,0); }
       30%{ box-shadow: 0 0 30px rgba(99,179,237,.55); }
@@ -354,6 +316,9 @@
     }
     .burst{ animation: clearBurst .35s ease-out; }
 
+    /* =========================================================
+       FLY OVERLAY
+       ========================================================= */
     .flyLayer{
       position: fixed;
       inset: 0;
@@ -378,9 +343,60 @@
       color:#111;
     }
 
+    /* =========================================================
+       SIDE PANEL / LOG
+       ========================================================= */
+    .panel{
+      background:rgba(255,255,255,.04);
+      border-radius:18px;
+      padding:12px;
+    }
+
+    .log{
+      background:rgba(0,0,0,.35);
+      border-radius:14px;
+      padding:8px;
+      font-family:ui-monospace,monospace;
+      font-size:12px;
+      max-height:300px;
+      overflow:auto;
+    }
+
+    .log .line{ padding:2px 0; border-bottom:1px dashed rgba(255,255,255,.07); }
+    .log .line:last-child{ border-bottom:none; }
+
     .ok{ color:var(--ok); }
     .warn{ color:#f2cc60; }
     .bad{ color:var(--danger); }
+
+    /* =========================================================
+       MOBILE
+       ========================================================= */
+    @media (max-width: 900px){
+      :root{
+        --card-w:68px;
+        --card-h:100px;
+        --avatar:40px;
+        --pile-h:130px;
+        --gap:8px;
+      }
+      .grid{ grid-template-columns:1fr; }
+    }
+
+    @media (max-width: 480px){
+      :root{
+        --card-w:60px;
+        --card-h:88px;
+        --avatar:36px;
+        --pile-h:110px;
+        --gap:6px;
+      }
+      header h1{ font-size:14px; }
+      select,button{ font-size:12px; padding:7px 10px; }
+      .log{ max-height:200px; font-size:11px; }
+      .corner{ font-size:11px; }
+      .pip{ font-size:26px; }
+    }
 
     .bottomBar{ display:none; }
     @media(max-width:700px){
@@ -405,6 +421,9 @@
       .topActions{ display:none !important; }
     }
 
+    /* =========================================================
+       PASS-AND-PLAY OVERLAY
+       ========================================================= */
     .overlay{
       position:fixed;
       inset:0;
@@ -496,7 +515,6 @@
   <button id="hintBtnMobile">Hint</button>
 </div>
 
-<!-- Pass-and-play privacy overlay -->
 <div class="overlay" id="passOverlay" role="dialog" aria-modal="true">
   <div class="overlayCard">
     <div class="bigAvatar" id="passAvatar"><span id="passEmoji">🙂</span><span class="init" id="passInit">P1</span></div>
@@ -512,7 +530,6 @@
 <main>
   <div class="grid">
 
-    <!-- TABLE -->
     <section class="table">
       <div class="playersRow" id="playersRow"></div>
 
@@ -532,10 +549,7 @@
         <div class="pileVisualWrap" id="pileVisualWrap"></div>
 
         <div class="muted" style="margin-top:10px;">
-          Play same-rank cards. Must be ≤ top rank (A &lt; … &lt; K).
-          <span class="kbd">10</span> and <span class="kbd">Joker</span> clear.
-          <span class="kbd">3+</span> of same rank on pile clears.
-          Face-down discovered on play. Illegal face-down → pick up entire pile.
+          Face cards (J/Q/K) can only be played on face cards. 10/Joker clears. Triple clears.
         </div>
       </div>
 
@@ -552,7 +566,6 @@
       <div id="yourTable" class="hand"></div>
     </section>
 
-    <!-- SIDE PANEL -->
     <section class="panel">
       <div class="topActions" style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
         <button id="playBtn" class="primary">Play Selected</button>
@@ -565,11 +578,6 @@
         <span class="muted">newest first</span>
       </div>
       <div id="log" class="log"></div>
-
-      <div class="zoneTitle" style="margin-top:12px;">
-        <span>Shortcuts</span>
-        <span class="muted"><span class="kbd">Enter</span> play · <span class="kbd">P</span> pickup · <span class="kbd">H</span> hint</span>
-      </div>
     </section>
 
   </div>
@@ -577,7 +585,6 @@
 
 <script>
 (() => {
-  // ======= Constants =======
   const SUITS = ["♠","♥","♦","♣"];
   const RANKS = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
   const RANK_ORDER = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
@@ -586,21 +593,21 @@
   const EMOJIS = ["🦊","🐼","🐯","🦁","🐸","🐙","🦉","🦄","🐲","🐶","🐱","🐵"];
 
   const SEAT_COLORS = [
-    ["#63b3ed","#7ee787"], // blue->green
-    ["#f2cc60","#ff7b72"], // gold->red
-    ["#a78bfa","#63b3ed"], // purple->blue
-    ["#34d399","#f2cc60"], // green->gold
-    ["#fb7185","#a78bfa"], // pink->purple
-    ["#60a5fa","#fb7185"], // blue->pink
+    ["#63b3ed","#7ee787"],
+    ["#f2cc60","#ff7b72"],
+    ["#a78bfa","#63b3ed"],
+    ["#34d399","#f2cc60"],
+    ["#fb7185","#a78bfa"],
+    ["#60a5fa","#fb7185"],
   ];
+
+  const SEAT_CLASSES = ["seat-bottom","seat-left","seat-top","seat-right","seat-tl","seat-tr"];
 
   const isJoker = c => c.rank === "JOKER";
   const isTenOrJoker = c => c.rank === "10" || isJoker(c);
 
-  // Player types for hybrid readiness
   const PlayerType = { HUMAN:"HUMAN", BOT:"BOT", REMOTE:"REMOTE" };
 
-  // Scoring (house)
   const scoreValue = (card) => {
     if (isJoker(card)) return 50;
     if (card.rank === "10") return 20;
@@ -609,7 +616,6 @@
     return parseInt(card.rank, 10);
   };
 
-  // ======= State =======
   const state = {
     numPlayers: 4,
     players: [],
@@ -623,10 +629,9 @@
     mustPlayAny: false,
     gameOver: false,
 
-    // pass-and-play privacy
-    viewPlayer: null,        // which player's hand/table is visible right now
-    revealedThisTurn: false, // must press "I'm ready" each turn to reveal
-    peekOnly: false          // if true, show table but not hand
+    viewPlayer: null,
+    revealedThisTurn: false,
+    peekOnly: false
   };
 
   const el = (id) => document.getElementById(id);
@@ -638,7 +643,6 @@
   const flyLayer = el("flyLayer");
   const discardPill = el("discardPill");
 
-  // overlay elements
   const passOverlay = el("passOverlay");
   const passTitle = el("passTitle");
   const passSub = el("passSub");
@@ -648,19 +652,13 @@
   const readyBtn = el("readyBtn");
   const peekBtn = el("peekBtn");
 
-  // Selection for current view player
   let selected = new Set();
   let selectedSources = new Map();
   let uid = 0;
   const newId = () => (++uid).toString();
 
-  // Double-tap detection
   let lastTap = { id: null, t: 0 };
 
-  // ✅ Seat mapping (visual only)
-  const SEAT_CLASSES = ["seat-bottom","seat-left","seat-top","seat-right","seat-tl","seat-tr"];
-
-  // ======= Log helpers =======
   function toneDot(tone){
     if (tone==="ok") return `<span class="ok">●</span> `;
     if (tone==="warn") return `<span class="warn">●</span> `;
@@ -674,7 +672,6 @@
     logEl.prepend(div);
   }
 
-  // ======= Animation helpers =======
   function flashBurst(){
     pileVisualWrap.classList.remove("burst");
     void pileVisualWrap.offsetWidth;
@@ -714,7 +711,6 @@
     }
   }
 
-  // ======= Core helpers =======
   function playerName(i){ return state.players[i]?.name ?? `Player ${i+1}`; }
 
   function initialsFromName(name){
@@ -732,7 +728,7 @@
   function createPlayers(n){
     return Array.from({length:n}, (_,i)=>({
       id:i,
-      type: PlayerType.HUMAN,          // default: all humans (multiplayer)
+      type: PlayerType.HUMAN,
       name: `Player ${i+1}`,
       emoji: EMOJIS[i % EMOJIS.length],
       initials: `P${i+1}`,
@@ -753,14 +749,22 @@
     return top ? top.rank : state.pileTopRank;
   }
 
-  // ✅ Correct play legality: rank hierarchy (NOT point values)
+  /* ============================
+     ✅ FIXED RULES HERE
+     - Face cards only on face cards
+     - Cannot play on top of 10/Joker (they clear)
+     ============================ */
   function canPlayOnTop(rank){
     if (state.mustPlayAny) return true;
+
     const top = topRank();
     if (!top) return true;
 
     if (rank === "10" || rank === "JOKER") return true;
-    if (top === "10" || top === "JOKER") return true;
+    if (top === "10" || top === "JOKER") return false;
+
+    const isFace = r => r === "J" || r === "Q" || r === "K";
+    if (isFace(rank) && !isFace(top)) return false;
 
     return rankOrder(rank) <= rankOrder(top);
   }
@@ -805,7 +809,6 @@
         }
       }
     }
-    // 4 jokers total
     for (let j=0; j<4; j++){
       deck.push({ id:newId(), rank:"JOKER", suit:"★" });
     }
@@ -816,12 +819,24 @@
     return deck;
   }
 
+  /* ============================
+     ✅ START CARD FIX:
+     If start card is 10/Joker, it clears immediately
+     ============================ */
   function drawStartCard(){
     const c = state.deck.pop();
     state.pile.push(c);
     state.pileTopRank = c.rank;
-    state.mustPlayAny = false;
-    addLog(`Start card flipped: ${renderCardText(c)}.`, "warn");
+
+    // If start is 10/Joker, it should clear instantly and allow ANY
+    if (c.rank === "10" || c.rank === "JOKER") {
+      clearPile(`start ${renderCardText(c)}`);
+      // clearPile sets mustPlayAny = true
+      // pile is empty now
+    } else {
+      state.mustPlayAny = false;
+      addLog(`Start card flipped: ${renderCardText(c)}.`, "warn");
+    }
   }
 
   function beginTurnRevealFlow(){
@@ -837,7 +852,7 @@
     passAvatar.style.background = seatGradient(p.id);
 
     passOverlay.classList.add("show");
-    render(); // will render hidden zones
+    render();
   }
 
   function endOverlayReveal(peekOnly){
@@ -885,7 +900,6 @@
     beginTurnRevealFlow();
   }
 
-  // ======= Rendering helpers =======
   function rankSortKey(r){
     if (r === "JOKER") return 99;
     return Math.max(0, RANK_ORDER.indexOf(r)) + 1;
@@ -908,7 +922,6 @@
     }
 
     if (isJoker(card)){
-      div.classList.add("joker");
       div.classList.add("black");
       div.innerHTML = `
         <div class="corner top">JOKER<br>★</div>
@@ -918,9 +931,6 @@
       `;
       return div;
     }
-
-    const isRed = card.suit === "♥" || card.suit === "♦";
-    div.classList.add(isRed ? "red" : "black");
 
     const rank = card.rank;
     const suit = card.suit;
@@ -998,7 +1008,7 @@
     if (ranks.size !== 1) return {ok:false, msg:"All played cards must be the same rank."};
     const r = playList[0].card.rank;
 
-    if (!canPlayOnTop(r)) return {ok:false, msg:`Illegal: must be ≤ top (${topRank()}) unless you have ANY.`};
+    if (!canPlayOnTop(r)) return {ok:false, msg:`Illegal play on top (${topRank()}).`};
     return {ok:true, msg:"OK"};
   }
 
@@ -1085,11 +1095,7 @@
 
     state.players.forEach(p => {
       if (p.id === winner.id) return;
-      const remainingCards = [
-        ...p.hand,
-        ...p.tableUp.filter(Boolean),
-        ...p.tableDown.filter(Boolean)
-      ];
+      const remainingCards = [...p.hand, ...p.tableUp.filter(Boolean), ...p.tableDown.filter(Boolean)];
       const pts = remainingCards.reduce((sum,c)=>sum+scoreValue(c),0);
       p.score += pts;
       addLog(`${p.name} scores ${pts} points (remaining cards).`, "warn");
@@ -1097,9 +1103,7 @@
 
     if (state.handIndex >= state.handsTotal){
       state.gameOver = true;
-      const standings = state.players
-        .map(p => ({name:p.name, score:p.score}))
-        .sort((a,b)=>a.score-b.score);
+      const standings = state.players.map(p => ({name:p.name, score:p.score})).sort((a,b)=>a.score-b.score);
       addLog(`🎉 Game over. Winner: ${standings[0].name} with ${standings[0].score} points.`, "ok");
     } else {
       state.handIndex += 1;
@@ -1118,7 +1122,6 @@
   function computeLegalPlays(player){
     const ranks = [];
     const addRank = (r) => { if (!ranks.includes(r)) ranks.push(r); };
-
     const cards = [...player.hand, ...player.tableUp.filter(Boolean)];
     const byRank = new Map();
     for (const c of cards){
@@ -1126,48 +1129,10 @@
       if (!byRank.has(r)) byRank.set(r, []);
       byRank.get(r).push(c);
     }
-
     for (const r of byRank.keys()){
       if (canPlayOnTop(r)) addRank(r);
     }
     return {ranks, byRank};
-  }
-
-  function penaltyPriority(rank){
-    if (rank === "JOKER") return 100;
-    if (rank === "10") return 60;
-    if (rank === "K" || rank === "Q" || rank === "J") return 40;
-    if (rank === "A") return 1;
-    return rankOrder(rank) + 2;
-  }
-
-  function botTakeTurn(bot){
-    const {ranks, byRank} = computeLegalPlays(bot);
-    if (ranks.length === 0){
-      pickupPile(bot);
-      return {extraTurn:false};
-    }
-    if (ranks.includes("10") || ranks.includes("JOKER")){
-      const r = ranks.includes("10") ? "10" : "JOKER";
-      const c = byRank.get(r)[0];
-      const src = bot.hand.find(x=>x.id===c.id)
-        ? {zone:"hand"}
-        : {zone:"tableUp", stackIndex: bot.tableUp.findIndex(x=>x && x.id===c.id)};
-      return playCards(bot, [{card:c, src}]);
-    }
-    let chosenRank;
-    if (state.mustPlayAny){
-      chosenRank = ranks.slice().sort((a,b)=> penaltyPriority(b)-penaltyPriority(a))[0];
-    } else {
-      chosenRank = ranks.slice().sort((a,b)=> rankOrder(b)-rankOrder(a))[0];
-    }
-    const toPlay = byRank.get(chosenRank).map(c=>({
-      card:c,
-      src: bot.hand.find(x=>x.id===c.id)
-        ? {zone:"hand"}
-        : {zone:"tableUp", stackIndex: bot.tableUp.findIndex(x=>x && x.id===c.id)}
-    }));
-    return playCards(bot, toPlay);
   }
 
   function quickPlayRank(rank){
@@ -1187,7 +1152,7 @@
     if (playList.length === 0) return;
 
     if (!canPlayOnTop(rank)){
-      addLog(`❌ Illegal: ${rank} is higher than top (${topRank()}).`, "bad");
+      addLog(`❌ Illegal: ${rank} on ${topRank()}.`, "bad");
       return;
     }
 
@@ -1242,41 +1207,17 @@
     if (state.peekOnly) return;
     const p = state.players[state.currentPlayer];
 
-    const anyPlayableKnown = (p.hand.length + p.tableUp.filter(Boolean).length) > 0;
-    if (!anyPlayableKnown){
-      const candidates = p.tableDown.map((c,i)=>({c,i})).filter(x=>x.c && !p.tableUp[x.i]);
-      addLog(candidates.length
-        ? `Hint: you must play a face-down card (choose any stack).`
-        : `Hint: you have no cards left (hand should end).`,
-        "warn"
-      );
-      return;
-    }
-
     const {ranks, byRank} = computeLegalPlays(p);
     if (ranks.length === 0){
-      addLog(`Hint: no legal play from hand/face-up → pick up the pile.`, "warn");
+      addLog(`Hint: no legal play → pick up.`, "warn");
       return;
     }
-
-    for (const r of ranks){
-      if (r==="10" || r==="JOKER") continue;
-      const existing = countRankOnPile(r);
-      const needed = Math.max(0, 3 - existing);
-      const have = (byRank.get(r) || []).length;
-      if (needed > 0 && have >= needed){
-        addLog(`Hint: play ${needed}×${r} to complete a triple and clear.`, "ok");
-        return;
-      }
-    }
-
     if (ranks.includes("10") || ranks.includes("JOKER")){
       addLog(`Hint: 10/Joker clears instantly.`, "ok");
       return;
     }
-
     const best = ranks.slice().sort((a,b)=> rankOrder(b)-rankOrder(a))[0];
-    addLog(`Hint: play ${best} (highest legal) to restrict others.`, "ok");
+    addLog(`Hint: play ${best}.`, "ok");
   }
 
   function renderPileVisual(){
@@ -1292,13 +1233,12 @@
     });
   }
 
-  /* ✅ ONLY MODIFIED FUNCTION: renderPlayersRow adds seat class */
   function renderPlayersRow(){
     playersRowEl.innerHTML = "";
     state.players.forEach((p, idx) => {
       const chip = document.createElement("div");
-      const seatClass = SEAT_CLASSES[idx] || "seat-top";
-      chip.className = "playerChip " + seatClass + (idx === state.currentPlayer ? " active" : "");
+      const seat = SEAT_CLASSES[idx] || "";
+      chip.className = `playerChip ${seat}${idx === state.currentPlayer ? " active" : ""}`;
 
       const remaining = playerRemaining(p);
       const upN = p.tableUp.filter(Boolean).length;
@@ -1310,12 +1250,12 @@
           <div class="init">${p.initials}</div>
         </div>
         <div>
-          <div class="pname">${p.name} <span class="pmeta">(${p.score} pts)</span></div>
+          <div class="pname">${p.name}</div>
           <div class="pstats">
-            <span>Hand ${p.hand.length}</span>
-            <span>Up ${upN}</span>
-            <span>Down ${downN}</span>
-            <span>Total ${remaining}</span>
+            <span>H ${p.hand.length}</span>
+            <span>U ${upN}</span>
+            <span>D ${downN}</span>
+            <span>T ${remaining}</span>
           </div>
         </div>
       `;
@@ -1347,17 +1287,14 @@
 
     yourHandEl.innerHTML = "";
     if (state.peekOnly){
-      for (let i=0;i<Math.min(7, Math.max(3, p.hand.length ? 5 : 3)); i++){
+      for (let i=0;i<5;i++){
         const back = makeRealCardDiv({rank:"X", suit:""}, {selectable:false, selectedOn:false, back:true});
         yourHandEl.appendChild(back);
       }
     } else {
-      p.hand
-        .slice()
-        .sort((a,b) => (rankSortKey(a.rank) - rankSortKey(b.rank)))
-        .forEach(card => {
-          yourHandEl.appendChild(renderSelectableCard(card, {zone:"hand"}));
-        });
+      p.hand.slice().sort((a,b)=>rankSortKey(a.rank)-rankSortKey(b.rank)).forEach(card=>{
+        yourHandEl.appendChild(renderSelectableCard(card, {zone:"hand"}));
+      });
     }
 
     yourTableEl.innerHTML = "";
@@ -1425,10 +1362,10 @@
   el("newGame").onclick = () => {
     state.numPlayers = parseInt(el("numPlayers").value, 10);
     state.players = createPlayers(state.numPlayers);
-    state.players.forEach((p,i)=>{ p.initials = initialsFromName(p.name) || `P${i+1}`; });
+    state.players.forEach((p,i)=> p.initials = initialsFromName(p.name) || `P${i+1}`);
     state.handIndex = 1;
     logEl.innerHTML = "";
-    addLog(`New game started with ${state.numPlayers} players (local multiplayer).`, "ok");
+    addLog(`New game started with ${state.numPlayers} players.`, "ok");
     dealHand();
   };
 
@@ -1448,20 +1385,13 @@
   el("pickupBtnMobile").onclick = humanPickup;
   el("hintBtnMobile").onclick = humanHint;
 
-  window.addEventListener("keydown", (e) => {
-    if (passOverlay.classList.contains("show")) return;
-    if (e.key === "Enter") humanPlay();
-    if (e.key.toLowerCase() === "p") humanPickup();
-    if (e.key.toLowerCase() === "h") humanHint();
-  });
-
   readyBtn.onclick = () => endOverlayReveal(false);
   peekBtn.onclick = () => endOverlayReveal(true);
 
   state.numPlayers = parseInt(el("numPlayers").value, 10);
   state.players = createPlayers(state.numPlayers);
   state.players.forEach((p,i)=> p.initials = initialsFromName(p.name) || `P${i+1}`);
-  addLog(`Ready. Click "New Game" to begin (local multiplayer).`, "ok");
+  addLog(`Ready. Click "New Game" to begin.`, "ok");
   render();
 })();
 </script>
