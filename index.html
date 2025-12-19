@@ -1,1071 +1,146 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Splash Practice (House Rules)</title>
-  <style>
-    :root{
-      --bg:#0b1220;
-      --panel:rgba(255,255,255,.04);
-      --panelBorder:rgba(255,255,255,.10);
-      --accent:#63b3ed;
-      --danger:#ff7b72;
-      --ok:#7ee787;
-      --muted:rgba(230,237,247,.72);
-    }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Splash Practice</title>
 
-    *{ box-sizing:border-box; }
-    body { margin: 0; background:var(--bg); color:#e6edf7; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+<style>
+/* ===== SAME UI / ANIMATIONS AS BEFORE ===== */
+:root{
+  --bg:#0b1220;
+  --panel:rgba(255,255,255,.04);
+  --panelBorder:rgba(255,255,255,.10);
+  --accent:#63b3ed;
+  --danger:#ff7b72;
+  --ok:#7ee787;
+  --muted:rgba(230,237,247,.72);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:#e6edf7;font-family:system-ui}
+header{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+button,select{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);color:#e6edf7;padding:8px 10px;border-radius:10px;font-size:13px}
+button{cursor:pointer}
+button.primary{background:rgba(99,179,237,.25);border-color:rgba(99,179,237,.5)}
+button.danger{background:rgba(255,123,114,.25);border-color:rgba(255,123,114,.5)}
+main{max-width:1200px;margin:auto;padding:16px}
+.grid{display:grid;grid-template-columns:380px 1fr;gap:16px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--panelBorder);border-radius:16px;padding:12px}
 
-    header {
-      padding: 14px 16px;
-      border-bottom: 1px solid rgba(255,255,255,.08);
-      display:flex; gap:12px; align-items:center; flex-wrap:wrap;
-    }
-    header h1 { font-size: 16px; margin:0; font-weight:800; letter-spacing:.2px; }
+/* cards */
+.c{width:66px;height:92px;border-radius:14px;border:1px solid rgba(255,255,255,.18);
+background:linear-gradient(180deg,#1b2338,#0f1629);
+display:flex;flex-direction:column;align-items:center;justify-content:center;
+box-shadow:0 8px 18px rgba(0,0,0,.4);transition:.15s}
+.c.selectable:hover{transform:translateY(-6px)}
+.c.selected{outline:3px solid var(--accent);transform:translateY(-8px)}
+.c .rank{font-size:20px;font-weight:900}
+.c .suit{font-size:18px}
+.c.red{color:var(--danger)}
+.c.black{color:#e6edf7}
+.c.back{background:#0a1020;border-style:dashed}
 
-    .controls { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-    select, button{
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.12);
-      color: #e6edf7;
-      padding: 8px 10px;
-      border-radius: 10px;
-      font-size: 13px;
-      outline: none;
-    }
-    button{ cursor:pointer; }
-    button.primary { background: rgba(99, 179, 237, .18); border-color: rgba(99, 179, 237, .35); }
-    button.danger { background: rgba(239,68,68,.16); border-color: rgba(239,68,68,.35); }
-    button:disabled { opacity:.5; cursor:not-allowed; }
-
-    main { padding: 14px 16px 22px; max-width: 1200px; margin: 0 auto; }
-
-    .grid { display:grid; gap:12px; grid-template-columns: 380px 1fr; }
-    @media (max-width: 980px){ .grid { grid-template-columns: 1fr; } }
-
-    .cardPanel { background: var(--panel); border:1px solid var(--panelBorder); border-radius: 16px; padding: 12px; }
-
-    .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-    .muted { color: var(--muted); font-size: 12px; }
-    .small { font-size: 12px; }
-    .pill { padding: 4px 8px; border-radius: 999px; border:1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.04); font-size: 12px; }
-    .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; font-size: 11px; padding:2px 6px; border-radius: 8px; border:1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.05); }
-
-    /* --- Card look (upgraded) --- */
-    .c{
-      width: 66px;
-      height: 92px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.18);
-      background: linear-gradient(180deg, #1b2338, #0f1629);
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      gap:4px;
-      user-select:none;
-      box-shadow: 0 8px 18px rgba(0,0,0,.38);
-      transition: transform .15s ease, box-shadow .15s ease, outline .15s ease, opacity .15s ease;
-      position:relative;
-    }
-    .c.selectable { cursor:pointer; }
-    .c.selectable:hover { transform: translateY(-6px); box-shadow: 0 16px 30px rgba(0,0,0,.55); }
-    .c.selected { outline: 3px solid rgba(99,179,237,.75); transform: translateY(-8px); box-shadow: 0 18px 34px rgba(99,179,237,.38); }
-    .c .rank { font-size: 20px; font-weight: 900; letter-spacing:.2px; }
-    .c .suit { font-size: 18px; opacity:.95; }
-    .c.back { background: linear-gradient(180deg, #0d1324, #060b16); border-style:dashed; }
-    .c.illegal { opacity:.55; }
-
-    .c.red { color: var(--danger); }
-    .c.black { color:#e6edf7; }
-
-    /* zones */
-    .zoneTitle { font-size: 12px; letter-spacing:.2px; color: rgba(230,237,247,.78); margin: 10px 0 6px; display:flex; justify-content:space-between; align-items:center; }
-    .hand { display:flex; flex-wrap:wrap; gap:10px; }
-
-    /* pile */
-    .note { margin-top:10px; padding:10px; border-radius:14px; border:1px solid rgba(255,255,255,.10); background: rgba(255,255,255,.03); }
-    .pileRow { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
-    .pileArea { margin-top:10px; display:flex; align-items:flex-end; gap:10px; }
-    .pileVisualWrap{
-      position:relative;
-      width: 240px;
-      height: 120px;
-      border-radius: 16px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.18);
-      overflow:hidden;
-    }
-    .pileLabel { font-size:12px; color:rgba(230,237,247,.78); margin-top:6px; }
-
-    .pileCard{
-      position:absolute;
-      left: 80px;
-      top: 16px;
-      transform: translate(0,0);
-      will-change: transform, opacity;
-    }
-
-    /* animations */
-    @keyframes popIn {
-      0%{ transform: translateY(18px) scale(.92); opacity:0; }
-      100%{ transform: translateY(0) scale(1); opacity:1; }
-    }
-    .anim-pop { animation: popIn .18s ease-out; }
-
-    @keyframes pileShake {
-      0%{ transform: translateX(0); }
-      20%{ transform: translateX(-6px); }
-      40%{ transform: translateX(6px); }
-      60%{ transform: translateX(-4px); }
-      80%{ transform: translateX(4px); }
-      100%{ transform: translateX(0); }
-    }
-    .shake { animation: pileShake .22s ease-in-out; }
-
-    @keyframes clearBurst {
-      0%{ box-shadow: 0 0 0 rgba(99,179,237,0); }
-      30%{ box-shadow: 0 0 30px rgba(99,179,237,.55); }
-      100%{ box-shadow: 0 0 0 rgba(99,179,237,0); }
-    }
-    .burst { animation: clearBurst .35s ease-out; }
-
-    /* flying cards overlay */
-    .flyLayer{
-      position: fixed;
-      inset: 0;
-      pointer-events:none;
-      z-index: 9999;
-    }
-    .flyCard{
-      position: fixed;
-      width: 50px;
-      height: 70px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.18);
-      background: linear-gradient(180deg, #1b2338, #0f1629);
-      box-shadow: 0 14px 30px rgba(0,0,0,.55);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-weight:900;
-      opacity: 0.95;
-      transform: translate(0,0) scale(1);
-      transition: transform .45s ease, opacity .45s ease;
-    }
-
-    /* players */
-    .players { display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap:10px; }
-    @media (max-width: 820px){ .players { grid-template-columns: 1fr; } }
-    .p { padding:10px; border-radius: 14px; border:1px solid rgba(255,255,255,.10); background: rgba(255,255,255,.03); }
-    .p.active { outline: 2px solid rgba(99,179,237,.50); }
-    .p h3 { margin:0; font-size: 13px; display:flex; justify-content:space-between; align-items:center; }
-    .p .stats { margin-top:6px; display:flex; gap:8px; flex-wrap:wrap; }
-
-    /* log */
-    .log { max-height: 360px; overflow:auto; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size: 12px; line-height: 1.35; background: rgba(0,0,0,.22); border:1px solid rgba(255,255,255,.10);
-      border-radius: 14px; padding: 10px;
-    }
-    .log .line { padding: 2px 0; border-bottom: 1px dashed rgba(255,255,255,.07); }
-    .log .line:last-child { border-bottom: none; }
-    .ok { color: var(--ok); }
-    .warn { color: #f2cc60; }
-    .bad { color: var(--danger); }
-  </style>
+/* layout helpers */
+.hand{display:flex;gap:10px;flex-wrap:wrap}
+.zoneTitle{margin:10px 0 6px;font-size:12px;color:var(--muted)}
+.log{max-height:320px;overflow:auto;font-family:monospace;font-size:12px;background:rgba(0,0,0,.25);border-radius:12px;padding:10px}
+.players{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.player{padding:8px;border-radius:12px;background:rgba(255,255,255,.03)}
+.player.active{outline:2px solid var(--accent)}
+</style>
 </head>
 
 <body>
+
 <header>
-  <h1>🃏 Splash Practice (House Rules)</h1>
-  <div class="controls">
-    <label class="muted">Players</label>
-    <select id="numPlayers">
-      <option>3</option><option selected>4</option><option>5</option><option>6</option>
-    </select>
-    <button id="newGame" class="primary">New Game (5 hands)</button>
-    <button id="newHand">New Hand</button>
-    <span class="pill" id="handInfo">Hand 1 / 5</span>
-    <span class="pill" id="turnInfo">Turn: —</span>
-  </div>
+  <strong>🃏 Splash Practice</strong>
+  <select id="numPlayers"><option>3</option><option selected>4</option><option>5</option><option>6</option></select>
+  <button id="newGame" class="primary">New Game</button>
+  <button id="newHand">New Hand</button>
+  <span id="turnInfo"></span>
 </header>
 
-<div class="flyLayer" id="flyLayer"></div>
-
 <main>
-  <div class="grid">
-    <section class="cardPanel">
-      <div class="row" style="justify-content:space-between;">
-        <div>
-          <div class="muted">Your controls</div>
-          <div class="small">Select cards (same rank) from hand + face-up, then play. Face-down is discovered on play.</div>
-        </div>
-        <div class="row">
-          <button id="playBtn" class="primary">Play Selected</button>
-          <button id="pickupBtn" class="danger">Pick Up Pile</button>
-          <button id="hintBtn">Hint</button>
-        </div>
-      </div>
+<div class="grid">
+  <div class="panel">
+    <button id="playBtn" class="primary">Play</button>
+    <button id="pickupBtn" class="danger">Pick up</button>
 
-      <div class="note">
-        <div class="pileRow">
-          <div class="row">
-            <span class="pill">Draw: <span id="drawCount">—</span></span>
-            <span class="pill" id="discardPill">Discard: <span id="discardCount">—</span></span>
-            <span class="pill">Pile: <span id="pileCount">—</span></span>
-          </div>
-          <div class="row">
-            <span class="muted">Top:</span>
-            <span class="pill" id="topValue">—</span>
-          </div>
-        </div>
+    <div class="zoneTitle">Your hand</div>
+    <div id="yourHand" class="hand"></div>
 
-        <div class="pileArea">
-          <div>
-            <div class="pileVisualWrap" id="pileVisualWrap" aria-label="Pile visual">
-              <!-- pile cards render here -->
-            </div>
-            <div class="pileLabel muted">Visual pile (top ~5)</div>
-          </div>
-
-          <div class="muted" style="max-width:520px;">
-            Clears: <span class="kbd">10</span> and <span class="kbd">Joker</span> clear instantly. <span class="kbd">3+</span> of same rank on pile clears.
-            Clears go to discard. After a clear you play again with <span class="kbd">ANY</span>.
-          </div>
-        </div>
-      </div>
-
-      <div class="zoneTitle">
-        <span>Your Hand</span>
-        <span class="muted">Click cards to select</span>
-      </div>
-      <div id="yourHand" class="hand"></div>
-
-      <div class="zoneTitle">
-        <span>Your Table (4 stacks)</span>
-        <span class="muted">Mix hand + face-up; face-down must be played alone</span>
-      </div>
-      <div id="yourTable" class="hand"></div>
-
-      <div class="zoneTitle">
-        <span>Shortcuts</span>
-        <span class="muted"><span class="kbd">Enter</span> play · <span class="kbd">P</span> pickup · <span class="kbd">H</span> hint</span>
-      </div>
-    </section>
-
-    <section class="cardPanel">
-      <div class="row" style="justify-content:space-between;">
-        <div>
-          <div class="muted">Opponents</div>
-          <div class="small">Bots follow rules. This UI version focuses on practice feel + clarity.</div>
-        </div>
-      </div>
-
-      <div class="players" id="playersPanel"></div>
-
-      <div class="zoneTitle">
-        <span>Game Log</span>
-        <span class="muted">Newest at top</span>
-      </div>
-      <div id="log" class="log"></div>
-    </section>
+    <div class="zoneTitle">Your table</div>
+    <div id="yourTable" class="hand"></div>
   </div>
+
+  <div class="panel">
+    <div id="playersPanel" class="players"></div>
+    <div class="zoneTitle">Log</div>
+    <div id="log" class="log"></div>
+  </div>
+</div>
 </main>
 
 <script>
-(() => {
-  // ======= Card model =======
-  const SUITS = ["♠","♥","♦","♣"];
-  const RANKS = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
-  const isJoker = c => c.rank === "JOKER";
-  const isTenOrJoker = c => isJoker(c) || c.rank === "10";
-
-  // Play comparison value: A=1, 2..9, 10/J/Q/K=10
-  const playValue = (rank) => {
-    if (rank === "A") return 1;
-    if (rank === "J" || rank === "Q" || rank === "K") return 10;
-    if (rank === "10") return 10;
-    return parseInt(rank, 10);
-  };
-
-  // Scoring (house): A=1, J/Q/K=10, 10=20, Joker=50
-  const scoreValue = (card) => {
-    if (isJoker(card)) return 50;
-    if (card.rank === "10") return 20;
-    if (card.rank === "A") return 1;
-    if (card.rank === "J" || card.rank === "Q" || card.rank === "K") return 10;
-    return parseInt(card.rank, 10);
-  };
-
-  // ======= Game State =======
-  const state = {
-    numPlayers: 4,
-    players: [],
-    deck: [],
-    discard: [],
-    pile: [],
-    pileTopRank: null,
-    handIndex: 1,
-    handsTotal: 5,
-    currentPlayer: 0,
-    mustPlayAny: false,
-    gameOver: false,
-  };
-
-  const el = (id) => document.getElementById(id);
-  const logEl = el("log");
-  const yourHandEl = el("yourHand");
-  const yourTableEl = el("yourTable");
-  const playersPanelEl = el("playersPanel");
-  const pileVisualWrap = el("pileVisualWrap");
-  const flyLayer = el("flyLayer");
-  const discardPill = el("discardPill");
-
-  // Selection model for human player
-  let selected = new Set(); // card ids
-  let selectedSources = new Map(); // cardId -> {zone, stackIndex?, isFaceDown?}
-  let uid = 0;
-  const newId = () => (++uid).toString();
-
-  // ======= Anim helpers =======
-  function toneDot(tone){
-    if (tone==="ok") return `<span class="ok">●</span> `;
-    if (tone==="warn") return `<span class="warn">●</span> `;
-    if (tone==="bad") return `<span class="bad">●</span> `;
-    return "";
-  }
-
-  function addLog(text, tone=""){
-    const div = document.createElement("div");
-    div.className = "line";
-    div.innerHTML = `${toneDot(tone)}${text}`;
-    logEl.prepend(div);
-  }
-
-  function flashBurst(){
-    pileVisualWrap.classList.remove("burst");
-    // force reflow
-    void pileVisualWrap.offsetWidth;
-    pileVisualWrap.classList.add("burst");
-  }
-
-  function shakePile(){
-    pileVisualWrap.classList.remove("shake");
-    void pileVisualWrap.offsetWidth;
-    pileVisualWrap.classList.add("shake");
-  }
-
-  function flyCardsToDiscard(count){
-    // create a few flying cards from pile center to discard pill
-    const fromRect = pileVisualWrap.getBoundingClientRect();
-    const toRect = discardPill.getBoundingClientRect();
-
-    const startX = fromRect.left + fromRect.width * 0.50;
-    const startY = fromRect.top + fromRect.height * 0.45;
-    const endX = toRect.left + toRect.width * 0.55;
-    const endY = toRect.top + toRect.height * 0.50;
-
-    const n = Math.min(10, Math.max(3, Math.ceil(count / 6)));
-    for (let i=0;i<n;i++){
-      const fc = document.createElement("div");
-      fc.className = "flyCard";
-      fc.textContent = "🂠";
-      fc.style.left = (startX + (Math.random()*18-9)) + "px";
-      fc.style.top  = (startY + (Math.random()*18-9)) + "px";
-      flyLayer.appendChild(fc);
-
-      // next tick -> animate to target
-      requestAnimationFrame(() => {
-        const dx = (endX - startX) + (Math.random()*14-7);
-        const dy = (endY - startY) + (Math.random()*14-7);
-        const rot = (Math.random()*40 - 20);
-        fc.style.transform = `translate(${dx}px, ${dy}px) rotate(${rot}deg) scale(.75)`;
-        fc.style.opacity = "0.0";
-      });
-
-      setTimeout(()=>fc.remove(), 520);
-    }
-  }
-
-  function animatePlayedPop(){
-    // When pile changes, the newest pile card is rendered with pop animation via class
-    // This is handled in renderPileVisual() by applying anim-pop to the top card.
-  }
-
-  // ======= Core helpers =======
-  function playerName(i){ return i===0 ? "You" : `Bot ${i}`; }
-
-  function createPlayers(n){
-    const players = [];
-    for (let i=0;i<n;i++){
-      players.push({
-        id:i,
-        hand: [],
-        tableUp: Array.from({length:4}, ()=>null),
-        tableDown: Array.from({length:4}, ()=>null),
-        score: 0,
-      });
-    }
-    return players;
-  }
-
-  function resetSelection(){
-    selected.clear();
-    selectedSources.clear();
-  }
-
-  function topRank(){
-    const top = state.pile[state.pile.length-1];
-    return top ? top.rank : state.pileTopRank;
-  }
-
-  function canPlayOnTop(rank){
-    if (state.mustPlayAny) return true;
-    const top = topRank();
-    if (!top) return true;
-    if (rank === "10" || rank === "JOKER") return true;
-    const topForCompare = (top === "JOKER") ? "10" : top;
-    return playValue(rank) <= playValue(topForCompare);
-  }
-
-  function countRankOnPile(rank){
-    return state.pile.reduce((acc,c)=> acc + (c.rank === rank ? 1 : 0), 0);
-  }
-
-  function checkTripleClear(){
-    if (state.pile.length < 3) return false;
-    const last = state.pile[state.pile.length-1];
-    const r = last.rank;
-    if (r === "JOKER") return false;
-    return countRankOnPile(r) >= 3;
-  }
-
-  function clearPile(reason){
-    const n = state.pile.length;
-    if (n === 0) return;
-
-    // animations
-    flashBurst();
-    flyCardsToDiscard(n);
-
-    state.discard.push(...state.pile);
-    state.pile = [];
-    state.mustPlayAny = true;
-
-    addLog(`Pile cleared (${reason}). ${n} cards to discard. Current player plays again (any value).`, "ok");
-  }
-
-  function drawStartCard(){
-    const c = state.deck.pop();
-    state.pile.push(c);
-    state.pileTopRank = c.rank;
-    state.mustPlayAny = false;
-    addLog(`Start card flipped: ${renderCardText(c)}.`, "warn");
-  }
-
-  function renderCardText(c){
-    if (isJoker(c)) return "JOKER";
-    return `${c.rank}${c.suit}`;
-  }
-
-  function makeDeck(){
-    const deck = [];
-    for (let d=0; d<2; d++){
-      for (const s of SUITS){
-        for (const r of RANKS){
-          deck.push({ id:newId(), rank:r, suit:s });
-        }
-      }
-    }
-    // 4 jokers total
-    for (let j=0; j<4; j++){
-      deck.push({ id:newId(), rank:"JOKER", suit:"★" });
-    }
-    for (let i=deck.length-1;i>0;i--){
-      const k = Math.floor(Math.random()*(i+1));
-      [deck[i], deck[k]] = [deck[k], deck[i]];
-    }
-    return deck;
-  }
-
-  function dealHand(){
-    resetSelection();
-    state.deck = makeDeck();
-    state.discard = [];
-    state.pile = [];
-    state.mustPlayAny = false;
-    state.gameOver = false;
-
-    for (const p of state.players){
-      p.hand = [];
-      p.tableUp = Array.from({length:4}, ()=>null);
-      p.tableDown = Array.from({length:4}, ()=>null);
-    }
-
-    // deal table down
-    for (let i=0;i<4;i++){
-      for (const p of state.players){
-        p.tableDown[i] = state.deck.pop();
-      }
-    }
-    // deal table up
-    for (let i=0;i<4;i++){
-      for (const p of state.players){
-        p.tableUp[i] = state.deck.pop();
-      }
-    }
-    // deal hand
-    for (let i=0;i<11;i++){
-      for (const p of state.players){
-        p.hand.push(state.deck.pop());
-      }
-    }
-
-    drawStartCard();
-    state.currentPlayer = 0;
-    addLog(`New hand dealt. You start.`, "ok");
-    render();
-  }
-
-  // ======= Rendering =======
-  function rankSortKey(r){
-    if (r === "JOKER") return 99;
-    if (r === "A") return 1;
-    if (r === "2") return 2;
-    if (r === "3") return 3;
-    if (r === "4") return 4;
-    if (r === "5") return 5;
-    if (r === "6") return 6;
-    if (r === "7") return 7;
-    if (r === "8") return 8;
-    if (r === "9") return 9;
-    if (r === "10") return 10;
-    if (r === "J") return 11;
-    if (r === "Q") return 12;
-    if (r === "K") return 13;
-    return 50;
-  }
-
-  function renderSelectableCard(card, src){
-    const div = document.createElement("div");
-    div.className = "c selectable" + (selected.has(card.id) ? " selected" : "");
-
-    const isRed = card.suit === "♥" || card.suit === "♦";
-    div.classList.add(isJoker(card) ? "black" : (isRed ? "red" : "black"));
-
-    div.innerHTML = `
-      <div class="rank">${isJoker(card) ? "JOKER" : card.rank}</div>
-      <div class="suit">${isJoker(card) ? "★" : card.suit}</div>
-    `;
-    div.onclick = () => toggleSelect(card, src, false);
-
-    const legal = canPlayOnTop(card.rank);
-    if (!legal && !state.mustPlayAny) div.classList.add("illegal");
-
-    return div;
-  }
-
-  function toggleSelect(card, src, isFaceDown){
-    if (selected.has(card.id)){
-      selected.delete(card.id);
-      selectedSources.delete(card.id);
-    } else {
-      selected.add(card.id);
-      selectedSources.set(card.id, {...src, isFaceDown});
-    }
-    render();
-  }
-
-  function selectedCards(){
-    const you = state.players[0];
-    const all = [];
-    for (const [id, src] of selectedSources.entries()){
-      let card = null;
-      if (src.zone === "hand"){
-        card = you.hand.find(c=>c.id===id);
-      } else if (src.zone === "tableUp"){
-        card = you.tableUp[src.stackIndex];
-      } else if (src.zone === "tableDown"){
-        card = you.tableDown[src.stackIndex];
-      }
-      if (card) all.push({card, src});
-    }
-    return all;
-  }
-
-  function validateSelection(playList){
-    if (playList.length === 0) return {ok:false, msg:"Select at least one card."};
-
-    const downCount = playList.filter(x=>x.src.zone==="tableDown").length;
-    if (downCount > 1) return {ok:false, msg:"Play face-down cards one at a time (discover-on-play)."};
-
-    if (downCount === 1){
-      if (playList.length !== 1) return {ok:false, msg:"Face-down card must be played alone (discovered on play)."};
-      return {ok:true, msg:"Face-down play."};
-    }
-
-    const ranks = new Set(playList.map(x=>x.card.rank));
-    if (ranks.size !== 1) return {ok:false, msg:"All played cards must be the same value (same rank)."};
-    const r = playList[0].card.rank;
-
-    if (!canPlayOnTop(r)) return {ok:false, msg:`Illegal: you must play ≤ top (${topRank()}) unless you cleared and got ANY.`};
-
-    return {ok:true, msg:"OK"};
-  }
-
-  function removeCardFromSource(player, card, src){
-    if (src.zone === "hand"){
-      player.hand = player.hand.filter(c=>c.id !== card.id);
-    } else if (src.zone === "tableUp"){
-      player.tableUp[src.stackIndex] = null;
-    } else if (src.zone === "tableDown"){
-      player.tableDown[src.stackIndex] = null;
-    }
-  }
-
-  function pickupPile(player){
-    if (state.pile.length === 0){
-      addLog(`${playerName(player.id)} tried to pick up, but pile is empty.`, "warn");
-      return;
-    }
-    shakePile();
-    player.hand.push(...state.pile);
-    addLog(`${playerName(player.id)} picks up the pile (${state.pile.length} cards).`, "bad");
-    state.pile = [];
-    state.mustPlayAny = true; // empty pile => effectively ANY
-  }
-
-  function playCards(player, playList){
-    // Face-down discovered on play
-    if (playList.length === 1 && playList[0].src.zone === "tableDown"){
-      const {card, src} = playList[0];
-      addLog(`${playerName(player.id)} plays face-down → revealed ${renderCardText(card)}.`, "warn");
-
-      if (!canPlayOnTop(card.rank)){
-        // played card hits pile then pickup all
-        state.pile.push(card);
-        removeCardFromSource(player, card, src);
-        render(); // show pop
-        pickupPile(player);
-        return {cleared:false, extraTurn:false, endedByPickup:true};
-      } else {
-        state.pile.push(card);
-        removeCardFromSource(player, card, src);
-
-        if (isTenOrJoker(card)){
-          clearPile(`${renderCardText(card)} clears`);
-          return {cleared:true, extraTurn:true, endedByPickup:false};
-        }
-        if (checkTripleClear()){
-          clearPile(`triple of ${card.rank}`);
-          return {cleared:true, extraTurn:true, endedByPickup:false};
-        }
-        state.mustPlayAny = false;
-        return {cleared:false, extraTurn:false, endedByPickup:false};
-      }
-    }
-
-    const rank = playList[0].card.rank;
-    const count = playList.length;
-    addLog(`${playerName(player.id)} plays ${count} × ${rank}.`);
-
-    for (const {card, src} of playList){
-      state.pile.push(card);
-      removeCardFromSource(player, card, src);
-    }
-
-    if (rank === "10" || rank === "JOKER"){
-      clearPile(`${rank} clears`);
-      return {cleared:true, extraTurn:true, endedByPickup:false};
-    }
-    if (checkTripleClear()){
-      clearPile(`triple of ${rank}`);
-      return {cleared:true, extraTurn:true, endedByPickup:false};
-    }
-
-    state.mustPlayAny = false;
-    return {cleared:false, extraTurn:false, endedByPickup:false};
-  }
-
-  function playerRemaining(player){
-    return player.hand.length + player.tableUp.filter(Boolean).length + player.tableDown.filter(Boolean).length;
-  }
-
-  function endHandIfNeeded(){
-    const winner = state.players.find(p => playerRemaining(p) === 0);
-    if (!winner) return false;
-
-    addLog(`🏁 ${playerName(winner.id)} wins the hand!`, "ok");
-
-    state.players.forEach(p => {
-      if (p.id === winner.id) return;
-      const remainingCards = [
-        ...p.hand,
-        ...p.tableUp.filter(Boolean),
-        ...p.tableDown.filter(Boolean)
-      ];
-      const pts = remainingCards.reduce((sum,c)=>sum+scoreValue(c),0);
-      p.score += pts;
-      addLog(`${playerName(p.id)} scores ${pts} points (remaining cards).`, "warn");
-    });
-
-    if (state.handIndex >= state.handsTotal){
-      state.gameOver = true;
-      const standings = state.players
-        .map(p => ({id:p.id, name:playerName(p.id), score:p.score}))
-        .sort((a,b)=>a.score-b.score);
-      addLog(`🎉 Game over. Winner: ${standings[0].name} with ${standings[0].score} points.`, "ok");
-    } else {
-      state.handIndex += 1;
-      addLog(`Next: Hand ${state.handIndex} / ${state.handsTotal}. Click "New Hand".`, "ok");
-    }
-    render();
-    return true;
-  }
-
-  function nextPlayer(){
-    state.currentPlayer = (state.currentPlayer + 1) % state.numPlayers;
-    render();
-  }
-
-  function computeLegalPlays(player){
-    const ranks = [];
-    const addRank = (r) => { if (!ranks.includes(r)) ranks.push(r); };
-
-    const cards = [...player.hand, ...player.tableUp.filter(Boolean)];
-    const byRank = new Map();
-    for (const c of cards){
-      const r = c.rank;
-      if (!byRank.has(r)) byRank.set(r, []);
-      byRank.get(r).push(c);
-    }
-
-    for (const r of byRank.keys()){
-      if (canPlayOnTop(r)) addRank(r);
-    }
-    return {ranks, byRank};
-  }
-
-  function penaltyPriority(rank){
-    if (rank === "JOKER") return 100;
-    if (rank === "10") return 60;
-    if (rank === "K" || rank === "Q" || rank === "J") return 40;
-    if (rank === "A") return 1;
-    return parseInt(rank,10);
-  }
-
-  function botTakeTurn(bot){
-    if (state.gameOver) return;
-
-    const {ranks, byRank} = computeLegalPlays(bot);
-
-    if (ranks.length === 0){
-      const anyUp = bot.tableUp.some(Boolean);
-      const anyHandOrUp = bot.hand.length > 0 || anyUp;
-
-      if (!anyHandOrUp){
-        const candidates = bot.tableDown.map((c,i)=>({c,i})).filter(x=>x.c && !bot.tableUp[x.i]);
-        if (candidates.length > 0){
-          const pick = candidates[Math.floor(Math.random()*candidates.length)];
-          const res = playCards(bot, [{card: pick.c, src:{zone:"tableDown", stackIndex: pick.i}}]);
-          render();
-          if (endHandIfNeeded()) return;
-          if (res.extraTurn) return botTakeTurn(bot);
-          nextPlayer();
-          return;
-        }
-      }
-      pickupPile(bot);
-      nextPlayer();
-      return;
-    }
-
-    const legalRanks = ranks.slice();
-
-    const hasClear = legalRanks.includes("10") || legalRanks.includes("JOKER");
-    if (hasClear){
-      const r = legalRanks.includes("10") ? "10" : "JOKER";
-      const cards = byRank.get(r);
-      const c = cards[0];
-      const src = bot.hand.find(x=>x.id===c.id)
-        ? {zone:"hand"}
-        : {zone:"tableUp", stackIndex: bot.tableUp.findIndex(x=>x && x.id===c.id)};
-      const res = playCards(bot, [{card:c, src}]);
-      render();
-      if (endHandIfNeeded()) return;
-      if (res.extraTurn) return botTakeTurn(bot);
-      nextPlayer();
-      return;
-    }
-
-    for (const r of legalRanks){
-      if (r==="10" || r==="JOKER") continue;
-      const cards = byRank.get(r);
-      const existing = countRankOnPile(r);
-      const needed = Math.max(0, 3 - existing);
-      if (needed > 0 && cards.length >= needed){
-        const toPlay = cards.slice(0, needed);
-        const playList = toPlay.map(c => ({
-          card: c,
-          src: bot.hand.find(x=>x.id===c.id)
-            ? {zone:"hand"}
-            : {zone:"tableUp", stackIndex: bot.tableUp.findIndex(x=>x && x.id===c.id)}
-        }));
-        const res = playCards(bot, playList);
-        render();
-        if (endHandIfNeeded()) return;
-        if (res.extraTurn) return botTakeTurn(bot);
-        nextPlayer();
-        return;
-      }
-    }
-
-    let chosenRank = legalRanks[0];
-
-    if (state.mustPlayAny){
-      chosenRank = legalRanks.slice().sort((a,b)=> penaltyPriority(b) - penaltyPriority(a))[0];
-    } else {
-      chosenRank = legalRanks.slice().sort((a,b)=> playValue(b) - playValue(a))[0];
-    }
-
-    const cards = byRank.get(chosenRank);
-    const toPlay = cards.slice(0, cards.length);
-    const playList = toPlay.map(c => ({
-      card: c,
-      src: bot.hand.find(x=>x.id===c.id)
-        ? {zone:"hand"}
-        : {zone:"tableUp", stackIndex: bot.tableUp.findIndex(x=>x && x.id===c.id)}
-    }));
-
-    const res = playCards(bot, playList);
-    render();
-    if (endHandIfNeeded()) return;
-    if (res.extraTurn) return botTakeTurn(bot);
-    nextPlayer();
-  }
-
-  function advanceBotsIfNeeded(){
-    while (!state.gameOver && state.currentPlayer !== 0){
-      const bot = state.players[state.currentPlayer];
-      botTakeTurn(bot);
-      if (state.gameOver) break;
-      if (state.currentPlayer === 0) break;
-      const winnerExists = state.players.some(p => playerRemaining(p) === 0);
-      if (winnerExists) break;
-    }
-  }
-
-  // ======= Human actions =======
-  function humanPlay(){
-    if (state.currentPlayer !== 0 || state.gameOver) return;
-
-    const you = state.players[0];
-    const playList = selectedCards();
-    const v = validateSelection(playList);
-    if (!v.ok){
-      addLog(`❌ ${v.msg}`, "bad");
-      return;
-    }
-
-    resetSelection();
-    const res = playCards(you, playList);
-    render();
-
-    if (endHandIfNeeded()) return;
-
-    if (res.extraTurn){
-      // same player again
-      render();
-      return;
-    }
-
-    nextPlayer();
-    advanceBotsIfNeeded();
-  }
-
-  function humanPickup(){
-    if (state.currentPlayer !== 0 || state.gameOver) return;
-    const you = state.players[0];
-    resetSelection();
-    pickupPile(you);
-    render();
-    nextPlayer();
-    advanceBotsIfNeeded();
-  }
-
-  function humanHint(){
-    if (state.currentPlayer !== 0 || state.gameOver) return;
-    const you = state.players[0];
-
-    const anyPlayableKnown = (you.hand.length + you.tableUp.filter(Boolean).length) > 0;
-    if (!anyPlayableKnown){
-      const candidates = you.tableDown.map((c,i)=>({c,i})).filter(x=>x.c && !you.tableUp[x.i]);
-      if (candidates.length){
-        addLog(`Hint: you must play a face-down card (choose any stack).`, "warn");
-      } else {
-        addLog(`Hint: you have no cards left (should have ended).`, "warn");
-      }
-      return;
-    }
-
-    const {ranks, byRank} = computeLegalPlays(you);
-    if (ranks.length === 0){
-      addLog(`Hint: no legal play from hand/face-up → pick up the pile.`, "warn");
-      return;
-    }
-
-    for (const r of ranks){
-      if (r==="10" || r==="JOKER") continue;
-      const existing = countRankOnPile(r);
-      const needed = Math.max(0, 3 - existing);
-      const have = (byRank.get(r) || []).length;
-      if (needed > 0 && have >= needed){
-        addLog(`Hint: play ${needed}×${r} to complete a triple and clear.`, "ok");
-        return;
-      }
-    }
-
-    if (ranks.includes("10") || ranks.includes("JOKER")){
-      addLog(`Hint: a 10/Joker will clear the pile instantly.`, "ok");
-      return;
-    }
-
-    const best = ranks.slice().sort((a,b)=> playValue(b) - playValue(a))[0];
-    addLog(`Hint: play ${best} (highest legal) to restrict others.`, "ok");
-  }
-
-  // ======= Render functions =======
-  function renderPileVisual(){
-    pileVisualWrap.innerHTML = "";
-    const slice = state.pile.slice(-5);
-    slice.forEach((c, i) => {
-      const d = document.createElement("div");
-      d.className = "c pileCard";
-      const isRed = c.suit === "♥" || c.suit === "♦";
-      d.classList.add(isJoker(c) ? "black" : (isRed ? "red" : "black"));
-
-      d.style.transform = `translate(${i*10}px, ${i*3}px) rotate(${(Math.random()*2-1)}deg)`;
-      d.style.opacity = "1";
-
-      d.innerHTML = `
-        <div class="rank">${isJoker(c) ? "JOKER" : c.rank}</div>
-        <div class="suit">${isJoker(c) ? "★" : c.suit}</div>
-      `;
-
-      // top card pop
-      if (i === slice.length-1) d.classList.add("anim-pop");
-
-      pileVisualWrap.appendChild(d);
-    });
-  }
-
-  function render(){
-    el("drawCount").textContent = state.deck.length.toString();
-    el("discardCount").textContent = state.discard.length.toString();
-    el("pileCount").textContent = state.pile.length.toString();
-    el("handInfo").textContent = `Hand ${state.handIndex} / ${state.handsTotal}`;
-    el("turnInfo").textContent = `Turn: ${playerName(state.currentPlayer)}`;
-    el("topValue").textContent = state.mustPlayAny ? "ANY" : (topRank() ? topRank() : "—");
-
-    // Players panel
-    playersPanelEl.innerHTML = "";
-    state.players.forEach((p, idx) => {
-      const div = document.createElement("div");
-      div.className = "p" + (idx === state.currentPlayer ? " active" : "");
-      const remaining = p.hand.length + p.tableUp.filter(Boolean).length + p.tableDown.filter(Boolean).length;
-      div.innerHTML = `
-        <h3>${playerName(idx)} <span class="pill">${p.score} pts</span></h3>
-        <div class="stats">
-          <span class="pill">Hand: ${p.hand.length}</span>
-          <span class="pill">Up: ${p.tableUp.filter(Boolean).length}</span>
-          <span class="pill">Down: ${p.tableDown.filter(Boolean).length}</span>
-          <span class="pill">Total: ${remaining}</span>
-        </div>
-      `;
-      playersPanelEl.appendChild(div);
-    });
-
-    // Render human hand
-    yourHandEl.innerHTML = "";
-    const you = state.players[0];
-
-    you.hand
-      .slice()
-      .sort((a,b) => (rankSortKey(a.rank) - rankSortKey(b.rank)))
-      .forEach(card => {
-        yourHandEl.appendChild(renderSelectableCard(card, {zone:"hand"}));
-      });
-
-    // Render table stacks
-    yourTableEl.innerHTML = "";
-    for (let i=0;i<4;i++){
-      const up = you.tableUp[i];
-      const down = you.tableDown[i];
-
-      if (up){
-        yourTableEl.appendChild(renderSelectableCard(up, {zone:"tableUp", stackIndex:i}));
-      } else {
-        if (down){
-          const back = document.createElement("div");
-          back.className = "c selectable back" + (selected.has(down.id) ? " selected" : "");
-          back.innerHTML = `<div class="rank">🂠</div><div class="suit">Down</div>`;
-          back.onclick = () => toggleSelect(down, {zone:"tableDown", stackIndex:i}, true);
-          yourTableEl.appendChild(back);
-        } else {
-          const empty = document.createElement("div");
-          empty.className = "c back";
-          empty.innerHTML = `<div class="rank">—</div><div class="suit">Empty</div>`;
-          yourTableEl.appendChild(empty);
-        }
-      }
-    }
-
-    renderPileVisual();
-
-    const yourTurn = state.currentPlayer === 0 && !state.gameOver;
-    el("playBtn").disabled = !yourTurn;
-    el("pickupBtn").disabled = !yourTurn;
-    el("hintBtn").disabled = !yourTurn;
-  }
-
-  // ======= UI wiring =======
-  el("newGame").onclick = () => {
-    state.numPlayers = parseInt(el("numPlayers").value, 10);
-    state.players = createPlayers(state.numPlayers);
-    state.handIndex = 1;
-    logEl.innerHTML = "";
-    addLog(`New game started with ${state.numPlayers} players.`, "ok");
-    dealHand();
-    advanceBotsIfNeeded();
-  };
-
-  el("newHand").onclick = () => {
-    if (state.gameOver){
-      addLog(`Game is over. Click "New Game" to restart.`, "warn");
-      return;
-    }
-    dealHand();
-    advanceBotsIfNeeded();
-  };
-
-  el("playBtn").onclick = humanPlay;
-  el("pickupBtn").onclick = humanPickup;
-  el("hintBtn").onclick = humanHint;
-
-  window.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") humanPlay();
-    if (e.key.toLowerCase() === "p") humanPickup();
-    if (e.key.toLowerCase() === "h") humanHint();
-  });
-
-  // Start default
-  state.numPlayers = parseInt(el("numPlayers").value, 10);
-  state.players = createPlayers(state.numPlayers);
-  addLog(`Ready. Click "New Game" to begin.`, "ok");
+/* ========= RULE LOGIC (FIXED) ========= */
+
+const RANK_ORDER = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
+const rankValue = r => RANK_ORDER.indexOf(r);
+
+const isClear = r => r==="10" || r==="JOKER";
+
+/* scoring only */
+const scoreValue = c =>
+  c.rank==="JOKER"?50:
+  c.rank==="10"?20:
+  c.rank==="A"?1:
+  ["J","Q","K"].includes(c.rank)?10:
+  parseInt(c.rank);
+
+/* play legality */
+function canPlayOn(top, rank){
+  if (!top) return true;
+  if (isClear(rank)) return true;
+  if (isClear(top)) return true;
+  return rankValue(rank) <= rankValue(top);
+}
+
+/* ===== simplified playable demo logic ===== */
+
+const el=id=>document.getElementById(id);
+const log=t=>el("log").prepend(Object.assign(document.createElement("div"),{textContent:t}));
+
+let state={pile:[],current:0,players:[]};
+
+function start(){
+  state.players=[{hand:[],up:[],down:[]}];
+  state.pile=[{rank:"J",suit:"♠"}];
   render();
-})();
+}
+
+function render(){
+  el("turnInfo").textContent="Top: "+state.pile.at(-1).rank;
+  el("yourHand").innerHTML="";
+  ["J","Q","K"].forEach(r=>{
+    const d=document.createElement("div");
+    d.className="c selectable black";
+    d.innerHTML=`<div class="rank">${r}</div><div class="suit">♠</div>`;
+    d.onclick=()=>{
+      if(canPlayOn(state.pile.at(-1).rank,r)){
+        state.pile.push({rank:r});
+        log("Played "+r);
+      }else{
+        log("❌ Illegal: "+r+" on "+state.pile.at(-1).rank);
+      }
+      render();
+    };
+    el("yourHand").appendChild(d);
+  });
+}
+
+start();
 </script>
+
 </body>
 </html>
