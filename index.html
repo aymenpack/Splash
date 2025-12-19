@@ -517,6 +517,37 @@
 .c.illegal.shake{
   animation: illegalShake .25s ease-in-out;
 }
+    /* ===== UX: SEAT-AWARE HIGHLIGHTING ===== */
+
+/* Active seat pulse */
+@keyframes seatPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(99,179,237,.55); }
+  70%  { box-shadow: 0 0 0 14px rgba(99,179,237,0); }
+  100% { box-shadow: 0 0 0 0 rgba(99,179,237,0); }
+}
+
+.playerChip.active{
+  animation: seatPulse 1.6s ease-out infinite;
+}
+
+/* Dim inactive players */
+.playerChip.inactive{
+  opacity: 0.55;
+  filter: grayscale(.35);
+}
+
+/* Turn arrow */
+.turnArrow{
+  position:absolute;
+  font-size:22px;
+  opacity:.85;
+  animation: arrowPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes arrowPulse{
+  0%,100%{ transform:translateY(0); opacity:.85; }
+  50%{ transform:translateY(6px); opacity:.55; }
+}
   </style>
 </head>
 
@@ -560,6 +591,7 @@
 
     <section class="table">
       <div class="playersRow" id="playersRow"></div>
+      <div id="turnArrow" class="turnArrow" style="display:none;">⬇️</div>
 
       <div class="note">
         <div class="pileRow">
@@ -1289,35 +1321,63 @@ function renderSelectableCard(card, src){
     });
   }
 
-  function renderPlayersRow(){
-    playersRowEl.innerHTML = "";
-    state.players.forEach((p, idx) => {
-      const chip = document.createElement("div");
-      const seat = SEAT_CLASSES[idx] || "";
-      chip.className = `playerChip ${seat}${idx === state.currentPlayer ? " active" : ""}`;
+function renderPlayersRow(){
+  playersRowEl.innerHTML = "";
 
-      const remaining = playerRemaining(p);
-      const upN = p.tableUp.filter(Boolean).length;
-      const downN = p.tableDown.filter(Boolean).length;
+  const arrow = document.getElementById("turnArrow");
+  arrow.style.display = "none";
 
-      chip.innerHTML = `
-        <div class="avatar" style="background:${seatGradient(p.id)}">
-          <div class="emo">${p.emoji}</div>
-          <div class="init">${p.initials}</div>
-        </div>
-        <div>
-          <div class="pname">${p.name}</div>
-          <div class="pstats">
-            <span>H ${p.hand.length}</span>
-            <span>U ${upN}</span>
-            <span>D ${downN}</span>
-            <span>T ${remaining}</span>
-          </div>
-        </div>
-      `;
-      playersRowEl.appendChild(chip);
-    });
-  }
+  state.players.forEach((p, idx) => {
+    const chip = document.createElement("div");
+    const seat = SEAT_CLASSES[idx] || "";
+
+    chip.className =
+      "playerChip " +
+      seat +
+      (idx === state.currentPlayer ? " active" : " inactive");
+
+    chip.innerHTML = `
+      <div class="avatar" style="background:${seatGradient(p.id)}">
+        <div class="emo">${p.emoji}</div>
+        <div class="init">${p.initials}</div>
+      </div>
+      <div>
+        <div class="pname">${p.name}</div>
+      </div>
+    `;
+
+    playersRowEl.appendChild(chip);
+
+    // Position arrow near active seat
+    if (idx === state.currentPlayer){
+      const r = chip.getBoundingClientRect();
+      const tableRect = playersRowEl.getBoundingClientRect();
+
+      arrow.style.display = "block";
+
+      // Default: arrow points downward to pile
+      arrow.textContent = "⬇️";
+      arrow.style.left = (r.left - tableRect.left + r.width/2 - 10) + "px";
+      arrow.style.top  = (r.top - tableRect.top + r.height + 4) + "px";
+
+      // Adjust arrow direction by seat
+      if (seat.includes("top")){
+        arrow.textContent = "⬇️";
+      } else if (seat.includes("bottom")){
+        arrow.textContent = "⬆️";
+        arrow.style.top = (r.top - tableRect.top - 28) + "px";
+      } else if (seat.includes("left")){
+        arrow.textContent = "➡️";
+        arrow.style.left = (r.left - tableRect.left + r.width + 6) + "px";
+        arrow.style.top  = (r.top - tableRect.top + r.height/2 - 10) + "px";
+      } else if (seat.includes("right")){
+        arrow.textContent = "⬅️";
+        arrow.style.left = (r.left - tableRect.left - 26) + "px";
+        arrow.style.top  = (r.top - tableRect.top + r.height/2 - 10) + "px";
+      }
+    }
+  });
+}
 
   function renderZonesHidden(){
     yourHandEl.innerHTML = "";
