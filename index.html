@@ -489,6 +489,34 @@
       font-size: 14px;
       border-radius: 16px;
     }
+    /* ===== UX: LEGALITY FEEDBACK ===== */
+
+/* Legal card highlight */
+.c.selectable.legal{
+  box-shadow:
+    0 0 0 2px rgba(99,179,237,.35),
+    0 10px 22px rgba(99,179,237,.25);
+}
+
+/* Illegal cards */
+.c.illegal{
+  opacity:0.45;
+  filter: grayscale(1) blur(.3px);
+  cursor:not-allowed;
+}
+
+/* Illegal tap feedback */
+@keyframes illegalShake {
+  0%{ transform:translateX(0); }
+  25%{ transform:translateX(-6px); }
+  50%{ transform:translateX(6px); }
+  75%{ transform:translateX(-4px); }
+  100%{ transform:translateX(0); }
+}
+
+.c.illegal.shake{
+  animation: illegalShake .25s ease-in-out;
+}
   </style>
 </head>
 
@@ -943,26 +971,54 @@
     return div;
   }
 
-  function renderSelectableCard(card, src){
-    const selectedOn = selected.has(card.id);
-    const div = makeRealCardDiv(card, { selectable:true, selectedOn, back:false });
+function renderSelectableCard(card, src){
+  const selectedOn = selected.has(card.id);
+  const div = makeRealCardDiv(card, { selectable:true, selectedOn, back:false });
 
-    const legal = canPlayOnTop(card.rank);
-    if (!legal && !state.mustPlayAny) div.classList.add("illegal");
+  const legal = canPlayOnTop(card.rank);
 
-    div.onclick = () => {
-      const now = Date.now();
-      const isDouble = (lastTap.id === card.id && (now - lastTap.t) < 320);
-      lastTap = { id: card.id, t: now };
-      if (isDouble) {
-        quickPlayRank(card.rank);
-        return;
-      }
-      toggleSelect(card, src);
-    };
-
-    return div;
+  if (legal){
+    div.classList.add("legal");
+  } else if (!state.mustPlayAny){
+    div.classList.add("illegal");
   }
+
+  div.onclick = () => {
+    if (!legal && !state.mustPlayAny){
+      // visual feedback
+      div.classList.remove("shake");
+      void div.offsetWidth;
+      div.classList.add("shake");
+
+      // rule explanation
+      const isFace = r => r === "J" || r === "Q" || r === "K";
+      const top = topRank();
+
+      let reason = "Illegal move.";
+      if (isFace(card.rank) && top && !isFace(top)){
+        reason = "Face cards (J/Q/K) can only be played on face cards.";
+      } else if (top === "10" || top === "JOKER"){
+        reason = "You cannot play on a 10 or Joker (they clear).";
+      }
+
+      addLog(`❌ ${reason}`, "bad");
+      return;
+    }
+
+    const now = Date.now();
+    const isDouble = (lastTap.id === card.id && (now - lastTap.t) < 320);
+    lastTap = { id: card.id, t: now };
+
+    if (isDouble){
+      quickPlayRank(card.rank);
+      return;
+    }
+
+    toggleSelect(card, src);
+  };
+
+  return div;
+}
 
   function toggleSelect(card, src){
     if (selected.has(card.id)){
