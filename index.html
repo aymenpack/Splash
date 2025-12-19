@@ -42,7 +42,7 @@
       letter-spacing:.2px;
     }
     .controls{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-    select,button{
+    select,button,input{
       background:rgba(255,255,255,.08);
       border:1px solid rgba(255,255,255,.16);
       color:#e6edf7;
@@ -78,7 +78,7 @@
       border:1px solid rgba(255,255,255,.08);
     }
 
-    /* Players on table */
+    /* Players */
     .playersRow{
       display:flex;
       justify-content:space-between;
@@ -94,20 +94,34 @@
       border-radius:16px;
       background:rgba(255,255,255,.06);
       border:1px solid rgba(255,255,255,.12);
-      min-width:170px;
+      min-width:190px;
     }
     .playerChip.active{
       outline:2px solid var(--accent);
       box-shadow: 0 0 24px rgba(99,179,237,.45);
     }
     .avatar{
-      width:42px;height:42px;border-radius:50%;
-      background: linear-gradient(135deg, #63b3ed, #7ee787);
+      width:44px;height:44px;border-radius:50%;
       display:flex;align-items:center;justify-content:center;
       font-weight:900;color:#0b1220;
       flex:0 0 auto;
+      position:relative;
+      overflow:hidden;
+    }
+    .avatar .emo{ font-size:22px; line-height:1; }
+    .avatar .init{
+      position:absolute;
+      bottom:-2px; right:-2px;
+      font-size:11px;
+      padding:2px 6px;
+      border-radius:999px;
+      background: rgba(0,0,0,.75);
+      color: #fff;
+      border:1px solid rgba(255,255,255,.18);
+      letter-spacing:.2px;
     }
     .pname{ font-weight:900; font-size:14px; }
+    .pmeta{ font-size:11px; color:var(--muted); }
     .pstats{ font-size:11px; color:var(--muted); display:flex; gap:8px; flex-wrap:wrap; }
 
     /* ===== Side panel ===== */
@@ -155,10 +169,8 @@
     .c.selectable{ cursor:pointer; }
     .c.selectable:hover{ transform: translateY(-6px); box-shadow: 0 18px 34px rgba(0,0,0,.55); }
     .c.selected{ outline: 3px solid rgba(99,179,237,.75); transform: translateY(-8px); box-shadow: 0 22px 44px rgba(99,179,237,.22); }
-
     .c.red{ color:#c0392b; }
     .c.black{ color:#111; }
-
     .corner{
       position:absolute;
       font-weight:900;
@@ -168,7 +180,6 @@
     }
     .corner.top{ top:7px; left:7px; }
     .corner.bottom{ bottom:7px; right:7px; transform:rotate(180deg); text-align:left; }
-
     .pip{
       position:absolute;
       left:50%; top:50%;
@@ -177,7 +188,6 @@
       opacity:.92;
       font-weight:700;
     }
-
     .subpip{
       position:absolute;
       left:50%; top:50%;
@@ -188,19 +198,16 @@
       letter-spacing:.6px;
       font-weight:800;
     }
-
     .c.joker{
       background: linear-gradient(180deg, #ffffff, #f3f5ff);
       color:#3b3b3b;
       border:1px solid rgba(0,0,0,.06);
     }
-
     .c.back{
       background: linear-gradient(135deg, #1b2a55, #0b1220);
       border:2px dashed rgba(255,255,255,.45);
       box-shadow: 0 10px 24px rgba(0,0,0,.55);
     }
-
     .c.illegal{ opacity:.55; }
 
     /* Zones */
@@ -213,14 +220,7 @@
       gap:10px;
       align-items:center;
     }
-
-    .hand{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-
-    /* Mobile-first horizontal hand */
+    .hand{ display:flex; gap:10px; flex-wrap:wrap; }
     .handScroll{
       display:flex;
       gap:10px;
@@ -269,7 +269,6 @@
       100%{ transform: translateY(0) scale(1); opacity:1; }
     }
     .anim-pop{ animation: popIn .18s ease-out; }
-
     @keyframes pileShake {
       0%{ transform: translateX(0); }
       20%{ transform: translateX(-6px); }
@@ -279,7 +278,6 @@
       100%{ transform: translateX(0); }
     }
     .shake{ animation: pileShake .22s ease-in-out; }
-
     @keyframes clearBurst {
       0%{ box-shadow: 0 0 0 rgba(99,179,237,0); }
       30%{ box-shadow: 0 0 30px rgba(99,179,237,.55); }
@@ -330,7 +328,7 @@
     .warn{ color:#f2cc60; }
     .bad{ color:var(--danger); }
 
-    /* Mobile tweaks */
+    /* Mobile */
     @media(max-width:700px){
       .c{ width:86px; height:124px; border-radius:16px; }
       .pip{ font-size:42px; }
@@ -361,6 +359,73 @@
       main{ padding-bottom: 96px; }
       .topActions{ display:none !important; }
     }
+
+    /* ===== Pass-and-play Privacy Overlay ===== */
+    .overlay{
+      position:fixed;
+      inset:0;
+      background: rgba(5,8,14,.86);
+      backdrop-filter: blur(10px);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index: 2000;
+      padding: 18px;
+    }
+    .overlay.show{ display:flex; }
+
+    .overlayCard{
+      width:min(520px, 100%);
+      border-radius:24px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      box-shadow: 0 22px 60px rgba(0,0,0,.6);
+      padding:18px;
+      text-align:center;
+    }
+    .overlayCard h2{
+      margin:0 0 8px;
+      font-size:18px;
+      font-weight:900;
+    }
+    .overlayCard .sub{ color:var(--muted); font-size:13px; margin-bottom:14px; }
+    .overlayCard .bigAvatar{
+      width:84px; height:84px;
+      border-radius:50%;
+      margin: 0 auto 14px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:34px;
+      font-weight:900;
+      color:#0b1220;
+      position:relative;
+      overflow:hidden;
+    }
+    .overlayCard .bigAvatar .init{
+      position:absolute;
+      bottom:4px; right:6px;
+      font-size:12px;
+      padding:2px 8px;
+      border-radius:999px;
+      background: rgba(0,0,0,.75);
+      color:#fff;
+      border:1px solid rgba(255,255,255,.18);
+      letter-spacing:.2px;
+    }
+    .overlayActions{
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+    .overlayActions button{
+      min-width: 160px;
+      padding: 12px 16px;
+      font-size: 14px;
+      border-radius: 16px;
+    }
   </style>
 </head>
 
@@ -387,6 +452,19 @@
   <button id="hintBtnMobile">Hint</button>
 </div>
 
+<!-- Pass-and-play privacy overlay -->
+<div class="overlay" id="passOverlay" role="dialog" aria-modal="true">
+  <div class="overlayCard">
+    <div class="bigAvatar" id="passAvatar"><span id="passEmoji">🙂</span><span class="init" id="passInit">P1</span></div>
+    <h2 id="passTitle">Pass to Player</h2>
+    <div class="sub" id="passSub">Only the current player’s cards will be visible.</div>
+    <div class="overlayActions">
+      <button id="readyBtn" class="primary">I’m ready</button>
+      <button id="peekBtn">Show table only</button>
+    </div>
+  </div>
+</div>
+
 <main>
   <div class="grid">
 
@@ -410,20 +488,21 @@
         <div class="pileVisualWrap" id="pileVisualWrap"></div>
 
         <div class="muted" style="margin-top:10px;">
-          Play same-rank cards. Must be ≤ top rank (A &lt; … &lt; K). <span class="kbd">10</span> and <span class="kbd">Joker</span> clear.
-          <span class="kbd">3+</span> of same rank on pile clears. Face-down discovered on play. Illegal face-down → pick up entire pile.
-          Double-tap a card to quick-play that rank (hand + face-up).
+          Play same-rank cards. Must be ≤ top rank (A &lt; … &lt; K).
+          <span class="kbd">10</span> and <span class="kbd">Joker</span> clear.
+          <span class="kbd">3+</span> of same rank on pile clears.
+          Face-down discovered on play. Illegal face-down → pick up entire pile.
         </div>
       </div>
 
       <div class="zoneTitle">
-        <span>Your Hand</span>
+        <span id="handLabel">Current player hand</span>
         <span class="muted">tap to select · double-tap to quick-play</span>
       </div>
       <div id="yourHand" class="handScroll"></div>
 
       <div class="zoneTitle">
-        <span>Your Table (4 stacks)</span>
+        <span id="tableLabel">Current player table</span>
         <span class="muted">hand + face-up can mix · face-down alone</span>
       </div>
       <div id="yourTable" class="hand"></div>
@@ -458,10 +537,24 @@
   const SUITS = ["♠","♥","♦","♣"];
   const RANKS = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
   const RANK_ORDER = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
-  const rankOrder = (rank) => RANK_ORDER.indexOf(rank); // 0..12
+  const rankOrder = (rank) => RANK_ORDER.indexOf(rank);
+
+  const EMOJIS = ["🦊","🐼","🐯","🦁","🐸","🐙","🦉","🦄","🐲","🐶","🐱","🐵"];
+
+  const SEAT_COLORS = [
+    ["#63b3ed","#7ee787"], // blue->green
+    ["#f2cc60","#ff7b72"], // gold->red
+    ["#a78bfa","#63b3ed"], // purple->blue
+    ["#34d399","#f2cc60"], // green->gold
+    ["#fb7185","#a78bfa"], // pink->purple
+    ["#60a5fa","#fb7185"], // blue->pink
+  ];
 
   const isJoker = c => c.rank === "JOKER";
   const isTenOrJoker = c => c.rank === "10" || isJoker(c);
+
+  // Player types for hybrid readiness
+  const PlayerType = { HUMAN:"HUMAN", BOT:"BOT", REMOTE:"REMOTE" };
 
   // Scoring (house)
   const scoreValue = (card) => {
@@ -485,6 +578,11 @@
     currentPlayer: 0,
     mustPlayAny: false,
     gameOver: false,
+
+    // pass-and-play privacy
+    viewPlayer: null,        // which player's hand/table is visible right now
+    revealedThisTurn: false, // must press "I'm ready" each turn to reveal
+    peekOnly: false          // if true, show table but not hand
   };
 
   const el = (id) => document.getElementById(id);
@@ -496,7 +594,17 @@
   const flyLayer = el("flyLayer");
   const discardPill = el("discardPill");
 
-  // Selection
+  // overlay elements
+  const passOverlay = el("passOverlay");
+  const passTitle = el("passTitle");
+  const passSub = el("passSub");
+  const passAvatar = el("passAvatar");
+  const passEmoji = el("passEmoji");
+  const passInit = el("passInit");
+  const readyBtn = el("readyBtn");
+  const peekBtn = el("peekBtn");
+
+  // Selection for current view player
   let selected = new Set();
   let selectedSources = new Map();
   let uid = 0;
@@ -560,11 +668,27 @@
   }
 
   // ======= Core helpers =======
-  function playerName(i){ return i===0 ? "You" : `Bot ${i}`; }
+  function playerName(i){ return state.players[i]?.name ?? `Player ${i+1}`; }
+
+  function initialsFromName(name){
+    const parts = name.trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 0) return "P";
+    if (parts.length === 1) return parts[0].slice(0,2).toUpperCase();
+    return (parts[0][0] + parts[parts.length-1][0]).toUpperCase();
+  }
+
+  function seatGradient(i){
+    const [a,b] = SEAT_COLORS[i % SEAT_COLORS.length];
+    return `linear-gradient(135deg, ${a}, ${b})`;
+  }
 
   function createPlayers(n){
     return Array.from({length:n}, (_,i)=>({
       id:i,
+      type: PlayerType.HUMAN,          // default: all humans (multiplayer)
+      name: `Player ${i+1}`,
+      emoji: EMOJIS[i % EMOJIS.length],
+      initials: `P${i+1}`,
       hand: [],
       tableUp: Array.from({length:4}, ()=>null),
       tableDown: Array.from({length:4}, ()=>null),
@@ -653,6 +777,30 @@
     addLog(`Start card flipped: ${renderCardText(c)}.`, "warn");
   }
 
+  function beginTurnRevealFlow(){
+    state.viewPlayer = null;
+    state.revealedThisTurn = false;
+    state.peekOnly = false;
+
+    const p = state.players[state.currentPlayer];
+    passTitle.textContent = `Pass to ${p.name}`;
+    passSub.textContent = `Only ${p.name}’s cards will be visible.`;
+    passEmoji.textContent = p.emoji;
+    passInit.textContent = p.initials;
+    passAvatar.style.background = seatGradient(p.id);
+
+    passOverlay.classList.add("show");
+    render(); // will render hidden zones
+  }
+
+  function endOverlayReveal(peekOnly){
+    state.viewPlayer = state.currentPlayer;
+    state.revealedThisTurn = true;
+    state.peekOnly = !!peekOnly;
+    passOverlay.classList.remove("show");
+    render();
+  }
+
   function dealHand(){
     resetSelection();
     state.deck = makeDeck();
@@ -685,8 +833,9 @@
 
     drawStartCard();
     state.currentPlayer = 0;
-    addLog(`New hand dealt. You start.`, "ok");
-    render();
+
+    addLog(`New hand dealt. ${state.players[state.currentPlayer].name} starts.`, "ok");
+    beginTurnRevealFlow();
   }
 
   // ======= Rendering helpers =======
@@ -741,7 +890,6 @@
     const selectedOn = selected.has(card.id);
     const div = makeRealCardDiv(card, { selectable:true, selectedOn, back:false });
 
-    // Illegal hint
     const legal = canPlayOnTop(card.rank);
     if (!legal && !state.mustPlayAny) div.classList.add("illegal");
 
@@ -749,7 +897,6 @@
       const now = Date.now();
       const isDouble = (lastTap.id === card.id && (now - lastTap.t) < 320);
       lastTap = { id: card.id, t: now };
-
       if (isDouble) {
         quickPlayRank(card.rank);
         return;
@@ -772,16 +919,17 @@
   }
 
   function selectedCards(){
-    const you = state.players[0];
+    const p = state.players[state.viewPlayer];
+    if (!p) return [];
     const all = [];
     for (const [id, src] of selectedSources.entries()){
       let card = null;
       if (src.zone === "hand"){
-        card = you.hand.find(c=>c.id===id);
+        card = p.hand.find(c=>c.id===id);
       } else if (src.zone === "tableUp"){
-        card = you.tableUp[src.stackIndex];
+        card = p.tableUp[src.stackIndex];
       } else if (src.zone === "tableDown"){
-        card = you.tableDown[src.stackIndex];
+        card = p.tableDown[src.stackIndex];
       }
       if (card) all.push({card, src});
     }
@@ -819,12 +967,12 @@
 
   function pickupPile(player){
     if (state.pile.length === 0){
-      addLog(`${playerName(player.id)} tried to pick up, but pile is empty.`, "warn");
+      addLog(`${player.name} tried to pick up, but pile is empty.`, "warn");
       return;
     }
     shakePile();
     player.hand.push(...state.pile);
-    addLog(`${playerName(player.id)} picks up the pile (${state.pile.length} cards).`, "bad");
+    addLog(`${player.name} picks up the pile (${state.pile.length} cards).`, "bad");
     state.pile = [];
     state.mustPlayAny = true; // empty pile -> ANY
   }
@@ -833,7 +981,7 @@
     // Face-down discovered on play
     if (playList.length === 1 && playList[0].src.zone === "tableDown"){
       const {card, src} = playList[0];
-      addLog(`${playerName(player.id)} plays face-down → revealed ${renderCardText(card)}.`, "warn");
+      addLog(`${player.name} plays face-down → revealed ${renderCardText(card)}.`, "warn");
 
       if (!canPlayOnTop(card.rank)){
         state.pile.push(card);
@@ -859,7 +1007,7 @@
     }
 
     const rank = playList[0].card.rank;
-    addLog(`${playerName(player.id)} plays ${playList.length} × ${rank}.`);
+    addLog(`${player.name} plays ${playList.length} × ${rank}.`);
 
     for (const {card, src} of playList){
       state.pile.push(card);
@@ -887,7 +1035,7 @@
     const winner = state.players.find(p => playerRemaining(p) === 0);
     if (!winner) return false;
 
-    addLog(`🏁 ${playerName(winner.id)} wins the hand!`, "ok");
+    addLog(`🏁 ${winner.name} wins the hand!`, "ok");
 
     state.players.forEach(p => {
       if (p.id === winner.id) return;
@@ -898,13 +1046,13 @@
       ];
       const pts = remainingCards.reduce((sum,c)=>sum+scoreValue(c),0);
       p.score += pts;
-      addLog(`${playerName(p.id)} scores ${pts} points (remaining cards).`, "warn");
+      addLog(`${p.name} scores ${pts} points (remaining cards).`, "warn");
     });
 
     if (state.handIndex >= state.handsTotal){
       state.gameOver = true;
       const standings = state.players
-        .map(p => ({id:p.id, name:playerName(p.id), score:p.score}))
+        .map(p => ({name:p.name, score:p.score}))
         .sort((a,b)=>a.score-b.score);
       addLog(`🎉 Game over. Winner: ${standings[0].name} with ${standings[0].score} points.`, "ok");
     } else {
@@ -917,9 +1065,11 @@
 
   function nextPlayer(){
     state.currentPlayer = (state.currentPlayer + 1) % state.numPlayers;
-    render();
+    resetSelection();
+    beginTurnRevealFlow();
   }
 
+  // Hybrid-ready BOT / REMOTE stubs (not used by default)
   function computeLegalPlays(player){
     const ranks = [];
     const addRank = (r) => { if (!ranks.includes(r)) ranks.push(r); };
@@ -947,69 +1097,24 @@
   }
 
   function botTakeTurn(bot){
-    if (state.gameOver) return;
-
+    // not used unless you flip someone to BOT later
     const {ranks, byRank} = computeLegalPlays(bot);
 
     if (ranks.length === 0){
-      const anyUp = bot.tableUp.some(Boolean);
-      const anyHandOrUp = bot.hand.length > 0 || anyUp;
-
-      if (!anyHandOrUp){
-        const candidates = bot.tableDown.map((c,i)=>({c,i})).filter(x=>x.c && !bot.tableUp[x.i]);
-        if (candidates.length > 0){
-          const pick = candidates[Math.floor(Math.random()*candidates.length)];
-          const res = playCards(bot, [{card: pick.c, src:{zone:"tableDown", stackIndex: pick.i}}]);
-          render();
-          if (endHandIfNeeded()) return;
-          if (res.extraTurn) return botTakeTurn(bot);
-          nextPlayer();
-          return;
-        }
-      }
       pickupPile(bot);
-      nextPlayer();
-      return;
+      return {extraTurn:false};
     }
 
-    // Prefer clear cards
     if (ranks.includes("10") || ranks.includes("JOKER")){
       const r = ranks.includes("10") ? "10" : "JOKER";
       const c = byRank.get(r)[0];
       const src = bot.hand.find(x=>x.id===c.id)
         ? {zone:"hand"}
         : {zone:"tableUp", stackIndex: bot.tableUp.findIndex(x=>x && x.id===c.id)};
-      const res = playCards(bot, [{card:c, src}]);
-      render();
-      if (endHandIfNeeded()) return;
-      if (res.extraTurn) return botTakeTurn(bot);
-      nextPlayer();
-      return;
+      return playCards(bot, [{card:c, src}]);
     }
 
-    // Try triple completion
-    for (const r of ranks){
-      if (r==="10" || r==="JOKER") continue;
-      const cards = byRank.get(r);
-      const existing = countRankOnPile(r);
-      const needed = Math.max(0, 3 - existing);
-      if (needed > 0 && cards.length >= needed){
-        const toPlay = cards.slice(0, needed).map(c=>({
-          card:c,
-          src: bot.hand.find(x=>x.id===c.id)
-            ? {zone:"hand"}
-            : {zone:"tableUp", stackIndex: bot.tableUp.findIndex(x=>x && x.id===c.id)}
-        }));
-        const res = playCards(bot, toPlay);
-        render();
-        if (endHandIfNeeded()) return;
-        if (res.extraTurn) return botTakeTurn(bot);
-        nextPlayer();
-        return;
-      }
-    }
-
-    // Otherwise: if ANY, dump high penalty first; else play highest legal rank
+    // if ANY, dump high penalty; else play highest legal
     let chosenRank;
     if (state.mustPlayAny){
       chosenRank = ranks.slice().sort((a,b)=> penaltyPriority(b)-penaltyPriority(a))[0];
@@ -1024,36 +1129,22 @@
         : {zone:"tableUp", stackIndex: bot.tableUp.findIndex(x=>x && x.id===c.id)}
     }));
 
-    const res = playCards(bot, toPlay);
-    render();
-    if (endHandIfNeeded()) return;
-    if (res.extraTurn) return botTakeTurn(bot);
-    nextPlayer();
+    return playCards(bot, toPlay);
   }
 
-  function advanceBotsIfNeeded(){
-    while (!state.gameOver && state.currentPlayer !== 0){
-      const bot = state.players[state.currentPlayer];
-      botTakeTurn(bot);
-      if (state.gameOver) break;
-      if (state.currentPlayer === 0) break;
-      const winnerExists = state.players.some(p => playerRemaining(p) === 0);
-      if (winnerExists) break;
-    }
-  }
-
-  // ======= Mobile-friendly quick play =======
+  // ======= Quick play (double-tap) =======
   function quickPlayRank(rank){
-    if (state.currentPlayer !== 0 || state.gameOver) return;
-    const you = state.players[0];
+    if (!isTurnPlayable()) return;
+    const p = state.players[state.currentPlayer];
+    if (!p || state.viewPlayer !== state.currentPlayer) return;
+    if (state.peekOnly) return; // hand hidden
 
-    // Gather all cards of that rank from hand + face-up
     const playList = [];
-    for (const c of you.hand){
+    for (const c of p.hand){
       if (c.rank === rank) playList.push({card:c, src:{zone:"hand"}});
     }
     for (let i=0;i<4;i++){
-      const up = you.tableUp[i];
+      const up = p.tableUp[i];
       if (up && up.rank === rank) playList.push({card:up, src:{zone:"tableUp", stackIndex:i}});
     }
     if (playList.length === 0) return;
@@ -1064,50 +1155,60 @@
     }
 
     resetSelection();
-    const res = playCards(you, playList);
+    const res = playCards(p, playList);
     render();
     if (endHandIfNeeded()) return;
-    if (res.extraTurn) return;
+    if (res.extraTurn) return; // same player continues
     nextPlayer();
-    advanceBotsIfNeeded();
+  }
+
+  function isTurnPlayable(){
+    if (state.gameOver) return false;
+    if (!state.revealedThisTurn) return false;
+    if (state.viewPlayer !== state.currentPlayer) return false;
+    const p = state.players[state.currentPlayer];
+    if (!p) return false;
+    return p.type === PlayerType.HUMAN; // currently all humans
   }
 
   // ======= Human actions =======
   function humanPlay(){
-    if (state.currentPlayer !== 0 || state.gameOver) return;
-    const you = state.players[0];
+    if (!isTurnPlayable()) return;
+    if (state.peekOnly) return; // hand hidden
+    const p = state.players[state.currentPlayer];
+
     const playList = selectedCards();
     const v = validateSelection(playList);
     if (!v.ok){
       addLog(`❌ ${v.msg}`, "bad");
       return;
     }
+
     resetSelection();
-    const res = playCards(you, playList);
+    const res = playCards(p, playList);
     render();
     if (endHandIfNeeded()) return;
     if (res.extraTurn) return;
     nextPlayer();
-    advanceBotsIfNeeded();
   }
 
   function humanPickup(){
-    if (state.currentPlayer !== 0 || state.gameOver) return;
-    const you = state.players[0];
+    if (!isTurnPlayable()) return;
+    const p = state.players[state.currentPlayer];
     resetSelection();
-    pickupPile(you);
+    pickupPile(p);
     render();
     nextPlayer();
-    advanceBotsIfNeeded();
   }
 
   function humanHint(){
-    if (state.currentPlayer !== 0 || state.gameOver) return;
-    const you = state.players[0];
+    if (!isTurnPlayable()) return;
+    if (state.peekOnly) return;
+    const p = state.players[state.currentPlayer];
 
-    const anyPlayableKnown = (you.hand.length + you.tableUp.filter(Boolean).length) > 0;
+    const anyPlayableKnown = (p.hand.length + p.tableUp.filter(Boolean).length) > 0;
     if (!anyPlayableKnown){
-      const candidates = you.tableDown.map((c,i)=>({c,i})).filter(x=>x.c && !you.tableUp[x.i]);
+      const candidates = p.tableDown.map((c,i)=>({c,i})).filter(x=>x.c && !p.tableUp[x.i]);
       addLog(candidates.length
         ? `Hint: you must play a face-down card (choose any stack).`
         : `Hint: you have no cards left (hand should end).`,
@@ -1116,13 +1217,12 @@
       return;
     }
 
-    const {ranks, byRank} = computeLegalPlays(you);
+    const {ranks, byRank} = computeLegalPlays(p);
     if (ranks.length === 0){
       addLog(`Hint: no legal play from hand/face-up → pick up the pile.`, "warn");
       return;
     }
 
-    // Prefer triple completion
     for (const r of ranks){
       if (r==="10" || r==="JOKER") continue;
       const existing = countRankOnPile(r);
@@ -1143,7 +1243,7 @@
     addLog(`Hint: play ${best} (highest legal) to restrict others.`, "ok");
   }
 
-  // ======= Pile visual =======
+  // ======= Rendering =======
   function renderPileVisual(){
     pileVisualWrap.innerHTML = "";
     const slice = state.pile.slice(-6);
@@ -1162,15 +1262,21 @@
     state.players.forEach((p, idx) => {
       const chip = document.createElement("div");
       chip.className = "playerChip" + (idx === state.currentPlayer ? " active" : "");
-      const remaining = p.hand.length + p.tableUp.filter(Boolean).length + p.tableDown.filter(Boolean).length;
+      const remaining = playerRemaining(p);
+      const upN = p.tableUp.filter(Boolean).length;
+      const downN = p.tableDown.filter(Boolean).length;
+
       chip.innerHTML = `
-        <div class="avatar">${idx===0 ? "Y" : "B"}</div>
+        <div class="avatar" style="background:${seatGradient(p.id)}">
+          <div class="emo">${p.emoji}</div>
+          <div class="init">${p.initials}</div>
+        </div>
         <div>
-          <div class="pname">${playerName(idx)} <span class="muted" style="font-weight:700">(${p.score} pts)</span></div>
+          <div class="pname">${p.name} <span class="pmeta">(${p.score} pts)</span></div>
           <div class="pstats">
             <span>Hand ${p.hand.length}</span>
-            <span>Up ${p.tableUp.filter(Boolean).length}</span>
-            <span>Down ${p.tableDown.filter(Boolean).length}</span>
+            <span>Up ${upN}</span>
+            <span>Down ${downN}</span>
             <span>Total ${remaining}</span>
           </div>
         </div>
@@ -1179,39 +1285,63 @@
     });
   }
 
-  function render(){
-    el("drawCount").textContent = state.deck.length.toString();
-    el("discardCount").textContent = state.discard.length.toString();
-    el("pileCount").textContent = state.pile.length.toString();
-    el("handInfo").textContent = `Hand ${state.handIndex} / ${state.handsTotal}`;
-    el("turnInfo").textContent = `Turn: ${playerName(state.currentPlayer)}`;
-    el("topValue").textContent = state.mustPlayAny ? "ANY" : (topRank() ? topRank() : "—");
-
-    renderPlayersRow();
-
-    // Hand (sorted)
+  function renderZonesHidden(){
     yourHandEl.innerHTML = "";
-    const you = state.players[0];
-    you.hand
-      .slice()
-      .sort((a,b) => (rankSortKey(a.rank) - rankSortKey(b.rank)))
-      .forEach(card => {
-        yourHandEl.appendChild(renderSelectableCard(card, {zone:"hand"}));
-      });
+    yourTableEl.innerHTML = "";
+
+    // show some placeholders so layout doesn’t jump
+    for (let i=0;i<5;i++){
+      const back = makeRealCardDiv({rank:"X", suit:""}, {selectable:false, selectedOn:false, back:true});
+      back.style.opacity = "0.55";
+      yourHandEl.appendChild(back);
+    }
+    for (let i=0;i<4;i++){
+      const back = makeRealCardDiv({rank:"X", suit:""}, {selectable:false, selectedOn:false, back:true});
+      back.style.opacity = "0.55";
+      yourTableEl.appendChild(back);
+    }
+  }
+
+  function renderZonesForPlayer(pid){
+    const p = state.players[pid];
+    if (!p) return;
+
+    // labels
+    el("handLabel").textContent = `${p.name} hand`;
+    el("tableLabel").textContent = `${p.name} table`;
+
+    // Hand (sorted) - if peekOnly, hide hand
+    yourHandEl.innerHTML = "";
+    if (state.peekOnly){
+      for (let i=0;i<Math.min(7, Math.max(3, p.hand.length ? 5 : 3)); i++){
+        const back = makeRealCardDiv({rank:"X", suit:""}, {selectable:false, selectedOn:false, back:true});
+        yourHandEl.appendChild(back);
+      }
+    } else {
+      p.hand
+        .slice()
+        .sort((a,b) => (rankSortKey(a.rank) - rankSortKey(b.rank)))
+        .forEach(card => {
+          yourHandEl.appendChild(renderSelectableCard(card, {zone:"hand"}));
+        });
+    }
 
     // Table stacks
     yourTableEl.innerHTML = "";
     for (let i=0;i<4;i++){
-      const up = you.tableUp[i];
-      const down = you.tableDown[i];
+      const up = p.tableUp[i];
+      const down = p.tableDown[i];
 
       if (up){
+        // face-up cards are always visible to that player
+        // (but only rendered when that player is the viewPlayer)
         yourTableEl.appendChild(renderSelectableCard(up, {zone:"tableUp", stackIndex:i}));
       } else {
         if (down){
           const back = makeRealCardDiv(down, { selectable:true, selectedOn:selected.has(down.id), back:true });
           back.onclick = () => {
-            // face-down is always single-card play; select only this
+            if (!isTurnPlayable()) return;
+            // face-down single card selection
             if (selected.has(down.id)){
               selected.delete(down.id);
               selectedSources.delete(down.id);
@@ -1232,27 +1362,51 @@
         }
       }
     }
-
-    renderPileVisual();
-
-    const yourTurn = state.currentPlayer === 0 && !state.gameOver;
-    el("playBtn").disabled = !yourTurn;
-    el("pickupBtn").disabled = !yourTurn;
-    el("hintBtn").disabled = !yourTurn;
-    el("playBtnMobile").disabled = !yourTurn;
-    el("pickupBtnMobile").disabled = !yourTurn;
-    el("hintBtnMobile").disabled = !yourTurn;
   }
 
-  // ======= Wire UI =======
+  function render(){
+    el("drawCount").textContent = state.deck.length.toString();
+    el("discardCount").textContent = state.discard.length.toString();
+    el("pileCount").textContent = state.pile.length.toString();
+    el("handInfo").textContent = `Hand ${state.handIndex} / ${state.handsTotal}`;
+    el("turnInfo").textContent = `Turn: ${playerName(state.currentPlayer)}`;
+    el("topValue").textContent = state.mustPlayAny ? "ANY" : (topRank() ? topRank() : "—");
+
+    renderPlayersRow();
+    renderPileVisual();
+
+    // Zones rendering depends on pass-and-play reveal state
+    if (!state.revealedThisTurn || state.viewPlayer === null){
+      el("handLabel").textContent = `Current player hand`;
+      el("tableLabel").textContent = `Current player table`;
+      renderZonesHidden();
+    } else {
+      renderZonesForPlayer(state.viewPlayer);
+    }
+
+    const playable = isTurnPlayable();
+    el("playBtn").disabled = !playable || state.peekOnly;
+    el("pickupBtn").disabled = !playable;
+    el("hintBtn").disabled = !playable || state.peekOnly;
+    el("playBtnMobile").disabled = !playable || state.peekOnly;
+    el("pickupBtnMobile").disabled = !playable;
+    el("hintBtnMobile").disabled = !playable || state.peekOnly;
+  }
+
+  // ======= UI wiring =======
   el("newGame").onclick = () => {
     state.numPlayers = parseInt(el("numPlayers").value, 10);
     state.players = createPlayers(state.numPlayers);
+
+    // update initials based on names
+    state.players.forEach((p,i)=>{
+      p.initials = initialsFromName(p.name) || `P${i+1}`;
+    });
+
     state.handIndex = 1;
     logEl.innerHTML = "";
-    addLog(`New game started with ${state.numPlayers} players.`, "ok");
+    addLog(`New game started with ${state.numPlayers} players (local multiplayer).`, "ok");
     dealHand();
-    advanceBotsIfNeeded();
   };
 
   el("newHand").onclick = () => {
@@ -1261,7 +1415,6 @@
       return;
     }
     dealHand();
-    advanceBotsIfNeeded();
   };
 
   el("playBtn").onclick = humanPlay;
@@ -1273,15 +1426,21 @@
   el("hintBtnMobile").onclick = humanHint;
 
   window.addEventListener("keydown", (e) => {
+    if (passOverlay.classList.contains("show")) return;
     if (e.key === "Enter") humanPlay();
     if (e.key.toLowerCase() === "p") humanPickup();
     if (e.key.toLowerCase() === "h") humanHint();
   });
 
-  // Start
+  // overlay actions
+  readyBtn.onclick = () => endOverlayReveal(false);
+  peekBtn.onclick = () => endOverlayReveal(true);
+
+  // Start screen
   state.numPlayers = parseInt(el("numPlayers").value, 10);
   state.players = createPlayers(state.numPlayers);
-  addLog(`Ready. Click "New Game" to begin.`, "ok");
+  state.players.forEach((p,i)=> p.initials = initialsFromName(p.name) || `P${i+1}`);
+  addLog(`Ready. Click "New Game" to begin (local multiplayer).`, "ok");
   render();
 })();
 </script>
