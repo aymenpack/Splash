@@ -686,12 +686,30 @@
     return JSON.parse(JSON.stringify(state));
   }
 
-  function applyRemoteState(remote){
-    // replace the entire state tree
-    for (const k of Object.keys(state)) delete state[k];
-    Object.assign(state, remote);
-    render();
-  }
+function applyRemoteState(remote){
+  // update known state fields only (preserve references)
+  state.numPlayers   = remote.numPlayers;
+  state.players      = remote.players;
+  state.deck         = remote.deck;
+  state.discard      = remote.discard;
+  state.pile         = remote.pile;
+  state.pileTopRank  = remote.pileTopRank;
+  state.handIndex    = remote.handIndex;
+  state.handsTotal   = remote.handsTotal;
+  state.currentPlayer= remote.currentPlayer;
+  state.mustPlayAny  = remote.mustPlayAny;
+  state.gameOver     = remote.gameOver;
+  state.viewPlayer = state.currentPlayer;
+  state.revealedThisTurn = true;
+  state.peekOnly = false;
+
+  // keep local-only flags intact:
+  // state.viewPlayer
+  // state.revealedThisTurn
+  // state.peekOnly
+
+  render();
+}
 
   document.getElementById("hostBtn").onclick = () => {
     mpIsHost = true;
