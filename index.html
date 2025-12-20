@@ -108,7 +108,7 @@
       box-shadow: var(--shadow);
     }
 
-    /* Desktop/tablet: seat map */
+    /* Seats */
     .playersRow{
       position:relative;
       height:180px;
@@ -130,6 +130,12 @@
     .playerChip.active{
       outline:2px solid var(--accent);
       box-shadow:0 0 16px rgba(99,179,237,.45);
+      animation: seatPulse 1.6s ease-out infinite;
+    }
+
+    .playerChip.inactive{
+      opacity: 0.55;
+      filter: grayscale(.35);
     }
 
     .seat-bottom{ left:50%; bottom:0; transform:translateX(-50%); }
@@ -138,6 +144,12 @@
     .seat-right{ right:0; top:50%; transform:translateY(-50%); }
     .seat-tl{ left:0; top:0; transform:none; }
     .seat-tr{ right:0; top:0; transform:none; }
+
+    @keyframes seatPulse {
+      0%   { box-shadow: 0 0 0 0 rgba(99,179,237,.55); }
+      70%  { box-shadow: 0 0 0 14px rgba(99,179,237,0); }
+      100% { box-shadow: 0 0 0 0 rgba(99,179,237,0); }
+    }
 
     .avatar{
       width:var(--avatar);
@@ -162,7 +174,7 @@
       color:#fff;
     }
 
-    /* Mobile: fall back to the old row layout to avoid overlap */
+    /* Mobile: fall back */
     @media (max-width: 700px){
       .playersRow{
         position:static;
@@ -192,6 +204,29 @@
 
     .c.selectable:hover{ transform:translateY(-4px); }
     .c.selected{ outline:3px solid var(--accent); transform:translateY(-6px); }
+
+    .c.selectable.legal{
+      box-shadow:
+        0 0 0 2px rgba(99,179,237,.35),
+        0 10px 22px rgba(99,179,237,.25);
+    }
+
+    .c.illegal{
+      opacity:0.45;
+      filter: grayscale(1) blur(.3px);
+      cursor:not-allowed;
+    }
+
+    @keyframes illegalShake {
+      0%{ transform:translateX(0); }
+      25%{ transform:translateX(-6px); }
+      50%{ transform:translateX(6px); }
+      75%{ transform:translateX(-4px); }
+      100%{ transform:translateX(0); }
+    }
+    .c.illegal.shake{
+      animation: illegalShake .25s ease-in-out;
+    }
 
     .corner{
       position:absolute;
@@ -224,7 +259,6 @@
       background:linear-gradient(135deg,#1b2a55,#0b1220);
       border:2px dashed rgba(255,255,255,.45);
     }
-    .c.illegal{ opacity:.55; }
 
     .zoneTitle{
       margin:10px 0 6px;
@@ -282,16 +316,6 @@
       100%{ transform: translateY(0) scale(1); opacity:1; }
     }
     .anim-pop{ animation: popIn .18s ease-out; }
-
-    @keyframes pileShake {
-      0%{ transform: translateX(0); }
-      20%{ transform: translateX(-6px); }
-      40%{ transform: translateX(6px); }
-      60%{ transform: translateX(-4px); }
-      80%{ transform: translateX(4px); }
-      100%{ transform: translateX(0); }
-    }
-    .shake{ animation: pileShake .22s ease-in-out; }
 
     @keyframes clearBurst {
       0%{ box-shadow: 0 0 0 rgba(99,179,237,0); }
@@ -367,146 +391,13 @@
         --gap:6px;
       }
       header h1{ font-size:14px; }
-      select,button{ font-size:12px; padding:7px 10px; }
+      select,button,input{ font-size:12px; padding:7px 10px; }
       .log{ max-height:200px; font-size:11px; }
       .corner{ font-size:11px; }
       .pip{ font-size:26px; }
     }
 
-    .bottomBar{ display:none; }
-    @media(max-width:700px){
-      .bottomBar{
-        display:flex;
-        position:fixed;
-        left:0; right:0; bottom:0;
-        padding:10px 12px calc(10px + env(safe-area-inset-bottom));
-        gap:10px;
-        background: rgba(8,12,22,.88);
-        border-top:1px solid rgba(255,255,255,.10);
-        backdrop-filter: blur(10px);
-        z-index: 1000;
-      }
-      .bottomBar button{
-        flex:1;
-        font-size:15px;
-        padding:14px 14px;
-        border-radius:16px;
-      }
-      main{ padding-bottom: 96px; }
-      .topActions{ display:none !important; }
-    }
-
-    .overlay{
-      position:fixed;
-      inset:0;
-      background: rgba(5,8,14,.86);
-      backdrop-filter: blur(10px);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      z-index: 2000;
-      padding: 18px;
-    }
-    .overlay.show{ display:flex; }
-
-    .overlayCard{
-      width:min(520px, 100%);
-      border-radius:24px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.06);
-      box-shadow: 0 22px 60px rgba(0,0,0,.6);
-      padding:18px;
-      text-align:center;
-    }
-    .overlayCard h2{
-      margin:0 0 8px;
-      font-size:18px;
-      font-weight:900;
-    }
-    .overlayCard .sub{ color:var(--muted); font-size:13px; margin-bottom:14px; }
-    .overlayCard .bigAvatar{
-      width:84px; height:84px;
-      border-radius:50%;
-      margin: 0 auto 14px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size:34px;
-      font-weight:900;
-      color:#0b1220;
-      position:relative;
-      overflow:hidden;
-    }
-    .overlayCard .bigAvatar .init{
-      position:absolute;
-      bottom:4px; right:6px;
-      font-size:12px;
-      padding:2px 8px;
-      border-radius:999px;
-      background: rgba(0,0,0,.75);
-      color:#fff;
-      border:1px solid rgba(255,255,255,.18);
-      letter-spacing:.2px;
-    }
-    .overlayActions{
-      display:flex;
-      gap:10px;
-      justify-content:center;
-      flex-wrap:wrap;
-      margin-top:12px;
-    }
-    .overlayActions button{
-      min-width: 160px;
-      padding: 12px 16px;
-      font-size: 14px;
-      border-radius: 16px;
-    }
-
-    /* ===== UX additions you already had ===== */
-    .c.selectable.legal{
-      box-shadow:
-        0 0 0 2px rgba(99,179,237,.35),
-        0 10px 22px rgba(99,179,237,.25);
-    }
-    .c.illegal{
-      opacity:0.45;
-      filter: grayscale(1) blur(.3px);
-      cursor:not-allowed;
-    }
-    @keyframes illegalShake {
-      0%{ transform:translateX(0); }
-      25%{ transform:translateX(-6px); }
-      50%{ transform:translateX(6px); }
-      75%{ transform:translateX(-4px); }
-      100%{ transform:translateX(0); }
-    }
-    .c.illegal.shake{
-      animation: illegalShake .25s ease-in-out;
-    }
-    @keyframes seatPulse {
-      0%   { box-shadow: 0 0 0 0 rgba(99,179,237,.55); }
-      70%  { box-shadow: 0 0 0 14px rgba(99,179,237,0); }
-      100% { box-shadow: 0 0 0 0 rgba(99,179,237,0); }
-    }
-    .playerChip.active{
-      animation: seatPulse 1.6s ease-out infinite;
-    }
-    .playerChip.inactive{
-      opacity: 0.55;
-      filter: grayscale(.35);
-    }
-    .turnArrow{
-      position:absolute;
-      font-size:22px;
-      opacity:.85;
-      animation: arrowPulse 1.2s ease-in-out infinite;
-    }
-    @keyframes arrowPulse{
-      0%,100%{ transform:translateY(0); opacity:.85; }
-      50%{ transform:translateY(6px); opacity:.55; }
-    }
-
-    /* ===== Multiplayer header additions ===== */
+    /* Multiplayer bar in header */
     .mpbar{
       display:flex;
       gap:6px;
@@ -514,18 +405,10 @@
       flex-wrap:wrap;
       margin-left:auto;
     }
-    .mpbar input{
-      width:90px;
-    }
-    .mpbar #mpRoom{
-      text-transform:uppercase;
-      width:90px;
-    }
-    .mpStatus{
-      font-size:12px;
-      opacity:.7;
-      margin-left:6px;
-    }
+    .mpbar input{ width:90px; }
+    .mpbar #mpRoom{ text-transform:uppercase; width:90px; }
+    .mpStatus{ font-size:12px; opacity:.7; }
+
   </style>
 </head>
 
@@ -533,7 +416,7 @@
 <header>
   <h1>🃏 Splash Practice</h1>
 
-  <!-- ✅ Multiplayer controls added (does not replace existing UI) -->
+  <!-- Multiplayer controls -->
   <div class="mpbar">
     <input id="mpName" placeholder="Name" />
     <input id="mpRoom" placeholder="ROOM" />
@@ -556,30 +439,11 @@
 
 <div class="flyLayer" id="flyLayer"></div>
 
-<div class="bottomBar">
-  <button id="playBtnMobile" class="primary">Play</button>
-  <button id="pickupBtnMobile" class="danger">Pick Up</button>
-  <button id="hintBtnMobile">Hint</button>
-</div>
-
-<div class="overlay" id="passOverlay" role="dialog" aria-modal="true">
-  <div class="overlayCard">
-    <div class="bigAvatar" id="passAvatar"><span id="passEmoji">🙂</span><span class="init" id="passInit">P1</span></div>
-    <h2 id="passTitle">Pass to Player</h2>
-    <div class="sub" id="passSub">Only the current player’s cards will be visible.</div>
-    <div class="overlayActions">
-      <button id="readyBtn" class="primary">I’m ready</button>
-      <button id="peekBtn">Show table only</button>
-    </div>
-  </div>
-</div>
-
 <main>
   <div class="grid">
 
     <section class="table">
       <div class="playersRow" id="playersRow"></div>
-      <div id="turnArrow" class="turnArrow" style="display:none;">⬇️</div>
 
       <div class="note">
         <div class="pileRow">
@@ -597,33 +461,31 @@
         <div class="pileVisualWrap" id="pileVisualWrap"></div>
 
         <div class="muted" style="margin-top:10px;">
-          Face cards (J/Q/K) can only be played on face cards. 10/Joker clears. Triple clears.
+          Online mode: each player sees their own hand only. (Server-authoritative rules next.)
         </div>
       </div>
 
       <div class="zoneTitle">
-        <span id="handLabel">Current player hand</span>
-        <span class="muted">tap to select · double-tap to quick-play</span>
+        <span id="handLabel">Your hand</span>
+        <span class="muted" id="turnHint"></span>
       </div>
       <div id="yourHand" class="handScroll"></div>
 
       <div class="zoneTitle">
-        <span id="tableLabel">Current player table</span>
-        <span class="muted">hand + face-up can mix · face-down alone</span>
+        <span id="tableLabel">Your table</span>
       </div>
       <div id="yourTable" class="hand"></div>
     </section>
 
     <section class="panel">
-      <div class="topActions" style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
         <button id="playBtn" class="primary">Play Selected</button>
         <button id="pickupBtn" class="danger">Pick Up Pile</button>
         <button id="hintBtn">Hint</button>
       </div>
 
       <div class="zoneTitle" style="margin-top:12px;">
-        <span>Game Log</span>
-        <span class="muted">newest first</span>
+        <span>Log</span>
       </div>
       <div id="log" class="log"></div>
     </section>
@@ -635,13 +497,15 @@
 (() => {
 
   /* =========================================================
-     ✅ ONLINE MULTIPLAYER (host broadcasts state, joiners sync)
+     ONLINE MULTIPLAYER (no observers)
      ========================================================= */
   const WS_BASE = "wss://splash-multiplayer.azimaymen.workers.dev";
+
   let mpWs = null;
   let mpRoom = null;
-  let mpIsHost = false;
   const mpClientId = crypto.randomUUID();
+  let isMultiplayer = false;
+  let myPlayerIndex = null; // 0..N-1 seat in room order
 
   function mpSetStatus(t){
     const s = document.getElementById("mpStatus");
@@ -649,13 +513,14 @@
   }
 
   function mpConnect(room){
+    isMultiplayer = true;
     mpRoom = room.toUpperCase();
     mpWs = new WebSocket(`${WS_BASE}?room=${mpRoom}`);
 
     mpWs.onopen = () => {
-      mpSetStatus(`Connected ${mpRoom}${mpIsHost ? " (host)" : ""}`);
+      mpSetStatus(`Connected ${mpRoom}`);
       mpWs.send(JSON.stringify({
-        type: "join",
+        type:"join",
         id: mpClientId,
         name: document.getElementById("mpName").value || "Player"
       }));
@@ -664,11 +529,30 @@
     mpWs.onmessage = (ev) => {
       let msg;
       try { msg = JSON.parse(ev.data); } catch { return; }
-      if (msg.type === "state") {
-        // joiners apply host state
-        if (!mpIsHost) {
-          applyRemoteState(msg.payload);
+
+      if (msg.type === "players"){
+        // Seat assignment based on join order
+        const idx = msg.players.findIndex(p => p.id === mpClientId);
+        if (idx !== -1) myPlayerIndex = idx;
+
+        // If we haven't started a game yet, map names into state.players
+        // (Host will still press New Game to start)
+        if (state.players.length !== msg.players.length){
+          state.numPlayers = msg.players.length;
+          state.players = createPlayers(state.numPlayers);
         }
+        msg.players.forEach((p, i) => {
+          if (state.players[i]){
+            state.players[i].name = p.name;
+            state.players[i].initials = initialsFromName(p.name);
+          }
+        });
+
+        render();
+      }
+
+      if (msg.type === "state"){
+        applyRemoteState(msg.payload);
       }
     };
 
@@ -678,41 +562,10 @@
 
   function mpBroadcast(payload){
     if (!mpWs || mpWs.readyState !== WebSocket.OPEN) return;
-    if (!mpIsHost) return;
     mpWs.send(JSON.stringify({ type:"broadcast", payload }));
   }
 
-  function serializeGameState(){
-    return JSON.parse(JSON.stringify(state));
-  }
-
-function applyRemoteState(remote){
-  // update known state fields only (preserve references)
-  state.numPlayers   = remote.numPlayers;
-  state.players      = remote.players;
-  state.deck         = remote.deck;
-  state.discard      = remote.discard;
-  state.pile         = remote.pile;
-  state.pileTopRank  = remote.pileTopRank;
-  state.handIndex    = remote.handIndex;
-  state.handsTotal   = remote.handsTotal;
-  state.currentPlayer= remote.currentPlayer;
-  state.mustPlayAny  = remote.mustPlayAny;
-  state.gameOver     = remote.gameOver;
-  state.viewPlayer = state.currentPlayer;
-  state.revealedThisTurn = true;
-  state.peekOnly = false;
-
-  // keep local-only flags intact:
-  // state.viewPlayer
-  // state.revealedThisTurn
-  // state.peekOnly
-
-  render();
-}
-
   document.getElementById("hostBtn").onclick = () => {
-    mpIsHost = true;
     const code = Math.random().toString(36).slice(2,8).toUpperCase();
     document.getElementById("mpRoom").value = code;
     mpConnect(code);
@@ -720,14 +573,34 @@ function applyRemoteState(remote){
   };
 
   document.getElementById("joinBtn").onclick = () => {
-    mpIsHost = false;
     const code = document.getElementById("mpRoom").value.trim();
     if (!code) return alert("Enter room code");
     mpConnect(code);
   };
 
+  function serializeGameState(){
+    return JSON.parse(JSON.stringify(state));
+  }
+
+  function applyRemoteState(remote){
+    // Update data only, keep local references stable
+    state.numPlayers    = remote.numPlayers;
+    state.players       = remote.players;
+    state.deck          = remote.deck;
+    state.discard       = remote.discard;
+    state.pile          = remote.pile;
+    state.pileTopRank   = remote.pileTopRank;
+    state.handIndex     = remote.handIndex;
+    state.handsTotal    = remote.handsTotal;
+    state.currentPlayer = remote.currentPlayer;
+    state.mustPlayAny   = remote.mustPlayAny;
+    state.gameOver      = remote.gameOver;
+
+    render();
+  }
+
   /* =========================================================
-     YOUR ORIGINAL GAME CODE (unchanged below)
+     ORIGINAL GAME CODE (kept)
      ========================================================= */
 
   const SUITS = ["♠","♥","♦","♣"];
@@ -774,8 +647,9 @@ function applyRemoteState(remote){
     mustPlayAny: false,
     gameOver: false,
 
+    // local-only pass-and-play fields (unused in multiplayer)
     viewPlayer: null,
-    revealedThisTurn: false,
+    revealedThisTurn: true,
     peekOnly: false
   };
 
@@ -785,17 +659,6 @@ function applyRemoteState(remote){
   const yourTableEl = el("yourTable");
   const playersRowEl = el("playersRow");
   const pileVisualWrap = el("pileVisualWrap");
-  const flyLayer = el("flyLayer");
-  const discardPill = el("discardPill");
-
-  const passOverlay = el("passOverlay");
-  const passTitle = el("passTitle");
-  const passSub = el("passSub");
-  const passAvatar = el("passAvatar");
-  const passEmoji = el("passEmoji");
-  const passInit = el("passInit");
-  const readyBtn = el("readyBtn");
-  const peekBtn = el("peekBtn");
 
   let selected = new Set();
   let selectedSources = new Map();
@@ -815,45 +678,6 @@ function applyRemoteState(remote){
     div.className = "line";
     div.innerHTML = `${toneDot(tone)}${text}`;
     logEl.prepend(div);
-  }
-
-  function flashBurst(){
-    pileVisualWrap.classList.remove("burst");
-    void pileVisualWrap.offsetWidth;
-    pileVisualWrap.classList.add("burst");
-  }
-  function shakePile(){
-    pileVisualWrap.classList.remove("shake");
-    void pileVisualWrap.offsetWidth;
-    pileVisualWrap.classList.add("shake");
-  }
-  function flyCardsToDiscard(count){
-    const fromRect = pileVisualWrap.getBoundingClientRect();
-    const toRect = discardPill.getBoundingClientRect();
-    const startX = fromRect.left + fromRect.width * 0.50;
-    const startY = fromRect.top + fromRect.height * 0.45;
-    const endX = toRect.left + toRect.width * 0.55;
-    const endY = toRect.top + toRect.height * 0.50;
-
-    const n = Math.min(10, Math.max(3, Math.ceil(count / 6)));
-    for (let i=0;i<n;i++){
-      const fc = document.createElement("div");
-      fc.className = "flyCard";
-      fc.textContent = "🂠";
-      fc.style.left = (startX + (Math.random()*18-9)) + "px";
-      fc.style.top  = (startY + (Math.random()*18-9)) + "px";
-      flyLayer.appendChild(fc);
-
-      requestAnimationFrame(() => {
-        const dx = (endX - startX) + (Math.random()*14-7);
-        const dy = (endY - startY) + (Math.random()*14-7);
-        const rot = (Math.random()*40 - 20);
-        fc.style.transform = `translate(${dx}px, ${dy}px) rotate(${rot}deg) scale(.75)`;
-        fc.style.opacity = "0.0";
-      });
-
-      setTimeout(()=>fc.remove(), 520);
-    }
   }
 
   function initialsFromName(name){
@@ -894,6 +718,7 @@ function applyRemoteState(remote){
 
   function canPlayOnTop(rank){
     if (state.mustPlayAny) return true;
+
     const top = topRank();
     if (!top) return true;
 
@@ -904,40 +729,6 @@ function applyRemoteState(remote){
     if (isFace(rank) && !isFace(top)) return false;
 
     return rankOrder(rank) <= rankOrder(top);
-  }
-
-  function countRankOnPile(rank){
-    return state.pile.reduce((acc,c)=> acc + (c.rank === rank ? 1 : 0), 0);
-  }
-
-  function checkTripleClear(){
-    if (state.pile.length < 3) return false;
-    const last = state.pile[state.pile.length-1];
-    const r = last.rank;
-    if (r === "JOKER") return false;
-    return countRankOnPile(r) >= 3;
-  }
-
-  function clearPile(reason){
-    const n = state.pile.length;
-    if (n === 0) return;
-
-    flashBurst();
-    flyCardsToDiscard(n);
-
-    state.discard.push(...state.pile);
-    state.pile = [];
-    state.mustPlayAny = true;
-
-    addLog(`Pile cleared (${reason}). ${n} cards to discard. Play again (ANY).`, "ok");
-
-    // host broadcast
-    mpBroadcast(serializeGameState());
-  }
-
-  function renderCardText(c){
-    if (isJoker(c)) return "JOKER";
-    return `${c.rank}${c.suit}`;
   }
 
   function makeDeck(){
@@ -957,43 +748,6 @@ function applyRemoteState(remote){
       [deck[i], deck[k]] = [deck[k], deck[i]];
     }
     return deck;
-  }
-
-  function drawStartCard(){
-    const c = state.deck.pop();
-    state.pile.push(c);
-    state.pileTopRank = c.rank;
-
-    if (c.rank === "10" || c.rank === "JOKER") {
-      clearPile(`start ${renderCardText(c)}`);
-    } else {
-      state.mustPlayAny = false;
-      addLog(`Start card flipped: ${renderCardText(c)}.`, "warn");
-    }
-  }
-
-  function beginTurnRevealFlow(){
-    state.viewPlayer = null;
-    state.revealedThisTurn = false;
-    state.peekOnly = false;
-
-    const p = state.players[state.currentPlayer];
-    passTitle.textContent = `Pass to ${p.name}`;
-    passSub.textContent = `Only ${p.name}’s cards will be visible.`;
-    passEmoji.textContent = p.emoji;
-    passInit.textContent = p.initials;
-    passAvatar.style.background = seatGradient(p.id);
-
-    passOverlay.classList.add("show");
-    render();
-  }
-
-  function endOverlayReveal(peekOnly){
-    state.viewPlayer = state.currentPlayer;
-    state.revealedThisTurn = true;
-    state.peekOnly = !!peekOnly;
-    passOverlay.classList.remove("show");
-    render();
   }
 
   function dealHand(){
@@ -1026,38 +780,34 @@ function applyRemoteState(remote){
       }
     }
 
-    drawStartCard();
+    // start card
+    const c = state.deck.pop();
+    state.pile.push(c);
+    state.pileTopRank = c.rank;
+
+    if (c.rank === "10" || c.rank === "JOKER"){
+      state.discard.push(...state.pile);
+      state.pile = [];
+      state.mustPlayAny = true;
+    } else {
+      state.mustPlayAny = false;
+    }
+
     state.currentPlayer = 0;
+    addLog(`New game started (online players).`, "ok");
+    render();
 
-    addLog(`New hand dealt. ${state.players[state.currentPlayer].name} starts.`, "ok");
-    beginTurnRevealFlow();
-
+    // broadcast
     mpBroadcast(serializeGameState());
   }
 
-  function rankSortKey(r){
-    if (r === "JOKER") return 99;
-    return Math.max(0, RANK_ORDER.indexOf(r)) + 1;
-  }
-
-  function makeRealCardDiv(card, opts){
+  function makeCardDiv(card){
     const div = document.createElement("div");
-    const selectable = !!opts.selectable;
-    const selectedOn = !!opts.selectedOn;
-    const back = !!opts.back;
-
-    div.className = "c" + (selectable ? " selectable" : "") + (selectedOn ? " selected" : "");
-    if (back){
-      div.classList.add("back");
-      div.innerHTML = `<div class="pip" style="color:rgba(255,255,255,.9)">🂠</div>`;
-      return div;
-    }
-
-    if (isJoker(card)){
+    div.className = "c";
+    if (card.rank === "JOKER"){
       div.innerHTML = `<div class="corner top">JOKER<br>★</div><div class="pip">★</div><div class="corner bottom">JOKER<br>★</div>`;
       return div;
     }
-
     div.innerHTML = `
       <div class="corner top">${card.rank}<br>${card.suit}</div>
       <div class="pip">${card.suit}</div>
@@ -1066,454 +816,342 @@ function applyRemoteState(remote){
     return div;
   }
 
-  function renderSelectableCard(card, src){
-    const selectedOn = selected.has(card.id);
-    const div = makeRealCardDiv(card, { selectable:true, selectedOn, back:false });
-
-    const legal = canPlayOnTop(card.rank);
-
-    if (legal){
-      div.classList.add("legal");
-    } else if (!state.mustPlayAny){
-      div.classList.add("illegal");
-    }
-
-    div.onclick = () => {
-      if (!legal && !state.mustPlayAny){
-        div.classList.remove("shake");
-        void div.offsetWidth;
-        div.classList.add("shake");
-
-        const isFace = r => r === "J" || r === "Q" || r === "K";
-        const top = topRank();
-
-        let reason = "Illegal move.";
-        if (isFace(card.rank) && top && !isFace(top)){
-          reason = "Face cards (J/Q/K) can only be played on face cards.";
-        } else if (top === "10" || top === "JOKER"){
-          reason = "You cannot play on a 10 or Joker (they clear).";
-        }
-
-        addLog(`❌ ${reason}`, "bad");
-        return;
-      }
-
-      const now = Date.now();
-      const isDouble = (lastTap.id === card.id && (now - lastTap.t) < 320);
-      lastTap = { id: card.id, t: now };
-
-      if (isDouble){
-        quickPlayRank(card.rank);
-        return;
-      }
-
-      toggleSelect(card, src);
-    };
-
-    return div;
-  }
-
-  function toggleSelect(card, src){
-    if (selected.has(card.id)){
-      selected.delete(card.id);
-      selectedSources.delete(card.id);
-    } else {
-      selected.add(card.id);
-      selectedSources.set(card.id, src);
-    }
-    render();
-  }
-
-  function selectedCards(){
-    const p = state.players[state.viewPlayer];
-    if (!p) return [];
-    const all = [];
-    for (const [id, src] of selectedSources.entries()){
-      let card = null;
-      if (src.zone === "hand"){
-        card = p.hand.find(c=>c.id===id);
-      } else if (src.zone === "tableUp"){
-        card = p.tableUp[src.stackIndex];
-      } else if (src.zone === "tableDown"){
-        card = p.tableDown[src.stackIndex];
-      }
-      if (card) all.push({card, src});
-    }
-    return all;
-  }
-
-  function validateSelection(playList){
-    if (playList.length === 0) return {ok:false, msg:"Select at least one card."};
-
-    const downCount = playList.filter(x=>x.src.zone==="tableDown").length;
-    if (downCount > 1) return {ok:false, msg:"Play face-down cards one at a time."};
-
-    if (downCount === 1){
-      if (playList.length !== 1) return {ok:false, msg:"Face-down must be played alone."};
-      return {ok:true, msg:"Face-down play."};
-    }
-
-    const ranks = new Set(playList.map(x=>x.card.rank));
-    if (ranks.size !== 1) return {ok:false, msg:"All played cards must be the same rank."};
-    const r = playList[0].card.rank;
-
-    if (!canPlayOnTop(r)) return {ok:false, msg:`Illegal play on top (${topRank()}).`};
-    return {ok:true, msg:"OK"};
-  }
-
-  function removeCardFromSource(player, card, src){
-    if (src.zone === "hand"){
-      player.hand = player.hand.filter(c=>c.id !== card.id);
-    } else if (src.zone === "tableUp"){
-      player.tableUp[src.stackIndex] = null;
-    } else if (src.zone === "tableDown"){
-      player.tableDown[src.stackIndex] = null;
-    }
-  }
-
-  function pickupPile(player){
-    if (state.pile.length === 0){
-      addLog(`${player.name} tried to pick up, but pile is empty.`, "warn");
-      return;
-    }
-    shakePile();
-    player.hand.push(...state.pile);
-    addLog(`${player.name} picks up the pile (${state.pile.length} cards).`, "bad");
-    state.pile = [];
-    state.mustPlayAny = true;
-
-    mpBroadcast(serializeGameState());
-  }
-
-  function playCards(player, playList){
-    if (playList.length === 1 && playList[0].src.zone === "tableDown"){
-      const {card, src} = playList[0];
-      addLog(`${player.name} plays face-down → revealed ${renderCardText(card)}.`, "warn");
-
-      if (!canPlayOnTop(card.rank)){
-        state.pile.push(card);
-        removeCardFromSource(player, card, src);
-        render();
-        pickupPile(player);
-        return {extraTurn:false};
-      }
-
-      state.pile.push(card);
-      removeCardFromSource(player, card, src);
-
-      if (isTenOrJoker(card)){
-        clearPile(`${renderCardText(card)} clears`);
-        return {extraTurn:true};
-      }
-      if (checkTripleClear()){
-        clearPile(`triple of ${card.rank}`);
-        return {extraTurn:true};
-      }
-      state.mustPlayAny = false;
-      return {extraTurn:false};
-    }
-
-    const ranks = new Set(playList.map(x=>x.card.rank));
-    if (ranks.size !== 1) return {extraTurn:false};
-
-    const rank = playList[0].card.rank;
-    addLog(`${player.name} plays ${playList.length} × ${rank}.`);
-
-    for (const {card, src} of playList){
-      state.pile.push(card);
-      removeCardFromSource(player, card, src);
-    }
-
-    if (rank === "10" || rank === "JOKER"){
-      clearPile(`${rank} clears`);
-      return {extraTurn:true};
-    }
-    if (checkTripleClear()){
-      clearPile(`triple of ${rank}`);
-      return {extraTurn:true};
-    }
-
-    state.mustPlayAny = false;
-    return {extraTurn:false};
-  }
-
-  function playerRemaining(player){
-    return player.hand.length + player.tableUp.filter(Boolean).length + player.tableDown.filter(Boolean).length;
-  }
-
-  function nextPlayer(){
-    state.currentPlayer = (state.currentPlayer + 1) % state.numPlayers;
-    resetSelection();
-    beginTurnRevealFlow();
-    mpBroadcast(serializeGameState());
-  }
-
-  function isTurnPlayable(){
-    // If connected as joiner, disable local play (spectator mode)
-    if (mpWs && mpWs.readyState === WebSocket.OPEN && !mpIsHost) return false;
-
-    if (state.gameOver) return false;
-    if (!state.revealedThisTurn) return false;
-    if (state.viewPlayer !== state.currentPlayer) return false;
-    const p = state.players[state.currentPlayer];
-    if (!p) return false;
-    return p.type === PlayerType.HUMAN;
-  }
-
-  function humanPlay(){
-    if (!isTurnPlayable()) return;
-    if (state.peekOnly) return;
-
-    const p = state.players[state.currentPlayer];
-    const playList = selectedCards();
-    const v = validateSelection(playList);
-    if (!v.ok){
-      addLog(`❌ ${v.msg}`, "bad");
-      return;
-    }
-
-    resetSelection();
-    const res = playCards(p, playList);
-    render();
-    if (res.extraTurn) {
-      mpBroadcast(serializeGameState());
-      return;
-    }
-    nextPlayer();
-  }
-
-  function humanPickup(){
-    if (!isTurnPlayable()) return;
-    const p = state.players[state.currentPlayer];
-    resetSelection();
-    pickupPile(p);
-    render();
-    nextPlayer();
-  }
-
-  function humanHint(){
-    if (!isTurnPlayable()) return;
-    if (state.peekOnly) return;
-
-    const p = state.players[state.currentPlayer];
-    const ranks = [];
-    const cards = [...p.hand, ...p.tableUp.filter(Boolean)];
-    const byRank = new Map();
-    for (const c of cards){
-      if (!byRank.has(c.rank)) byRank.set(c.rank, []);
-      byRank.get(c.rank).push(c);
-    }
-    for (const r of byRank.keys()){
-      if (canPlayOnTop(r)) ranks.push(r);
-    }
-
-    if (ranks.length === 0){
-      addLog(`Hint: no legal play → pick up.`, "warn");
-      return;
-    }
-    if (ranks.includes("10") || ranks.includes("JOKER")){
-      addLog(`Hint: 10/Joker clears instantly.`, "ok");
-      return;
-    }
-    const best = ranks.slice().sort((a,b)=> rankOrder(b)-rankOrder(a))[0];
-    addLog(`Hint: play ${best}.`, "ok");
-  }
-
-  function renderPileVisual(){
+  function renderPile(){
     pileVisualWrap.innerHTML = "";
-    const slice = state.pile.slice(-6);
-    slice.forEach((c, i) => {
-      const d = makeRealCardDiv(c, { selectable:false, selectedOn:false, back:false });
+    state.pile.slice(-6).forEach((c,i)=>{
+      const d = makeCardDiv(c);
       d.classList.add("pileCard");
       const rot = (Math.random()*2-1);
       d.style.transform = `translate(${i*12}px, ${i*4}px) rotate(${rot}deg)`;
-      if (i === slice.length-1) d.classList.add("anim-pop");
       pileVisualWrap.appendChild(d);
     });
   }
 
-  function renderPlayersRow(){
+  function renderPlayers(){
     playersRowEl.innerHTML = "";
-
-    const arrow = document.getElementById("turnArrow");
-    arrow.style.display = "none";
-
-    state.players.forEach((p, idx) => {
+    state.players.forEach((p, idx)=>{
       const chip = document.createElement("div");
       const seat = SEAT_CLASSES[idx] || "";
-
-      chip.className =
-        "playerChip " +
-        seat +
-        (idx === state.currentPlayer ? " active" : " inactive");
-
+      chip.className = `playerChip ${seat} ${idx===state.currentPlayer ? "active" : "inactive"}`;
       chip.innerHTML = `
-        <div class="avatar" style="background:${seatGradient(p.id)}">
+        <div class="avatar" style="background:${seatGradient(idx)}">
           <div class="emo">${p.emoji}</div>
           <div class="init">${p.initials}</div>
         </div>
         <div>
-          <div class="pname">${p.name}</div>
+          <div style="font-weight:900">${p.name}</div>
+          <div class="muted" style="font-size:11px">H ${p.hand.length}</div>
         </div>
       `;
-
       playersRowEl.appendChild(chip);
-
-      if (idx === state.currentPlayer){
-        const r = chip.getBoundingClientRect();
-        const tableRect = playersRowEl.getBoundingClientRect();
-
-        arrow.style.display = "block";
-        arrow.textContent = "⬇️";
-        arrow.style.left = (r.left - tableRect.left + r.width/2 - 10) + "px";
-        arrow.style.top  = (r.top - tableRect.top + r.height + 4) + "px";
-
-        if (seat.includes("top")){
-          arrow.textContent = "⬇️";
-        } else if (seat.includes("bottom")){
-          arrow.textContent = "⬆️";
-          arrow.style.top = (r.top - tableRect.top - 28) + "px";
-        } else if (seat.includes("left")){
-          arrow.textContent = "➡️";
-          arrow.style.left = (r.left - tableRect.left + r.width + 6) + "px";
-          arrow.style.top  = (r.top - tableRect.top + r.height/2 - 10) + "px";
-        } else if (seat.includes("right")){
-          arrow.textContent = "⬅️";
-          arrow.style.left = (r.left - tableRect.left - 26) + "px";
-          arrow.style.top  = (r.top - tableRect.top + r.height/2 - 10) + "px";
-        }
-      }
     });
   }
 
-  function renderZonesHidden(){
+  function renderMyHand(){
     yourHandEl.innerHTML = "";
     yourTableEl.innerHTML = "";
-    for (let i=0;i<5;i++){
-      const back = makeRealCardDiv({rank:"X", suit:""}, {selectable:false, selectedOn:false, back:true});
-      back.style.opacity = "0.55";
-      yourHandEl.appendChild(back);
+
+    if (myPlayerIndex === null){
+      return;
     }
+
+    const me = state.players[myPlayerIndex];
+    if (!me) return;
+
+    // hand
+    me.hand.forEach(card=>{
+      const d = makeCardDiv(card);
+      d.classList.add("selectable");
+
+      const legal = canPlayOnTop(card.rank);
+      if (legal) d.classList.add("legal"); else d.classList.add("illegal");
+      if (selected.has(card.id)) d.classList.add("selected");
+
+      d.onclick = () => {
+        if (!isTurnPlayable()) return;
+        if (!legal){
+          d.classList.remove("shake"); void d.offsetWidth; d.classList.add("shake");
+          addLog("❌ Illegal", "bad");
+          return;
+        }
+        // select
+        if (selected.has(card.id)) selected.delete(card.id);
+        else {
+          // only same rank selection
+          if (selected.size){
+            const anyId = selected.values().next().value;
+            const anyCard = me.hand.find(x=>x.id===anyId) || null;
+            if (anyCard && anyCard.rank !== card.rank){
+              selected.clear();
+            }
+          }
+          selected.add(card.id);
+        }
+        render();
+      };
+
+      yourHandEl.appendChild(d);
+    });
+
+    // tableUp/Down
     for (let i=0;i<4;i++){
-      const back = makeRealCardDiv({rank:"X", suit:""}, {selectable:false, selectedOn:false, back:true});
-      back.style.opacity = "0.55";
-      yourTableEl.appendChild(back);
-    }
-  }
-
-  function renderZonesForPlayer(pid){
-    const p = state.players[pid];
-    if (!p) return;
-
-    el("handLabel").textContent = `${p.name} hand`;
-    el("tableLabel").textContent = `${p.name} table`;
-
-    yourHandEl.innerHTML = "";
-    if (state.peekOnly){
-      for (let i=0;i<5;i++){
-        const back = makeRealCardDiv({rank:"X", suit:""}, {selectable:false, selectedOn:false, back:true});
-        yourHandEl.appendChild(back);
-      }
-    } else {
-      p.hand.slice().sort((a,b)=>rankSortKey(a.rank)-rankSortKey(b.rank)).forEach(card=>{
-        yourHandEl.appendChild(renderSelectableCard(card, {zone:"hand"}));
-      });
-    }
-
-    yourTableEl.innerHTML = "";
-    for (let i=0;i<4;i++){
-      const up = p.tableUp[i];
-      const down = p.tableDown[i];
+      const up = me.tableUp[i];
+      const down = me.tableDown[i];
 
       if (up){
-        yourTableEl.appendChild(renderSelectableCard(up, {zone:"tableUp", stackIndex:i}));
-      } else if (down){
-        const back = makeRealCardDiv(down, { selectable:true, selectedOn:selected.has(down.id), back:true });
-        back.onclick = () => {
+        const d = makeCardDiv(up);
+        d.classList.add("selectable");
+        const legal = canPlayOnTop(up.rank);
+        if (legal) d.classList.add("legal"); else d.classList.add("illegal");
+        if (selected.has(up.id)) d.classList.add("selected");
+
+        d.onclick = () => {
           if (!isTurnPlayable()) return;
-          if (selected.has(down.id)){
-            selected.delete(down.id);
-            selectedSources.delete(down.id);
-          } else {
-            resetSelection();
-            selected.add(down.id);
-            selectedSources.set(down.id, {zone:"tableDown", stackIndex:i});
+          if (!legal){
+            d.classList.remove("shake"); void d.offsetWidth; d.classList.add("shake");
+            addLog("❌ Illegal", "bad");
+            return;
+          }
+          if (selected.has(up.id)) selected.delete(up.id);
+          else {
+            if (selected.size){
+              // ensure same rank selection
+              const anyId = selected.values().next().value;
+              const anyHand = me.hand.find(x=>x.id===anyId);
+              const anyUp = me.tableUp.find(x=>x && x.id===anyId);
+              const anyCard = anyHand || anyUp;
+              if (anyCard && anyCard.rank !== up.rank){
+                selected.clear();
+              }
+            }
+            selected.add(up.id);
           }
           render();
         };
-        yourTableEl.appendChild(back);
+
+        yourTableEl.appendChild(d);
+      } else if (down){
+        const d = document.createElement("div");
+        d.className = "c back selectable";
+        d.innerHTML = `<div class="pip" style="color:rgba(255,255,255,.9)">🂠</div>`;
+        d.onclick = () => {
+          if (!isTurnPlayable()) return;
+          // face-down alone
+          selected.clear();
+          selected.add(down.id);
+          // mark where it is
+          selectedSources.clear();
+          selectedSources.set(down.id, {zone:"tableDown", stackIndex:i});
+          render();
+        };
+        yourTableEl.appendChild(d);
       } else {
         const empty = document.createElement("div");
-        empty.className = "c back";
-        empty.style.opacity = "0.35";
-        empty.innerHTML = `<div class="pip" style="color:rgba(255,255,255,.9)">—</div>`;
+        empty.className = "c";
+        empty.style.opacity = "0.2";
+        empty.innerHTML = `<div class="pip">—</div>`;
         yourTableEl.appendChild(empty);
       }
     }
   }
 
-  function render(){
-    el("drawCount").textContent = state.deck.length.toString();
-    el("discardCount").textContent = state.discard.length.toString();
-    el("pileCount").textContent = state.pile.length.toString();
-    el("handInfo").textContent = `Hand ${state.handIndex} / ${state.handsTotal}`;
-    el("turnInfo").textContent = `Turn: ${playerName(state.currentPlayer)}`;
-    el("topValue").textContent = state.mustPlayAny ? "ANY" : (topRank() ? topRank() : "—");
-
-    renderPlayersRow();
-    renderPileVisual();
-
-    if (!state.revealedThisTurn || state.viewPlayer === null){
-      el("handLabel").textContent = `Current player hand`;
-      el("tableLabel").textContent = `Current player table`;
-      renderZonesHidden();
-    } else {
-      renderZonesForPlayer(state.viewPlayer);
-    }
-
-    const playable = isTurnPlayable();
-    el("playBtn").disabled = !playable || state.peekOnly;
-    el("pickupBtn").disabled = !playable;
-    el("hintBtn").disabled = !playable || state.peekOnly;
-    el("playBtnMobile").disabled = !playable || state.peekOnly;
-    el("pickupBtnMobile").disabled = !playable;
-    el("hintBtnMobile").disabled = !playable || state.peekOnly;
+  function isTurnPlayable(){
+    if (!isMultiplayer) return true;
+    if (myPlayerIndex === null) return false;
+    return myPlayerIndex === state.currentPlayer;
   }
 
-  el("newGame").onclick = () => {
-    state.numPlayers = parseInt(el("numPlayers").value, 10);
-    state.players = createPlayers(state.numPlayers);
-    state.players.forEach((p,i)=> p.initials = initialsFromName(p.name) || `P${i+1}`);
-    state.handIndex = 1;
-    logEl.innerHTML = "";
-    addLog(`New game started with ${state.numPlayers} players.`, "ok");
+  function applySelectedPlay(){
+    if (!isTurnPlayable()) return;
+    if (myPlayerIndex === null) return;
+    const me = state.players[myPlayerIndex];
+    if (!me) return;
+
+    // face-down?
+    if (selected.size === 1){
+      const only = selected.values().next().value;
+      const downIdx = me.tableDown.findIndex(x=>x && x.id===only);
+      if (downIdx !== -1){
+        // play face-down
+        const card = me.tableDown[downIdx];
+        me.tableDown[downIdx] = null;
+
+        const top = topRank();
+        if (!canPlayOnTop(card.rank)){
+          // illegal: pick up pile + played card
+          state.pile.push(card);
+          me.hand.push(...state.pile);
+          state.pile = [];
+          state.mustPlayAny = true;
+          selected.clear();
+          state.currentPlayer = (state.currentPlayer + 1) % state.players.length;
+          mpBroadcast(serializeGameState());
+          render();
+          return;
+        }
+
+        state.pile.push(card);
+
+        if (card.rank === "10" || card.rank === "JOKER"){
+          state.discard.push(...state.pile);
+          state.pile = [];
+          state.mustPlayAny = true;
+          selected.clear();
+          mpBroadcast(serializeGameState());
+          render();
+          return; // extra turn
+        }
+
+        // triple
+        const r = card.rank;
+        const cnt = state.pile.reduce((a,x)=>a+(x.rank===r?1:0),0);
+        if (cnt >= 3){
+          state.discard.push(...state.pile);
+          state.pile = [];
+          state.mustPlayAny = true;
+          selected.clear();
+          mpBroadcast(serializeGameState());
+          render();
+          return; // extra turn
+        }
+
+        state.mustPlayAny = false;
+        selected.clear();
+        state.currentPlayer = (state.currentPlayer + 1) % state.players.length;
+        mpBroadcast(serializeGameState());
+        render();
+        return;
+      }
+    }
+
+    // normal play: all selected must be same rank
+    const ids = Array.from(selected);
+    const allCards = [];
+    for (const id of ids){
+      const h = me.hand.find(x=>x.id===id);
+      if (h) allCards.push({card:h, zone:"hand"});
+      const upIdx = me.tableUp.findIndex(x=>x && x.id===id);
+      if (upIdx !== -1) allCards.push({card:me.tableUp[upIdx], zone:"tableUp", stackIndex:upIdx});
+    }
+    if (!allCards.length) return;
+
+    const rank = allCards[0].card.rank;
+    if (!allCards.every(x=>x.card.rank===rank)) {
+      addLog("❌ Must play same rank", "bad");
+      return;
+    }
+    if (!canPlayOnTop(rank)){
+      addLog("❌ Illegal", "bad");
+      return;
+    }
+
+    // remove from zones
+    for (const x of allCards){
+      if (x.zone==="hand"){
+        me.hand = me.hand.filter(c=>c.id!==x.card.id);
+      } else if (x.zone==="tableUp"){
+        me.tableUp[x.stackIndex] = null;
+      }
+      state.pile.push(x.card);
+    }
+
+    // clears
+    if (rank==="10" || rank==="JOKER"){
+      state.discard.push(...state.pile);
+      state.pile = [];
+      state.mustPlayAny = true;
+      selected.clear();
+      mpBroadcast(serializeGameState());
+      render();
+      return; // extra turn
+    }
+
+    // triple
+    const cnt = state.pile.reduce((a,x)=>a+(x.rank===rank?1:0),0);
+    if (cnt >= 3){
+      state.discard.push(...state.pile);
+      state.pile = [];
+      state.mustPlayAny = true;
+      selected.clear();
+      mpBroadcast(serializeGameState());
+      render();
+      return; // extra turn
+    }
+
+    state.mustPlayAny = false;
+    selected.clear();
+    state.currentPlayer = (state.currentPlayer + 1) % state.players.length;
+    mpBroadcast(serializeGameState());
+    render();
+  }
+
+  function pickup(){
+    if (!isTurnPlayable()) return;
+    if (myPlayerIndex === null) return;
+    const me = state.players[myPlayerIndex];
+    if (!me) return;
+
+    me.hand.push(...state.pile);
+    state.pile = [];
+    state.mustPlayAny = true;
+    selected.clear();
+    state.currentPlayer = (state.currentPlayer + 1) % state.players.length;
+    mpBroadcast(serializeGameState());
+    render();
+  }
+
+  function render(){
+    // update counters
+    document.getElementById("drawCount").textContent = String(state.deck.length);
+    document.getElementById("discardCount").textContent = String(state.discard.length);
+    document.getElementById("pileCount").textContent = String(state.pile.length);
+    document.getElementById("topValue").textContent = state.mustPlayAny ? "ANY" : (topRank() || "—");
+    document.getElementById("turnInfo").textContent = state.players[state.currentPlayer]?.name || "—";
+
+    const hint = document.getElementById("turnHint");
+    if (hint){
+      hint.textContent = isTurnPlayable() ? "Your turn" : "Waiting…";
+    }
+
+    renderPlayers();
+    renderPile();
+    renderMyHand();
+
+    document.getElementById("playBtn").disabled = !isTurnPlayable();
+    document.getElementById("pickupBtn").disabled = !isTurnPlayable();
+    document.getElementById("hintBtn").disabled = !isTurnPlayable();
+    document.getElementById("newGame").disabled = isMultiplayer && myPlayerIndex !== 0; // only player 0 starts
+  }
+
+  // Buttons
+  document.getElementById("newGame").onclick = () => {
+    if (isMultiplayer && myPlayerIndex !== 0){
+      alert("Only Player 1 (seat 1) can start the game.");
+      return;
+    }
+    state.numPlayers = state.players.length || parseInt(document.getElementById("numPlayers").value,10);
+    if (!state.players.length) state.players = createPlayers(state.numPlayers);
     dealHand();
   };
 
-  el("newHand").onclick = () => {
-    if (state.gameOver){
-      addLog(`Game is over. Click "New Game" to restart.`, "warn");
+  document.getElementById("newHand").onclick = () => {
+    if (isMultiplayer && myPlayerIndex !== 0){
+      alert("Only Player 1 can start a new hand.");
       return;
     }
     dealHand();
   };
 
-  el("playBtn").onclick = humanPlay;
-  el("pickupBtn").onclick = humanPickup;
-  el("hintBtn").onclick = humanHint;
+  document.getElementById("playBtn").onclick = applySelectedPlay;
+  document.getElementById("pickupBtn").onclick = pickup;
 
-  el("playBtnMobile").onclick = humanPlay;
-  el("pickupBtnMobile").onclick = humanPickup;
-  el("hintBtnMobile").onclick = humanHint;
-
-  readyBtn.onclick = () => endOverlayReveal(false);
-  peekBtn.onclick = () => endOverlayReveal(true);
-
-  state.numPlayers = parseInt(el("numPlayers").value, 10);
+  // init local state
+  state.numPlayers = parseInt(document.getElementById("numPlayers").value,10);
   state.players = createPlayers(state.numPlayers);
   state.players.forEach((p,i)=> p.initials = initialsFromName(p.name) || `P${i+1}`);
-  addLog(`Ready. Click "New Game" to begin.`, "ok");
+  addLog("Ready. Host a room or join one. Player 1 starts New Game.", "ok");
   render();
+
 })();
 </script>
 </body>
