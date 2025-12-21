@@ -92,14 +92,6 @@
       align-items:center;
       white-space:nowrap;
     }
-    .kbd{
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      font-size: 11px;
-      padding:2px 6px;
-      border-radius: 8px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.05);
-    }
 
     .table{
       background: linear-gradient(180deg, var(--table1), var(--table2));
@@ -108,7 +100,6 @@
       box-shadow: var(--shadow);
     }
 
-    /* Seats */
     .playersRow{
       position:relative;
       height:180px;
@@ -130,12 +121,11 @@
     .playerChip.active{
       outline:2px solid var(--accent);
       box-shadow:0 0 16px rgba(99,179,237,.45);
-      animation: seatPulse 1.6s ease-out infinite;
     }
 
-    .playerChip.inactive{
-      opacity: 0.55;
-      filter: grayscale(.35);
+    .playerChip.disconnected{
+      opacity: 0.4;
+      border-color: var(--danger);
     }
 
     .seat-bottom{ left:50%; bottom:0; transform:translateX(-50%); }
@@ -144,12 +134,6 @@
     .seat-right{ right:0; top:50%; transform:translateY(-50%); }
     .seat-tl{ left:0; top:0; transform:none; }
     .seat-tr{ right:0; top:0; transform:none; }
-
-    @keyframes seatPulse {
-      0%   { box-shadow: 0 0 0 0 rgba(99,179,237,.55); }
-      70%  { box-shadow: 0 0 0 14px rgba(99,179,237,0); }
-      100% { box-shadow: 0 0 0 0 rgba(99,179,237,0); }
-    }
 
     .avatar{
       width:var(--avatar);
@@ -174,7 +158,6 @@
       color:#fff;
     }
 
-    /* Mobile: fall back */
     @media (max-width: 700px){
       .playersRow{
         position:static;
@@ -205,29 +188,6 @@
     .c.selectable:hover{ transform:translateY(-4px); }
     .c.selected{ outline:3px solid var(--accent); transform:translateY(-6px); }
 
-    .c.selectable.legal{
-      box-shadow:
-        0 0 0 2px rgba(99,179,237,.35),
-        0 10px 22px rgba(99,179,237,.25);
-    }
-
-    .c.illegal{
-      opacity:0.45;
-      filter: grayscale(1) blur(.3px);
-      cursor:not-allowed;
-    }
-
-    @keyframes illegalShake {
-      0%{ transform:translateX(0); }
-      25%{ transform:translateX(-6px); }
-      50%{ transform:translateX(6px); }
-      75%{ transform:translateX(-4px); }
-      100%{ transform:translateX(0); }
-    }
-    .c.illegal.shake{
-      animation: illegalShake .25s ease-in-out;
-    }
-
     .corner{
       position:absolute;
       font-weight:900;
@@ -244,21 +204,7 @@
       font-size:32px;
     }
 
-    .subpip{
-      position:absolute;
-      left:50%; top:50%;
-      transform:translate(-50%,-50%);
-      font-size:12px;
-      opacity:.75;
-      margin-top:30px;
-      letter-spacing:.6px;
-      font-weight:800;
-    }
-
-    .c.back{
-      background:linear-gradient(135deg,#1b2a55,#0b1220);
-      border:2px dashed rgba(255,255,255,.45);
-    }
+    .c.illegal{ opacity:.55; }
 
     .zoneTitle{
       margin:10px 0 6px;
@@ -304,50 +250,6 @@
       overflow:hidden;
     }
 
-    .pileCard{
-      position:absolute;
-      left: calc(50% - 38px);
-      top: 20px;
-      will-change: transform, opacity;
-    }
-
-    @keyframes popIn {
-      0%{ transform: translateY(18px) scale(.92); opacity:0; }
-      100%{ transform: translateY(0) scale(1); opacity:1; }
-    }
-    .anim-pop{ animation: popIn .18s ease-out; }
-
-    @keyframes clearBurst {
-      0%{ box-shadow: 0 0 0 rgba(99,179,237,0); }
-      30%{ box-shadow: 0 0 30px rgba(99,179,237,.55); }
-      100%{ box-shadow: 0 0 0 rgba(99,179,237,0); }
-    }
-    .burst{ animation: clearBurst .35s ease-out; }
-
-    .flyLayer{
-      position: fixed;
-      inset: 0;
-      pointer-events:none;
-      z-index: 9999;
-    }
-    .flyCard{
-      position: fixed;
-      width: 56px;
-      height: 78px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,.18);
-      background: #fff;
-      box-shadow: 0 14px 30px rgba(0,0,0,.55);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-weight:900;
-      opacity: 0.95;
-      transform: translate(0,0) scale(1);
-      transition: transform .45s ease, opacity .45s ease;
-      color:#111;
-    }
-
     .panel{
       background:rgba(255,255,255,.04);
       border-radius:18px;
@@ -371,33 +273,6 @@
     .warn{ color:#f2cc60; }
     .bad{ color:var(--danger); }
 
-    @media (max-width: 900px){
-      :root{
-        --card-w:68px;
-        --card-h:100px;
-        --avatar:40px;
-        --pile-h:130px;
-        --gap:8px;
-      }
-      .grid{ grid-template-columns:1fr; }
-    }
-
-    @media (max-width: 480px){
-      :root{
-        --card-w:60px;
-        --card-h:88px;
-        --avatar:36px;
-        --pile-h:110px;
-        --gap:6px;
-      }
-      header h1{ font-size:14px; }
-      select,button,input{ font-size:12px; padding:7px 10px; }
-      .log{ max-height:200px; font-size:11px; }
-      .corner{ font-size:11px; }
-      .pip{ font-size:26px; }
-    }
-
-    /* Multiplayer bar in header */
     .mpbar{
       display:flex;
       gap:6px;
@@ -408,7 +283,25 @@
     .mpbar input{ width:90px; }
     .mpbar #mpRoom{ text-transform:uppercase; width:90px; }
     .mpStatus{ font-size:12px; opacity:.7; }
+    .mpStatus.connected{ color: var(--ok); }
+    .mpStatus.error{ color: var(--danger); }
 
+    .connectionIndicator{
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--danger);
+      display: inline-block;
+      margin-right: 6px;
+    }
+    .connectionIndicator.connected{
+      background: var(--ok);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
   </style>
 </head>
 
@@ -416,28 +309,20 @@
 <header>
   <h1>🃏 Splash Practice</h1>
 
-  <!-- Multiplayer controls -->
   <div class="mpbar">
     <input id="mpName" placeholder="Name" />
     <input id="mpRoom" placeholder="ROOM" />
     <button id="hostBtn" class="primary">Host</button>
     <button id="joinBtn" class="primary">Join</button>
+    <button id="leaveBtn" class="danger" style="display:none;">Leave</button>
     <span id="mpStatus" class="mpStatus"></span>
   </div>
 
   <div class="controls">
-    <label class="muted">Players</label>
-    <select id="numPlayers">
-      <option>3</option><option selected>4</option><option>5</option><option>6</option>
-    </select>
     <button id="newGame" class="primary">New Game</button>
-    <button id="newHand">New Hand</button>
-    <span class="pill" id="handInfo">Hand 1 / 5</span>
     <span class="pill" id="turnInfo">Turn: —</span>
   </div>
 </header>
-
-<div class="flyLayer" id="flyLayer"></div>
 
 <main>
   <div class="grid">
@@ -448,8 +333,8 @@
       <div class="note">
         <div class="pileRow">
           <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
-            <span class="pill">Draw: <span id="drawCount">—</span></span>
-            <span class="pill" id="discardPill">Discard: <span id="discardCount">—</span></span>
+            <span class="pill">Deck: <span id="deckCount">—</span></span>
+            <span class="pill">Discard: <span id="discardCount">—</span></span>
             <span class="pill">Pile: <span id="pileCount">—</span></span>
           </div>
           <div style="display:flex; gap:8px; align-items:center;">
@@ -461,7 +346,7 @@
         <div class="pileVisualWrap" id="pileVisualWrap"></div>
 
         <div class="muted" style="margin-top:10px;">
-          Online mode: each player sees their own hand only. (Server-authoritative rules next.)
+          Each player sees only their own hand. Host controls game start.
         </div>
       </div>
 
@@ -472,7 +357,7 @@
       <div id="yourHand" class="handScroll"></div>
 
       <div class="zoneTitle">
-        <span id="tableLabel">Your table</span>
+        <span id="tableLabel">Your table cards</span>
       </div>
       <div id="yourTable" class="hand"></div>
     </section>
@@ -481,11 +366,10 @@
       <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
         <button id="playBtn" class="primary">Play Selected</button>
         <button id="pickupBtn" class="danger">Pick Up Pile</button>
-        <button id="hintBtn">Hint</button>
       </div>
 
       <div class="zoneTitle" style="margin-top:12px;">
-        <span>Log</span>
+        <span>Game Log</span>
       </div>
       <div id="log" class="log"></div>
     </section>
@@ -495,393 +379,486 @@
 
 <script>
 (() => {
-
-  /* =========================================================
-     ONLINE MULTIPLAYER (no observers)
-     ========================================================= */
   const WS_BASE = "wss://splash-multiplayer.azimaymen.workers.dev";
-
+  const mpClientId = crypto.randomUUID();
   let mpWs = null;
   let mpRoom = null;
-  const mpClientId = crypto.randomUUID();
-  let isMultiplayer = false;
-  let myPlayerIndex = null; // 0..N-1 seat in room order
+  let mpConnected = false;
+  let mySeat = null;
+  let reconnectAttempts = 0;
+  let reconnectTimer = null;
+  const MAX_RECONNECT_ATTEMPTS = 5;
 
-  function mpSetStatus(t){
-    const s = document.getElementById("mpStatus");
-    if (s) s.textContent = t;
+  // Save connection info to localStorage for reconnection
+  function saveConnectionInfo(room, name, isHost) {
+    localStorage.setItem('splash_room', room);
+    localStorage.setItem('splash_name', name);
+    localStorage.setItem('splash_isHost', isHost.toString());
   }
 
-  function mpConnect(room){
-    isMultiplayer = true;
+  function clearConnectionInfo() {
+    localStorage.removeItem('splash_room');
+    localStorage.removeItem('splash_name');
+    localStorage.removeItem('splash_isHost');
+  }
+
+  function loadConnectionInfo() {
+    return {
+      room: localStorage.getItem('splash_room'),
+      name: localStorage.getItem('splash_name'),
+      isHost: localStorage.getItem('splash_isHost') === 'true'
+    };
+  }
+
+  function mpSetStatus(t, type = 'normal') {
+    const status = document.getElementById("mpStatus");
+    const indicator = '<span class="connectionIndicator' + (type === 'connected' ? ' connected' : '') + '"></span>';
+    status.innerHTML = indicator + t;
+    status.className = 'mpStatus ' + type;
+  }
+
+  function mpSendJoin(isHost) {
+    if (!mpWs || mpWs.readyState !== WebSocket.OPEN) return;
+    mpWs.send(JSON.stringify({
+      type: "join",
+      id: mpClientId,
+      name: document.getElementById("mpName").value || (isHost ? "Host" : "Player"),
+      isHost: isHost
+    }));
+  }
+
+  function mpConnect(room, isHost) {
     mpRoom = room.toUpperCase();
     mpWs = new WebSocket(`${WS_BASE}?room=${mpRoom}`);
+    
+    const name = document.getElementById("mpName").value || (isHost ? "Host" : "Player");
+    saveConnectionInfo(mpRoom, name, isHost);
 
     mpWs.onopen = () => {
-      mpSetStatus(`Connected ${mpRoom}`);
-      mpWs.send(JSON.stringify({
-        type:"join",
-        id: mpClientId,
-        name: document.getElementById("mpName").value || "Player"
-      }));
+      mpConnected = true;
+      reconnectAttempts = 0;
+      mpSetStatus(`${mpRoom}${isHost ? " (HOST)" : ""}`, 'connected');
+      mpSendJoin(isHost);
+      document.getElementById("hostBtn").style.display = "none";
+      document.getElementById("joinBtn").style.display = "none";
+      document.getElementById("leaveBtn").style.display = "inline-block";
+      logLine(`Connected to room ${mpRoom}`, "ok");
     };
 
     mpWs.onmessage = (ev) => {
       let msg;
       try { msg = JSON.parse(ev.data); } catch { return; }
 
-      if (msg.type === "players"){
-        // Seat assignment based on join order
-        const idx = msg.players.findIndex(p => p.id === mpClientId);
-        if (idx !== -1) myPlayerIndex = idx;
-
-        // If we haven't started a game yet, map names into state.players
-        // (Host will still press New Game to start)
-        if (state.players.length !== msg.players.length){
-          state.numPlayers = msg.players.length;
-          state.players = createPlayers(state.numPlayers);
-        }
-        msg.players.forEach((p, i) => {
-          if (state.players[i]){
-            state.players[i].name = p.name;
-            state.players[i].initials = initialsFromName(p.name);
-          }
-        });
-
+      if (msg.type === "players") {
+        mySeat = msg.players.findIndex(p => p.id === mpClientId);
+        ensurePlayersFromServer(msg.players);
         render();
       }
 
-      if (msg.type === "state"){
-        applyRemoteState(msg.payload);
+      if (msg.type === "state") {
+        const payload = msg.payload;
+        if (payload && payload.senderId === mpClientId) return;
+        applyRemoteState(payload.state);
+      }
+
+      if (msg.type === "reset") {
+        logLine("Game was reset by host", "warn");
+        resetLocalState();
+        render();
+      }
+
+      if (msg.type === "pong") {
+        // Keep-alive response
       }
     };
 
-    mpWs.onclose = () => mpSetStatus("Disconnected");
-    mpWs.onerror = () => mpSetStatus("Error");
+    mpWs.onclose = () => {
+      mpConnected = false;
+      mpSetStatus("Disconnected", "error");
+      handleReconnect(room, isHost);
+    };
+
+    mpWs.onerror = () => {
+      mpConnected = false;
+      mpSetStatus("Connection Error", "error");
+    };
+
+    // Ping every 30 seconds to keep connection alive
+    setInterval(() => {
+      if (mpWs && mpWs.readyState === WebSocket.OPEN) {
+        mpWs.send(JSON.stringify({ type: "ping" }));
+      }
+    }, 30000);
   }
 
-  function mpBroadcast(payload){
-    if (!mpWs || mpWs.readyState !== WebSocket.OPEN) return;
-    mpWs.send(JSON.stringify({ type:"broadcast", payload }));
+  function handleReconnect(room, isHost) {
+    if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+      logLine("Failed to reconnect after multiple attempts", "bad");
+      mpSetStatus("Disconnected - Reload to try again", "error");
+      return;
+    }
+
+    reconnectAttempts++;
+    const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000);
+    mpSetStatus(`Reconnecting... (${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`, "error");
+    
+    reconnectTimer = setTimeout(() => {
+      logLine(`Reconnecting (attempt ${reconnectAttempts})...`, "warn");
+      mpConnect(room, isHost);
+    }, delay);
   }
 
-  document.getElementById("hostBtn").onclick = () => {
-    const code = Math.random().toString(36).slice(2,8).toUpperCase();
-    document.getElementById("mpRoom").value = code;
-    mpConnect(code);
-    alert("Room code: " + code);
-  };
-
-  document.getElementById("joinBtn").onclick = () => {
-    const code = document.getElementById("mpRoom").value.trim();
-    if (!code) return alert("Enter room code");
-    mpConnect(code);
-  };
-
-  function serializeGameState(){
-    return JSON.parse(JSON.stringify(state));
+  function mpBroadcastState() {
+    if (!mpWs || mpWs.readyState !== WebSocket.OPEN) {
+      logLine("Cannot sync - not connected", "warn");
+      return;
+    }
+    mpWs.send(JSON.stringify({
+      type: "broadcast",
+      payload: { senderId: mpClientId, state: JSON.parse(JSON.stringify(state)) }
+    }));
   }
 
-  function applyRemoteState(remote){
-    // Update data only, keep local references stable
-    state.numPlayers    = remote.numPlayers;
-    state.players       = remote.players;
-    state.deck          = remote.deck;
-    state.discard       = remote.discard;
-    state.pile          = remote.pile;
-    state.pileTopRank   = remote.pileTopRank;
-    state.handIndex     = remote.handIndex;
-    state.handsTotal    = remote.handsTotal;
-    state.currentPlayer = remote.currentPlayer;
-    state.mustPlayAny   = remote.mustPlayAny;
-    state.gameOver      = remote.gameOver;
-
+  function mpLeave() {
+    if (reconnectTimer) clearTimeout(reconnectTimer);
+    if (mpWs) mpWs.close();
+    mpConnected = false;
+    mpRoom = null;
+    mySeat = null;
+    clearConnectionInfo();
+    document.getElementById("hostBtn").style.display = "inline-block";
+    document.getElementById("joinBtn").style.display = "inline-block";
+    document.getElementById("leaveBtn").style.display = "none";
+    mpSetStatus("Not connected");
+    logLine("Left room", "warn");
+    resetLocalState();
     render();
   }
 
-  /* =========================================================
-     ORIGINAL GAME CODE (kept)
-     ========================================================= */
-
-  const SUITS = ["♠","♥","♦","♣"];
-  const RANKS = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
-  const RANK_ORDER = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
-  const rankOrder = (rank) => RANK_ORDER.indexOf(rank);
-
-  const EMOJIS = ["🦊","🐼","🐯","🦁","🐸","🐙","🦉","🦄","🐲","🐶","🐱","🐵"];
-
-  const SEAT_COLORS = [
-    ["#63b3ed","#7ee787"],
-    ["#f2cc60","#ff7b72"],
-    ["#a78bfa","#63b3ed"],
-    ["#34d399","#f2cc60"],
-    ["#fb7185","#a78bfa"],
-    ["#60a5fa","#fb7185"],
-  ];
-
-  const SEAT_CLASSES = ["seat-bottom","seat-left","seat-top","seat-right","seat-tl","seat-tr"];
-
-  const isJoker = c => c.rank === "JOKER";
-  const isTenOrJoker = c => c.rank === "10" || isJoker(c);
-
-  const PlayerType = { HUMAN:"HUMAN", BOT:"BOT", REMOTE:"REMOTE" };
-
-  const scoreValue = (card) => {
-    if (isJoker(card)) return 50;
-    if (card.rank === "10") return 20;
-    if (card.rank === "A") return 1;
-    if (card.rank === "J" || card.rank === "Q" || card.rank === "K") return 10;
-    return parseInt(card.rank, 10);
+  document.getElementById("hostBtn").onclick = () => {
+    const name = document.getElementById("mpName").value.trim();
+    if (!name) return alert("Enter your name first");
+    const code = Math.random().toString(36).slice(2, 8).toUpperCase();
+    document.getElementById("mpRoom").value = code;
+    mpConnect(code, true);
+    alert("Room code: " + code + "\nShare this with others to join!");
   };
 
+  document.getElementById("joinBtn").onclick = () => {
+    const name = document.getElementById("mpName").value.trim();
+    const code = document.getElementById("mpRoom").value.trim();
+    if (!name) return alert("Enter your name first");
+    if (!code) return alert("Enter room code");
+    mpConnect(code, false);
+  };
+
+  document.getElementById("leaveBtn").onclick = mpLeave;
+
+  // Try to auto-reconnect on page load
+  window.addEventListener('load', () => {
+    const info = loadConnectionInfo();
+    if (info.room && info.name) {
+      document.getElementById("mpName").value = info.name;
+      document.getElementById("mpRoom").value = info.room;
+      // Auto-reconnect after 1 second
+      setTimeout(() => {
+        logLine("Attempting to reconnect to previous room...", "warn");
+        mpConnect(info.room, info.isHost);
+      }, 1000);
+    }
+  });
+
+  /* ========================================================= GAME LOGIC */
+  const SUITS = ["♠", "♥", "♦", "♣"];
+  const RANKS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
+  const RANK_ORDER = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
+  const rankOrder = (r) => RANK_ORDER.indexOf(r);
+  const isFace = (r) => r === "J" || r === "Q" || r === "K";
+
+  const EMOJIS = ["🦊", "🐼", "🐯", "🦁", "🐸", "🐙", "🦉", "🦄", "🐲", "🐶", "🐱", "🐵"];
+  const SEAT_CLASSES = ["seat-bottom", "seat-left", "seat-top", "seat-right", "seat-tl", "seat-tr"];
+
   const state = {
-    numPlayers: 4,
     players: [],
     deck: [],
     discard: [],
     pile: [],
-    pileTopRank: null,
-    handIndex: 1,
-    handsTotal: 5,
     currentPlayer: 0,
-    mustPlayAny: false,
-    gameOver: false,
-
-    // local-only pass-and-play fields (unused in multiplayer)
-    viewPlayer: null,
-    revealedThisTurn: true,
-    peekOnly: false
+    mustPlayAny: false
   };
 
-  const el = (id) => document.getElementById(id);
-  const logEl = el("log");
-  const yourHandEl = el("yourHand");
-  const yourTableEl = el("yourTable");
-  const playersRowEl = el("playersRow");
-  const pileVisualWrap = el("pileVisualWrap");
-
   let selected = new Set();
-  let selectedSources = new Map();
-  let uid = 0;
-  const newId = () => (++uid).toString();
 
-  let lastTap = { id: null, t: 0 };
+  const el = (id) => document.getElementById(id);
 
-  function toneDot(tone){
-    if (tone==="ok") return `<span class="ok">●</span> `;
-    if (tone==="warn") return `<span class="warn">●</span> `;
-    if (tone==="bad") return `<span class="bad">●</span> `;
-    return "";
-  }
-  function addLog(text, tone=""){
+  function logLine(text, tone = "") {
     const div = document.createElement("div");
     div.className = "line";
-    div.innerHTML = `${toneDot(tone)}${text}`;
-    logEl.prepend(div);
+    const timestamp = new Date().toLocaleTimeString();
+    div.innerHTML = `<span class="muted">[${timestamp}]</span> ` + (tone ? `<span class="${tone}">●</span> ` : "") + text;
+    el("log").prepend(div);
   }
 
-  function initialsFromName(name){
-    const parts = name.trim().split(/\s+/).filter(Boolean);
-    if (parts.length === 0) return "P";
-    if (parts.length === 1) return parts[0].slice(0,2).toUpperCase();
-    return (parts[0][0] + parts[parts.length-1][0]).toUpperCase();
+  function ensurePlayersFromServer(players) {
+    while (state.players.length < players.length) {
+      const idx = state.players.length;
+      state.players.push({
+        name: `Player ${idx + 1}`,
+        emoji: EMOJIS[idx % EMOJIS.length],
+        hand: [],
+        tableUp: Array.from({ length: 4 }, () => null),
+        tableDown: Array.from({ length: 4 }, () => null)
+      });
+    }
+    players.forEach((p, idx) => {
+      if (state.players[idx]) state.players[idx].name = p.name || `Player ${idx + 1}`;
+    });
   }
 
-  function seatGradient(i){
-    const [a,b] = SEAT_COLORS[i % SEAT_COLORS.length];
-    return `linear-gradient(135deg, ${a}, ${b})`;
-  }
-
-  function createPlayers(n){
-    return Array.from({length:n}, (_,i)=>({
-      id:i,
-      type: PlayerType.HUMAN,
-      name: `Player ${i+1}`,
-      emoji: EMOJIS[i % EMOJIS.length],
-      initials: `P${i+1}`,
-      hand: [],
-      tableUp: Array.from({length:4}, ()=>null),
-      tableDown: Array.from({length:4}, ()=>null),
-      score: 0
-    }));
-  }
-
-  function resetSelection(){
+  function applyRemoteState(remote) {
+    state.players = remote.players;
+    state.deck = remote.deck;
+    state.discard = remote.discard;
+    state.pile = remote.pile;
+    state.currentPlayer = remote.currentPlayer;
+    state.mustPlayAny = remote.mustPlayAny;
     selected.clear();
-    selectedSources.clear();
+    render();
   }
 
-  function topRank(){
-    const top = state.pile[state.pile.length-1];
-    return top ? top.rank : state.pileTopRank;
+  function resetLocalState() {
+    state.deck = [];
+    state.discard = [];
+    state.pile = [];
+    state.currentPlayer = 0;
+    state.mustPlayAny = false;
+    selected.clear();
   }
 
-  function canPlayOnTop(rank){
+  function topRank() {
+    return state.pile.length ? state.pile[state.pile.length - 1].rank : null;
+  }
+
+  function canPlayOnTop(rank) {
     if (state.mustPlayAny) return true;
-
     const top = topRank();
     if (!top) return true;
-
     if (rank === "10" || rank === "JOKER") return true;
     if (top === "10" || top === "JOKER") return false;
-
-    const isFace = r => r === "J" || r === "Q" || r === "K";
     if (isFace(rank) && !isFace(top)) return false;
-
     return rankOrder(rank) <= rankOrder(top);
   }
 
-  function makeDeck(){
-    const deck = [];
-    for (let d=0; d<2; d++){
-      for (const s of SUITS){
-        for (const r of RANKS){
-          deck.push({ id:newId(), rank:r, suit:s });
+  function makeDeck() {
+    const d = [];
+    for (let k = 0; k < 2; k++) {
+      for (const s of SUITS) {
+        for (const r of RANKS) {
+          d.push({ id: crypto.randomUUID(), rank: r, suit: s });
         }
       }
     }
-    for (let j=0; j<4; j++){
-      deck.push({ id:newId(), rank:"JOKER", suit:"★" });
+    for (let j = 0; j < 4; j++) d.push({ id: crypto.randomUUID(), rank: "JOKER", suit: "★" });
+    for (let i = d.length - 1; i > 0; i--) {
+      const k = Math.floor(Math.random() * (i + 1));
+      [d[i], d[k]] = [d[k], d[i]];
     }
-    for (let i=deck.length-1;i>0;i--){
-      const k = Math.floor(Math.random()*(i+1));
-      [deck[i], deck[k]] = [deck[k], deck[i]];
-    }
-    return deck;
+    return d;
   }
 
-  function dealHand(){
-    resetSelection();
+  function newGame() {
+    if (!mpConnected) {
+      logLine("Must be connected to start game", "bad");
+      return;
+    }
+    if (mySeat !== 0) {
+      logLine("Only Host (Player 1) can start a new game", "warn");
+      return;
+    }
+
     state.deck = makeDeck();
     state.discard = [];
     state.pile = [];
     state.mustPlayAny = false;
-    state.gameOver = false;
+    state.currentPlayer = 0;
 
-    for (const p of state.players){
+    state.players.forEach(p => {
       p.hand = [];
-      p.tableUp = Array.from({length:4}, ()=>null);
-      p.tableDown = Array.from({length:4}, ()=>null);
-    }
+      p.tableUp = Array.from({ length: 4 }, () => null);
+      p.tableDown = Array.from({ length: 4 }, () => null);
+    });
 
-    for (let i=0;i<4;i++){
-      for (const p of state.players){
-        p.tableDown[i] = state.deck.pop();
-      }
-    }
-    for (let i=0;i<4;i++){
-      for (const p of state.players){
-        p.tableUp[i] = state.deck.pop();
-      }
-    }
-    for (let i=0;i<11;i++){
-      for (const p of state.players){
-        p.hand.push(state.deck.pop());
-      }
-    }
+    for (let i = 0; i < 4; i++) state.players.forEach(p => p.tableDown[i] = state.deck.pop());
+    for (let i = 0; i < 4; i++) state.players.forEach(p => p.tableUp[i] = state.deck.pop());
+    for (let i = 0; i < 11; i++) state.players.forEach(p => p.hand.push(state.deck.pop()));
 
-    // start card
-    const c = state.deck.pop();
-    state.pile.push(c);
-    state.pileTopRank = c.rank;
-
-    if (c.rank === "10" || c.rank === "JOKER"){
+    const start = state.deck.pop();
+    state.pile.push(start);
+    if (start.rank === "10" || start.rank === "JOKER") {
       state.discard.push(...state.pile);
       state.pile = [];
       state.mustPlayAny = true;
-    } else {
-      state.mustPlayAny = false;
     }
 
-    state.currentPlayer = 0;
-    addLog(`New game started (online players).`, "ok");
+    logLine("Game started by host", "ok");
+    mpBroadcastState();
     render();
-
-    // broadcast
-    mpBroadcast(serializeGameState());
   }
 
-  function makeCardDiv(card){
-    const div = document.createElement("div");
-    div.className = "c";
-    if (card.rank === "JOKER"){
-      div.innerHTML = `<div class="corner top">JOKER<br>★</div><div class="pip">★</div><div class="corner bottom">JOKER<br>★</div>`;
-      return div;
+  function isMyTurn() {
+    return mySeat !== null && mySeat === state.currentPlayer;
+  }
+
+  function playSelected() {
+    if (!isMyTurn()) {
+      logLine("Not your turn", "warn");
+      return;
     }
-    div.innerHTML = `
-      <div class="corner top">${card.rank}<br>${card.suit}</div>
-      <div class="pip">${card.suit}</div>
-      <div class="corner bottom">${card.rank}<br>${card.suit}</div>
-    `;
-    return div;
-  }
+    if (mySeat === null) return;
+    const me = state.players[mySeat];
+    if (!me) return;
+    if (!selected.size) return;
 
-  function renderPile(){
-    pileVisualWrap.innerHTML = "";
-    state.pile.slice(-6).forEach((c,i)=>{
-      const d = makeCardDiv(c);
-      d.classList.add("pileCard");
-      const rot = (Math.random()*2-1);
-      d.style.transform = `translate(${i*12}px, ${i*4}px) rotate(${rot}deg)`;
-      pileVisualWrap.appendChild(d);
-    });
-  }
+    const ids = Array.from(selected);
+    const chosen = [];
 
-  function renderPlayers(){
-    playersRowEl.innerHTML = "";
-    state.players.forEach((p, idx)=>{
-      const chip = document.createElement("div");
-      const seat = SEAT_CLASSES[idx] || "";
-      chip.className = `playerChip ${seat} ${idx===state.currentPlayer ? "active" : "inactive"}`;
-      chip.innerHTML = `
-        <div class="avatar" style="background:${seatGradient(idx)}">
-          <div class="emo">${p.emoji}</div>
-          <div class="init">${p.initials}</div>
-        </div>
-        <div>
-          <div style="font-weight:900">${p.name}</div>
-          <div class="muted" style="font-size:11px">H ${p.hand.length}</div>
-        </div>
-      `;
-      playersRowEl.appendChild(chip);
-    });
-  }
+    for (const id of ids) {
+      const h = me.hand.find(c => c.id === id);
+      if (h) chosen.push({ card: h, zone: "hand" });
+      const upIdx = me.tableUp.findIndex(c => c && c.id === id);
+      if (upIdx !== -1) chosen.push({ card: me.tableUp[upIdx], zone: "tableUp", idx: upIdx });
+    }
+    if (!chosen.length) return;
 
-  function renderMyHand(){
-    yourHandEl.innerHTML = "";
-    yourTableEl.innerHTML = "";
-
-    if (myPlayerIndex === null){
+    const rank = chosen[0].card.rank;
+    if (!chosen.every(x => x.card.rank === rank)) {
+      logLine("Must play same rank", "bad");
+      return;
+    }
+    if (!canPlayOnTop(rank)) {
+      logLine("Illegal play - cannot play " + rank + " on " + topRank(), "bad");
       return;
     }
 
-    const me = state.players[myPlayerIndex];
-    if (!me) return;
+    chosen.forEach(x => {
+      if (x.zone === "hand") me.hand = me.hand.filter(c => c.id !== x.card.id);
+      if (x.zone === "tableUp") me.tableUp[x.idx] = null;
+      state.pile.push(x.card);
+    });
+    selected.clear();
 
-    // hand
-    me.hand.forEach(card=>{
-      const d = makeCardDiv(card);
-      d.classList.add("selectable");
+    if (rank === "10" || rank === "JOKER") {
+      state.discard.push(...state.pile);
+      state.pile = [];
+      state.mustPlayAny = true;
+      logLine("🎉 Clear! Play again", "ok");
+      mpBroadcastState();
+      render();
+      return;
+    }
 
+    const cnt = state.pile.reduce((a, c) => a + (c.rank === rank ? 1 : 0), 0);
+    if (cnt >= 3) {
+      state.discard.push(...state.pile);
+      state.pile = [];
+      state.mustPlayAny = true;
+      logLine("🎊 Triple clear! Play again", "ok");
+      mpBroadcastState();
+      render();
+      return;
+    }
+
+    state.mustPlayAny = false;
+    state.currentPlayer = (state.currentPlayer + 1) % state.players.length;
+    logLine("Played " + rank, "ok");
+    mpBroadcastState();
+    render();
+  }
+
+  function pickup() {
+    if (!isMyTurn()) {
+      logLine("Not your turn", "warn");
+      return;
+    }
+    if (mySeat === null) return;
+    const me = state.players[mySeat];
+    me.hand.push(...state.pile);
+    logLine("Picked up " + state.pile.length + " cards", "warn");
+    state.pile = [];
+    state.mustPlayAny = true;
+    selected.clear();
+    state.currentPlayer = (state.currentPlayer + 1) % state.players.length;
+    mpBroadcastState();
+    render();
+  }
+
+  function render() {
+    el("pileCount").textContent = String(state.pile.length);
+    el("deckCount").textContent = String(state.deck.length);
+    el("discardCount").textContent = String(state.discard.length);
+    el("topValue").textContent = state.mustPlayAny ? "ANY" : (topRank() || "—");
+    el("turnInfo").textContent = "Turn: " + (state.players[state.currentPlayer]?.name || "—");
+    el("turnHint").textContent = isMyTurn() ? "👉 Your turn!" : "Waiting for others...";
+
+    const pr = el("playersRow");
+    pr.innerHTML = "";
+    state.players.forEach((p, idx) => {
+      const d = document.createElement("div");
+      const seat = SEAT_CLASSES[idx] || "";
+      d.className = `playerChip ${seat} ${idx === state.currentPlayer ? "active" : ""}`;
+      d.innerHTML = `<div class="avatar"><span class="emo">${p.emoji}</span><span class="init">${idx + 1}</span></div><div><div style="font-weight:900">${p.name}</div><div class="muted" style="font-size:11px">Hand: ${p.hand.length} | Table: ${p.tableUp.filter(c => c).length}</div></div>`;
+      pr.appendChild(d);
+    });
+
+    const pv = el("pileVisualWrap");
+    pv.innerHTML = "";
+    state.pile.slice(-6).forEach((c, i) => {
+      const d = document.createElement("div");
+      d.className = "c";
+      d.style.position = "absolute";
+      d.style.left = "50%";
+      d.style.top = `${20 + i * 4}px`;
+      d.style.transform = `translateX(-50%) rotate(${i * 4 - 8}deg)`;
+      d.innerHTML = `<div class="corner top">${c.rank}<br>${c.suit}</div><div class="pip">${c.suit}</div><div class="corner bottom">${c.rank}<br>${c.suit}</div>`;
+      pv.appendChild(d);
+    });
+
+    const handEl = el("yourHand");
+    const tableEl = el("yourTable");
+    handEl.innerHTML = "";
+    tableEl.innerHTML = "";
+
+    if (mySeat === null || !state.players[mySeat]) {
+      handEl.innerHTML = '<div class="muted" style="padding:20px;text-align:center;">Join a room to see your cards</div>';
+      return;
+    }
+
+    const me = state.players[mySeat];
+
+    me.hand.forEach(card => {
+      const d = document.createElement("div");
+      d.className = "c selectable";
       const legal = canPlayOnTop(card.rank);
-      if (legal) d.classList.add("legal"); else d.classList.add("illegal");
+      if (!legal) d.classList.add("illegal");
       if (selected.has(card.id)) d.classList.add("selected");
 
       d.onclick = () => {
-        if (!isTurnPlayable()) return;
-        if (!legal){
-          d.classList.remove("shake"); void d.offsetWidth; d.classList.add("shake");
-          addLog("❌ Illegal", "bad");
+        if (!isMyTurn()) {
+          logLine("Wait for your turn", "warn");
           return;
         }
-        // select
-        if (selected.has(card.id)) selected.delete(card.id);
-        else {
-          // only same rank selection
-          if (selected.size){
+        if (!legal) {
+          logLine("Cannot play " + card.rank + " on " + topRank(), "bad");
+          return;
+        }
+        if (selected.has(card.id)) {
+          selected.delete(card.id);
+        } else {
+          if (selected.size) {
             const anyId = selected.values().next().value;
-            const anyCard = me.hand.find(x=>x.id===anyId) || null;
-            if (anyCard && anyCard.rank !== card.rank){
+            const anyCard = me.hand.find(x => x.id === anyId) || me.tableUp.find(x => x && x.id === anyId);
+            if (anyCard && anyCard.rank !== card.rank) {
+              logLine("Must select same rank", "warn");
               selected.clear();
             }
           }
@@ -890,37 +867,40 @@
         render();
       };
 
-      yourHandEl.appendChild(d);
+      d.innerHTML = `<div class="corner top">${card.rank}<br>${card.suit}</div><div class="pip">${card.suit}</div><div class="corner bottom">${card.rank}<br>${card.suit}</div>`;
+      handEl.appendChild(d);
     });
 
-    // tableUp/Down
-    for (let i=0;i<4;i++){
+    for (let i = 0; i < 4; i++) {
       const up = me.tableUp[i];
-      const down = me.tableDown[i];
-
-      if (up){
-        const d = makeCardDiv(up);
-        d.classList.add("selectable");
+      if (up) {
+        const d = document.createElement("div");
+        d.className = "c selectable";
         const legal = canPlayOnTop(up.rank);
-        if (legal) d.classList.add("legal"); else d.classList.add("illegal");
+        if (!legal) d.classList.add("illegal");
         if (selected.has(up.id)) d.classList.add("selected");
 
         d.onclick = () => {
-          if (!isTurnPlayable()) return;
-          if (!legal){
-            d.classList.remove("shake"); void d.offsetWidth; d.classList.add("shake");
-            addLog("❌ Illegal", "bad");
+          if (!isMyTurn()) {
+            logLine("Wait for your turn", "warn");
             return;
           }
-          if (selected.has(up.id)) selected.delete(up.id);
-          else {
-            if (selected.size){
-              // ensure same rank selection
+          if (me.hand.length > 0) {
+            logLine("Must play hand cards first", "warn");
+            return;
+          }
+          if (!legal) {
+            logLine("Cannot play " + up.rank + " on " + topRank(), "bad");
+            return;
+          }
+          if (selected.has(up.id)) {
+            selected.delete(up.id);
+          } else {
+            if (selected.size) {
               const anyId = selected.values().next().value;
-              const anyHand = me.hand.find(x=>x.id===anyId);
-              const anyUp = me.tableUp.find(x=>x && x.id===anyId);
-              const anyCard = anyHand || anyUp;
-              if (anyCard && anyCard.rank !== up.rank){
+              const anyCard = me.tableUp.find(x => x && x.id === anyId);
+              if (anyCard && anyCard.rank !== up.rank) {
+                logLine("Must select same rank", "warn");
                 selected.clear();
               }
             }
@@ -929,229 +909,29 @@
           render();
         };
 
-        yourTableEl.appendChild(d);
-      } else if (down){
-        const d = document.createElement("div");
-        d.className = "c back selectable";
-        d.innerHTML = `<div class="pip" style="color:rgba(255,255,255,.9)">🂠</div>`;
-        d.onclick = () => {
-          if (!isTurnPlayable()) return;
-          // face-down alone
-          selected.clear();
-          selected.add(down.id);
-          // mark where it is
-          selectedSources.clear();
-          selectedSources.set(down.id, {zone:"tableDown", stackIndex:i});
-          render();
-        };
-        yourTableEl.appendChild(d);
+        d.innerHTML = `<div class="corner top">${up.rank}<br>${up.suit}</div><div class="pip">${up.suit}</div><div class="corner bottom">${up.rank}<br>${up.suit}</div>`;
+        tableEl.appendChild(d);
       } else {
         const empty = document.createElement("div");
         empty.className = "c";
         empty.style.opacity = "0.2";
         empty.innerHTML = `<div class="pip">—</div>`;
-        yourTableEl.appendChild(empty);
-      }
-    }
-  }
-
-  function isTurnPlayable(){
-    if (!isMultiplayer) return true;
-    if (myPlayerIndex === null) return false;
-    return myPlayerIndex === state.currentPlayer;
-  }
-
-  function applySelectedPlay(){
-    if (!isTurnPlayable()) return;
-    if (myPlayerIndex === null) return;
-    const me = state.players[myPlayerIndex];
-    if (!me) return;
-
-    // face-down?
-    if (selected.size === 1){
-      const only = selected.values().next().value;
-      const downIdx = me.tableDown.findIndex(x=>x && x.id===only);
-      if (downIdx !== -1){
-        // play face-down
-        const card = me.tableDown[downIdx];
-        me.tableDown[downIdx] = null;
-
-        const top = topRank();
-        if (!canPlayOnTop(card.rank)){
-          // illegal: pick up pile + played card
-          state.pile.push(card);
-          me.hand.push(...state.pile);
-          state.pile = [];
-          state.mustPlayAny = true;
-          selected.clear();
-          state.currentPlayer = (state.currentPlayer + 1) % state.players.length;
-          mpBroadcast(serializeGameState());
-          render();
-          return;
-        }
-
-        state.pile.push(card);
-
-        if (card.rank === "10" || card.rank === "JOKER"){
-          state.discard.push(...state.pile);
-          state.pile = [];
-          state.mustPlayAny = true;
-          selected.clear();
-          mpBroadcast(serializeGameState());
-          render();
-          return; // extra turn
-        }
-
-        // triple
-        const r = card.rank;
-        const cnt = state.pile.reduce((a,x)=>a+(x.rank===r?1:0),0);
-        if (cnt >= 3){
-          state.discard.push(...state.pile);
-          state.pile = [];
-          state.mustPlayAny = true;
-          selected.clear();
-          mpBroadcast(serializeGameState());
-          render();
-          return; // extra turn
-        }
-
-        state.mustPlayAny = false;
-        selected.clear();
-        state.currentPlayer = (state.currentPlayer + 1) % state.players.length;
-        mpBroadcast(serializeGameState());
-        render();
-        return;
+        tableEl.appendChild(empty);
       }
     }
 
-    // normal play: all selected must be same rank
-    const ids = Array.from(selected);
-    const allCards = [];
-    for (const id of ids){
-      const h = me.hand.find(x=>x.id===id);
-      if (h) allCards.push({card:h, zone:"hand"});
-      const upIdx = me.tableUp.findIndex(x=>x && x.id===id);
-      if (upIdx !== -1) allCards.push({card:me.tableUp[upIdx], zone:"tableUp", stackIndex:upIdx});
-    }
-    if (!allCards.length) return;
-
-    const rank = allCards[0].card.rank;
-    if (!allCards.every(x=>x.card.rank===rank)) {
-      addLog("❌ Must play same rank", "bad");
-      return;
-    }
-    if (!canPlayOnTop(rank)){
-      addLog("❌ Illegal", "bad");
-      return;
-    }
-
-    // remove from zones
-    for (const x of allCards){
-      if (x.zone==="hand"){
-        me.hand = me.hand.filter(c=>c.id!==x.card.id);
-      } else if (x.zone==="tableUp"){
-        me.tableUp[x.stackIndex] = null;
-      }
-      state.pile.push(x.card);
-    }
-
-    // clears
-    if (rank==="10" || rank==="JOKER"){
-      state.discard.push(...state.pile);
-      state.pile = [];
-      state.mustPlayAny = true;
-      selected.clear();
-      mpBroadcast(serializeGameState());
-      render();
-      return; // extra turn
-    }
-
-    // triple
-    const cnt = state.pile.reduce((a,x)=>a+(x.rank===rank?1:0),0);
-    if (cnt >= 3){
-      state.discard.push(...state.pile);
-      state.pile = [];
-      state.mustPlayAny = true;
-      selected.clear();
-      mpBroadcast(serializeGameState());
-      render();
-      return; // extra turn
-    }
-
-    state.mustPlayAny = false;
-    selected.clear();
-    state.currentPlayer = (state.currentPlayer + 1) % state.players.length;
-    mpBroadcast(serializeGameState());
-    render();
+    el("newGame").disabled = (mySeat !== 0 || !mpConnected);
+    el("playBtn").disabled = (!isMyTurn() || !mpConnected);
+    el("pickupBtn").disabled = (!isMyTurn() || !mpConnected);
   }
 
-  function pickup(){
-    if (!isTurnPlayable()) return;
-    if (myPlayerIndex === null) return;
-    const me = state.players[myPlayerIndex];
-    if (!me) return;
+  el("newGame").onclick = newGame;
+  el("playBtn").onclick = playSelected;
+  el("pickupBtn").onclick = pickup;
 
-    me.hand.push(...state.pile);
-    state.pile = [];
-    state.mustPlayAny = true;
-    selected.clear();
-    state.currentPlayer = (state.currentPlayer + 1) % state.players.length;
-    mpBroadcast(serializeGameState());
-    render();
-  }
-
-  function render(){
-    // update counters
-    document.getElementById("drawCount").textContent = String(state.deck.length);
-    document.getElementById("discardCount").textContent = String(state.discard.length);
-    document.getElementById("pileCount").textContent = String(state.pile.length);
-    document.getElementById("topValue").textContent = state.mustPlayAny ? "ANY" : (topRank() || "—");
-    document.getElementById("turnInfo").textContent = state.players[state.currentPlayer]?.name || "—";
-
-    const hint = document.getElementById("turnHint");
-    if (hint){
-      hint.textContent = isTurnPlayable() ? "Your turn" : "Waiting…";
-    }
-
-    renderPlayers();
-    renderPile();
-    renderMyHand();
-
-    document.getElementById("playBtn").disabled = !isTurnPlayable();
-    document.getElementById("pickupBtn").disabled = !isTurnPlayable();
-    document.getElementById("hintBtn").disabled = !isTurnPlayable();
-    document.getElementById("newGame").disabled = isMultiplayer && myPlayerIndex !== 0; // only player 0 starts
-  }
-
-  // Buttons
-  document.getElementById("newGame").onclick = () => {
-    if (isMultiplayer && myPlayerIndex !== 0){
-      alert("Only Player 1 (seat 1) can start the game.");
-      return;
-    }
-    state.numPlayers = state.players.length || parseInt(document.getElementById("numPlayers").value,10);
-    if (!state.players.length) state.players = createPlayers(state.numPlayers);
-    dealHand();
-  };
-
-  document.getElementById("newHand").onclick = () => {
-    if (isMultiplayer && myPlayerIndex !== 0){
-      alert("Only Player 1 can start a new hand.");
-      return;
-    }
-    dealHand();
-  };
-
-  document.getElementById("playBtn").onclick = applySelectedPlay;
-  document.getElementById("pickupBtn").onclick = pickup;
-
-  // init local state
-  state.numPlayers = parseInt(document.getElementById("numPlayers").value,10);
-  state.players = createPlayers(state.numPlayers);
-  state.players.forEach((p,i)=> p.initials = initialsFromName(p.name) || `P${i+1}`);
-  addLog("Ready. Host a room or join one. Player 1 starts New Game.", "ok");
+  logLine("Welcome to Splash! Host or join a room to start.", "ok");
+  mpSetStatus("Not connected");
   render();
-
 })();
 </script>
 </body>
