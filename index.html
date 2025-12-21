@@ -8,18 +8,20 @@
   <style>
     :root{
       --bg:#0b1220;
-      --card-w: clamp(46px, 8.2vw, 74px);
-      --card-h: calc(var(--card-w) * 1.45);
+      --table1:#12204a;
+      --table2:#0c1430;
       --accent:#63b3ed;
       --danger:#ff7b72;
       --ok:#7ee787;
       --muted:rgba(230,237,247,.72);
-      --shadow:0 12px 30px rgba(0,0,0,.45);
-      --panel:rgba(255,255,255,.05);
-      --border:rgba(255,255,255,.12);
-      --table1:#12204a;
-      --table2:#0c1430;
-      --gap:8px;
+      --shadow:0 10px 26px rgba(0,0,0,.45);
+
+      --card-w: clamp(46px, 8.2vw, 74px);
+      --card-h: calc(var(--card-w) * 1.45);
+
+      --pile-h: 125px;
+      --panel-h: 200px;
+      --gap: 8px;
     }
 
     *{ box-sizing:border-box; }
@@ -27,7 +29,7 @@
     body{
       color:#e6edf7;
       font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      background: radial-gradient(circle at top, #142046, var(--bg) 62%);
+      background: radial-gradient(circle at top, #142046, var(--bg) 60%);
       -webkit-tap-highlight-color: transparent;
     }
 
@@ -47,69 +49,62 @@
 
     .muted{ color:var(--muted); font-size:12px; }
     .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding:5px 10px;
+      padding:4px 10px;
       border-radius:999px;
       border:1px solid rgba(255,255,255,.14);
       background:rgba(255,255,255,.04);
       font-size:12px;
+      display:inline-flex;
+      gap:6px;
+      align-items:center;
       white-space:nowrap;
     }
 
-    /* App shell */
     #app{ height:100%; display:flex; flex-direction:column; }
-    .view{ height:100%; display:flex; flex-direction:column; }
 
-    /* LOBBY */
+    /* ---------------- LOBBY ---------------- */
     #lobbyView{
-      padding:18px 14px calc(18px + env(safe-area-inset-bottom));
+      flex:1;
       display:flex;
       align-items:center;
       justify-content:center;
+      padding:16px;
     }
     .lobbyCard{
-      width:min(520px, 100%);
+      width:min(560px,100%);
       background:rgba(255,255,255,.05);
       border:1px solid rgba(255,255,255,.12);
       border-radius:22px;
-      box-shadow:var(--shadow);
+      box-shadow: var(--shadow);
       padding:18px;
     }
     .lobbyTop{
       display:flex;
-      align-items:center;
       justify-content:space-between;
       gap:10px;
-      margin-bottom:12px;
+      align-items:flex-start;
     }
-    .brand{
-      display:flex;
-      flex-direction:column;
-      gap:2px;
-    }
-    .brand h1{
+    .lobbyTop h1{
       margin:0;
-      font-size:18px;
+      font-size:20px;
       font-weight:900;
       letter-spacing:.2px;
     }
-    .brand .muted{ font-size:12px; }
     .lobbyGrid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
-      margin-top:10px;
-    }
-    .lobbyGrid input{ width:100%; }
-    .lobbyActions{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
       margin-top:12px;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
     }
-    .lobbyFoot{
+    .lobbyGrid input{ width:100%; text-transform:none; }
+    #roomInput{ text-transform:uppercase; }
+    .lobbyActions{
+      margin-top:12px;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    .lobbyHelp{
       margin-top:12px;
       padding-top:12px;
       border-top:1px solid rgba(255,255,255,.10);
@@ -117,22 +112,19 @@
       flex-direction:column;
       gap:8px;
     }
-    .roomHint{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      align-items:center;
-      justify-content:space-between;
-    }
-    @media (max-width: 520px){
-      .lobbyGrid{ grid-template-columns: 1fr; }
-      .lobbyActions{ grid-template-columns: 1fr; }
+    @media(max-width:520px){
+      .lobbyGrid{ grid-template-columns:1fr; }
+      .lobbyActions{ grid-template-columns:1fr; }
     }
 
-    /* GAME */
-    #gameView{ display:none; }
+    /* ---------------- GAME ---------------- */
+    #gameView{
+      height:100%;
+      display:none;
+      flex-direction:column;
+    }
+
     header{
-      flex:0 0 auto;
       padding:10px 12px;
       border-bottom:1px solid rgba(255,255,255,.08);
       display:flex;
@@ -140,58 +132,36 @@
       align-items:center;
       flex-wrap:wrap;
     }
-    header .left{
-      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
-    }
-    header .right{
-      margin-left:auto;
-      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
-    }
-    header .title{
-      font-weight:900;
-      letter-spacing:.2px;
-      font-size:14px;
-      white-space:nowrap;
-    }
+    header .left{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    header .right{ margin-left:auto; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    header .title{ font-weight:900; letter-spacing:.2px; white-space:nowrap; }
 
     main{
-      flex:1 1 auto;
+      flex:1;
       min-height:0;
-      padding:10px 10px calc(10px + env(safe-area-inset-bottom));
+      padding:10px;
       overflow:hidden;
-    }
-
-    .grid{
-      height:100%;
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:10px;
-    }
-    @media (min-width: 1200px){
-      .grid{ grid-template-columns: 1fr 380px; }
+      padding-bottom: calc(var(--panel-h) + 24px + env(safe-area-inset-bottom));
     }
 
     .table{
       height:100%;
       min-height:0;
+      background: linear-gradient(180deg, var(--table1), var(--table2));
+      border-radius:22px;
+      box-shadow: var(--shadow);
+      padding:12px;
+      overflow:hidden;
       display:flex;
       flex-direction:column;
       gap:10px;
-      background: linear-gradient(180deg, var(--table1), var(--table2));
-      border-radius:22px;
-      padding:12px;
-      box-shadow:var(--shadow);
-      overflow:hidden;
     }
 
     .playersRow{
-      flex:0 0 auto;
       display:grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap:8px;
-    }
-    @media (min-width: 900px){
-      .playersRow{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      flex:0 0 auto;
     }
 
     .playerChip{
@@ -209,11 +179,10 @@
       box-shadow:0 0 16px rgba(99,179,237,.35);
     }
     .avatar{
-      width:38px; height:38px;
-      border-radius:50%;
-      display:flex; align-items:center; justify-content:center;
+      width:38px;height:38px;border-radius:50%;
       background:rgba(255,255,255,.9);
       color:#0b1220;
+      display:flex;align-items:center;justify-content:center;
       font-weight:900;
       flex:0 0 auto;
       position:relative;
@@ -230,23 +199,23 @@
     }
 
     .pileBox{
-      flex:0 0 auto;
       background:rgba(255,255,255,.03);
       border:1px solid rgba(255,255,255,.10);
       border-radius:18px;
       padding:10px;
+      flex:0 0 auto;
       overflow:hidden;
     }
     .pileRow{
       display:flex;
-      flex-wrap:wrap;
-      gap:8px;
       justify-content:space-between;
       align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
     }
     .pileVisual{
       width:100%;
-      height:130px;
+      height:var(--pile-h);
       border-radius:16px;
       border:2px dashed rgba(255,255,255,.20);
       background:rgba(0,0,0,.18);
@@ -261,15 +230,16 @@
     }
 
     .zoneTitle{
-      flex:0 0 auto;
       display:flex;
-      align-items:center;
       justify-content:space-between;
+      align-items:center;
       gap:10px;
-      margin-top:2px;
+      color:var(--muted);
+      font-size:12px;
+      flex:0 0 auto;
     }
 
-    /* Cards */
+    /* -------- Cards -------- */
     .c{
       width:var(--card-w);
       height:var(--card-h);
@@ -284,8 +254,6 @@
     }
     .c.illegal{ opacity:.55; }
     .c.selected{ outline:3px solid var(--accent); transform:translateY(-3px); }
-    .c.dragging{ outline:3px solid rgba(99,179,237,.55); transform:scale(1.03); }
-
     .corner{
       position:absolute;
       font-weight:900;
@@ -298,26 +266,20 @@
       position:absolute;
       left:50%; top:50%;
       transform:translate(-50%,-50%);
-      font-size:30px;
-    }
-    @media (max-width: 600px){
-      .corner{ font-size:11px; }
-      .pip{ font-size:24px; }
+      font-size:28px;
     }
 
-    /* ✅ Hand grouped by rank into stacks – 5 stacks per row */
+    /* -------- Grouped hand stacks: 5 per row -------- */
     .handStacks{
       flex:1 1 auto;
       min-height:0;
       display:grid;
       grid-template-columns: repeat(5, minmax(0, 1fr));
       gap:8px;
-      overflow:hidden;
       justify-items:center;
       align-content:start;
-      padding-bottom:2px;
+      overflow:hidden;
     }
-
     .cardStack{
       width:var(--card-w);
       height:var(--card-h);
@@ -325,15 +287,15 @@
     }
     .cardStack .c{ position:absolute; top:0; left:0; }
     .stackGhost{
-      opacity:.20;
+      opacity:.18;
       filter:saturate(.9);
     }
     .stackGhost.g1{ transform: translate(7px, -7px); }
     .stackGhost.g2{ transform: translate(14px, -14px); }
     .stackCount{
       position:absolute;
-      top:-8px; right:-8px;
-      background:rgba(0,0,0,.8);
+      top:-6px; right:-6px;
+      background:rgba(0,0,0,.82);
       border:1px solid rgba(255,255,255,.18);
       color:#fff;
       font-size:11px;
@@ -342,7 +304,7 @@
       font-weight:900;
     }
 
-    /* Table cards: 5 per row too (only 4 used) */
+    /* -------- Table cards: 5 columns, first 4 used -------- */
     .tableCards{
       flex:0 0 auto;
       display:grid;
@@ -352,25 +314,25 @@
       overflow:hidden;
     }
 
-    /* Right panel / controls */
+    /* -------- Bottom Panel -------- */
     .panel{
-      height:100%;
-      min-height:0;
+      position:fixed;
+      left:10px;
+      right:10px;
+      bottom: calc(10px + env(safe-area-inset-bottom));
+      height:var(--panel-h);
+      background:rgba(15,20,40,.96);
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:22px;
+      padding:12px;
       display:flex;
       flex-direction:column;
       gap:10px;
-      background:rgba(255,255,255,.04);
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:22px;
-      padding:12px;
-      overflow:hidden;
+      z-index:1000;
+      backdrop-filter: blur(10px);
     }
-
-    .actionRow{
-      display:flex;
-      gap:10px;
-    }
-    .actionRow button{ flex:1; }
+    .panel .row{ display:flex; gap:10px; }
+    .panel button{ flex:1; }
 
     .logWrap{
       flex:1 1 auto;
@@ -405,53 +367,25 @@
     }
     .logLine:last-child{ border-bottom:none; }
 
-    /* Mobile: keep panel as bottom bar, but still no scrolling */
-    @media (max-width: 900px){
-      .grid{ grid-template-columns: 1fr; }
-      .panel{
-        position:fixed;
-        left:10px;
-        right:10px;
-        bottom: calc(10px + env(safe-area-inset-bottom));
-        height: 170px;
-        z-index:1000;
-        backdrop-filter: blur(10px);
-      }
-      main{ padding-bottom: 190px; }
-      .logWrap{ display:none; } /* log still available via button -> overlay */
-    }
-
-    /* Mobile log overlay */
-    #logOverlay{
+    /* -------- Snap animation clone -------- */
+    .snapClone{
       position:fixed;
-      inset:0;
-      background:rgba(0,0,0,.55);
-      display:none;
       z-index:5000;
-      padding:14px;
+      pointer-events:none;
+      transition: transform .22s ease, opacity .22s ease;
+      transform-origin:center center;
     }
-    #logOverlay .logModal{
-      height:100%;
-      background:rgba(10,14,30,.98);
-      border:1px solid rgba(255,255,255,.14);
-      border-radius:20px;
-      overflow:hidden;
-      display:flex;
-      flex-direction:column;
-    }
-    #logOverlay .logHead{ padding:10px 12px; }
-    #logOverlay .logBody{ padding:10px 12px; }
   </style>
 </head>
 
 <body>
 <div id="app">
 
-  <!-- LOBBY VIEW -->
-  <section id="lobbyView" class="view">
+  <!-- LOBBY -->
+  <section id="lobbyView">
     <div class="lobbyCard">
       <div class="lobbyTop">
-        <div class="brand">
+        <div>
           <h1>🃏 Splash</h1>
           <div class="muted">Host a room or join your family’s room.</div>
         </div>
@@ -461,38 +395,34 @@
       <div class="lobbyGrid">
         <div>
           <div class="muted" style="margin:0 0 6px;">Your name</div>
-          <input id="mpNameLobby" placeholder="Aymen" />
+          <input id="nameInput" placeholder="Name" />
         </div>
         <div>
           <div class="muted" style="margin:0 0 6px;">Room code</div>
-          <input id="mpRoomLobby" placeholder="ROOM" style="text-transform:uppercase;" />
+          <input id="roomInput" placeholder="ROOM" />
         </div>
       </div>
 
       <div class="lobbyActions">
-        <button id="hostBtnLobby" class="primary">Host</button>
-        <button id="joinBtnLobby" class="primary">Join</button>
+        <button id="hostBtn" class="primary">Host</button>
+        <button id="joinBtn" class="primary">Join</button>
       </div>
 
-      <div class="lobbyFoot">
-        <div class="roomHint">
-          <div class="muted">Tip: share the room code with everyone.</div>
-          <div class="pill">No observers • Online players only</div>
-        </div>
-        <div class="muted">In-game: tap a stack to select that rank. Drag a stack to the pile to play it.</div>
+      <div class="lobbyHelp">
+        <div class="muted">Tip: Share the room code with everyone.</div>
+        <div class="muted">In-game: tap a stack to select that rank, drag it to the pile to play (snap animation).</div>
       </div>
     </div>
   </section>
 
-  <!-- GAME VIEW -->
-  <section id="gameView" class="view">
+  <!-- GAME -->
+  <section id="gameView">
     <header>
       <div class="left">
         <div class="title">🃏 Splash</div>
         <span class="pill" id="roomPill">ROOM: —</span>
         <span class="pill" id="turnInfo">Turn: —</span>
       </div>
-
       <div class="right">
         <button id="newGame" class="primary">New Game</button>
         <button id="leaveBtn" class="danger">Leave</button>
@@ -500,76 +430,59 @@
     </header>
 
     <main>
-      <div class="grid">
-        <section class="table">
-          <div class="playersRow" id="playersRow"></div>
+      <div class="table">
+        <div class="playersRow" id="playersRow"></div>
 
-          <div class="pileBox">
-            <div class="pileRow">
-              <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                <span class="pill">Deck: <span id="deckCount">—</span></span>
-                <span class="pill">Discard: <span id="discardCount">—</span></span>
-                <span class="pill">Pile: <span id="pileCount">—</span></span>
-              </div>
-              <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
-                <span class="muted">Top:</span>
-                <span class="pill" id="topValue">—</span>
-              </div>
+        <div class="pileBox">
+          <div class="pileRow">
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <span class="pill">Deck: <span id="deckCount">—</span></span>
+              <span class="pill">Discard: <span id="discardCount">—</span></span>
+              <span class="pill">Pile: <span id="pileCount">—</span></span>
             </div>
-            <div class="pileVisual" id="pileVisual"></div>
-            <div class="muted" style="margin-top:8px;">
-              Tap a stack to select. Drag a stack onto the pile to play. (Or use buttons.)
+            <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+              <span class="muted">Top:</span>
+              <span class="pill" id="topValue">—</span>
             </div>
           </div>
+          <div class="pileVisual" id="pileVisual"></div>
+          <div class="muted" style="margin-top:8px;">Tap a stack to select. Drag it onto the pile to play.</div>
+        </div>
 
-          <div class="zoneTitle">
-            <span>Your hand (grouped)</span>
-            <span class="muted" id="turnHint"></span>
-          </div>
-          <div id="yourHand" class="handStacks"></div>
+        <div class="zoneTitle">
+          <span>Your hand (grouped)</span>
+          <span class="muted" id="turnHint">—</span>
+        </div>
+        <div id="handStacks" class="handStacks"></div>
 
-          <div class="zoneTitle">
-            <span>Your table cards</span>
-            <span class="muted">Play hand first</span>
-          </div>
-          <div id="yourTable" class="tableCards"></div>
-        </section>
-
-        <section class="panel">
-          <div class="actionRow">
-            <button id="playBtn" class="primary">Play Selected</button>
-            <button id="pickupBtn" class="danger">Pick Up Pile</button>
-          </div>
-
-          <div class="actionRow">
-            <button id="openLogBtn" class="primary">Log</button>
-            <button id="clearSelBtn">Clear Selection</button>
-          </div>
-
-          <div class="pill" id="selPill">Selected: —</div>
-
-          <div class="logWrap">
-            <div class="logHead">
-              <div style="font-weight:900;">Game Log</div>
-              <span class="muted">Latest on top</span>
-            </div>
-            <div id="log" class="logBody"></div>
-          </div>
-        </section>
+        <div class="zoneTitle">
+          <span>Your table cards</span>
+          <span class="muted">Play hand first</span>
+        </div>
+        <div id="yourTable" class="tableCards"></div>
       </div>
     </main>
-  </section>
 
-  <!-- Mobile log overlay -->
-  <div id="logOverlay">
-    <div class="logModal">
-      <div class="logHead">
-        <div style="font-weight:900;">Game Log</div>
-        <button id="closeLogBtn" class="danger">Close</button>
+    <div class="panel">
+      <div class="row">
+        <button id="playBtn" class="primary">Play Selected</button>
+        <button id="pickupBtn" class="danger">Pick Up Pile</button>
       </div>
-      <div id="logMobile" class="logBody"></div>
+      <div class="row">
+        <button id="clearSelBtn">Clear Selection</button>
+        <span class="pill" id="selPill" style="flex:1; justify-content:center;">Selected: —</span>
+      </div>
+
+      <div class="logWrap">
+        <div class="logHead">
+          <div style="font-weight:900;">Game Log</div>
+          <span class="muted">Latest on top</span>
+        </div>
+        <div id="log" class="logBody"></div>
+      </div>
     </div>
-  </div>
+
+  </section>
 
 </div>
 
@@ -578,55 +491,50 @@
   const WS_BASE = "wss://splash-multiplayer.azimaymen.workers.dev";
   const mpClientId = crypto.randomUUID();
 
-  // Views
+  // views
   const lobbyView = document.getElementById("lobbyView");
-  const gameView  = document.getElementById("gameView");
+  const gameView = document.getElementById("gameView");
 
-  // Lobby inputs
-  const mpNameLobby = document.getElementById("mpNameLobby");
-  const mpRoomLobby = document.getElementById("mpRoomLobby");
+  // lobby controls
+  const nameInput = document.getElementById("nameInput");
+  const roomInput = document.getElementById("roomInput");
   const lobbyStatus = document.getElementById("lobbyStatus");
 
-  // Game header pills
+  // game controls
   const roomPill = document.getElementById("roomPill");
+  const turnInfo = document.getElementById("turnInfo");
+  const turnHint = document.getElementById("turnHint");
+  const playersRow = document.getElementById("playersRow");
+  const pileVisual = document.getElementById("pileVisual");
+  const handStacks = document.getElementById("handStacks");
+  const yourTable = document.getElementById("yourTable");
+  const logEl = document.getElementById("log");
 
-  // Mobile log overlay
-  const logOverlay = document.getElementById("logOverlay");
-  const logMobile  = document.getElementById("logMobile");
-  document.getElementById("openLogBtn").onclick = () => {
-    syncMobileLog();
-    logOverlay.style.display = "block";
-  };
-  document.getElementById("closeLogBtn").onclick = () => {
-    logOverlay.style.display = "none";
-  };
-  logOverlay.addEventListener("click", (e) => {
-    if (e.target === logOverlay) logOverlay.style.display = "none";
-  });
+  const deckCount = document.getElementById("deckCount");
+  const discardCount = document.getElementById("discardCount");
+  const pileCount = document.getElementById("pileCount");
+  const topValue = document.getElementById("topValue");
 
-  function showLobby(){
-    gameView.style.display = "none";
-    lobbyView.style.display = "flex";
-  }
-  function showGame(){
-    lobbyView.style.display = "none";
-    gameView.style.display = "flex";
-  }
+  const playBtn = document.getElementById("playBtn");
+  const pickupBtn = document.getElementById("pickupBtn");
+  const newGameBtn = document.getElementById("newGame");
+  const leaveBtn = document.getElementById("leaveBtn");
+  const clearSelBtn = document.getElementById("clearSelBtn");
+  const selPill = document.getElementById("selPill");
 
-  // Multiplayer
+  // multiplayer state
   let mpWs = null;
   let mpRoom = null;
   let mpConnected = false;
   let mySeat = null;
-
   let reconnectAttempts = 0;
   let reconnectTimer = null;
   const MAX_RECONNECT_ATTEMPTS = 5;
 
-  // Drag state for stacks
-  const drag = { active:false, rank:null, ids:null, el:null, pid:null, moved:false, sx:0, sy:0 };
+  // drag state (stack dragging)
+  const drag = { active:false, ids:null, el:null, pid:null, moved:false, sx:0, sy:0 };
 
-  // Game constants
+  // game constants
   const SUITS = ["♠", "♥", "♦", "♣"];
   const RANKS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
   const RANK_ORDER = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
@@ -644,83 +552,62 @@
     mustPlayAny: false
   };
 
-  // selection now can contain many ids (stack selection)
   let selected = new Set(); // card ids
 
-  // Helpers
-  const el = (id) => document.getElementById(id);
+  function showLobby(){
+    gameView.style.display = "none";
+    lobbyView.style.display = "flex";
+  }
+  function showGame(){
+    lobbyView.style.display = "none";
+    gameView.style.display = "flex";
+  }
 
   function setLobbyStatus(text, ok=false){
     lobbyStatus.textContent = text;
     lobbyStatus.style.borderColor = ok ? "rgba(126,231,135,.5)" : "rgba(255,255,255,.14)";
   }
 
-  function saveConnectionInfo(room, name) {
-    localStorage.setItem('splash_room', room);
-    localStorage.setItem('splash_name', name);
+  function saveConnectionInfo(room, name){
+    localStorage.setItem("splash_room", room);
+    localStorage.setItem("splash_name", name);
   }
-  function clearConnectionInfo() {
-    localStorage.removeItem('splash_room');
-    localStorage.removeItem('splash_name');
-  }
-  function loadConnectionInfo() {
+  function loadConnectionInfo(){
     return {
-      room: localStorage.getItem('splash_room'),
-      name: localStorage.getItem('splash_name')
+      room: localStorage.getItem("splash_room"),
+      name: localStorage.getItem("splash_name")
     };
   }
+  function clearConnectionInfo(){
+    localStorage.removeItem("splash_room");
+    localStorage.removeItem("splash_name");
+  }
 
-  function logLine(text, tone="") {
+  function logLine(text, tone=""){
     const div = document.createElement("div");
     div.className = "logLine";
     const ts = new Date().toLocaleTimeString();
     div.innerHTML = `<span class="muted">[${ts}]</span> ${tone ? `<span class="${tone}">●</span> ` : ""}${text}`;
-    const log = el("log");
-    log.prepend(div);
-    syncMobileLog();
+    logEl.prepend(div);
   }
 
-  function syncMobileLog(){
-    // mirror desktop log HTML into mobile
-    logMobile.innerHTML = el("log").innerHTML;
-  }
-
-  function mpSendJoin() {
-    if (!mpWs || mpWs.readyState !== WebSocket.OPEN) return;
-    mpWs.send(JSON.stringify({
-      type: "join",
-      id: mpClientId,
-      name: (mpNameLobby.value || "Player").trim()
-    }));
-  }
-
-  function handleReconnect(room) {
-    if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
-      setLobbyStatus("Disconnected", false);
-      logLine("Failed to reconnect after multiple attempts", "bad");
-      return;
-    }
-    reconnectAttempts++;
-    const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000);
-    setLobbyStatus(`Reconnecting… (${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`, false);
-    reconnectTimer = setTimeout(() => {
-      mpConnect(room);
-    }, delay);
-  }
-
-  function mpConnect(room) {
+  // ---------- WebSocket ----------
+  function mpConnect(room){
     mpRoom = room.toUpperCase();
     roomPill.textContent = `ROOM: ${mpRoom}`;
     setLobbyStatus(`Connecting to ${mpRoom}…`, false);
 
     mpWs = new WebSocket(`${WS_BASE}?room=${mpRoom}`);
-    saveConnectionInfo(mpRoom, (mpNameLobby.value || "").trim());
+
+    const nm = (nameInput.value || "Player").trim();
+    saveConnectionInfo(mpRoom, nm);
 
     mpWs.onopen = () => {
       mpConnected = true;
       reconnectAttempts = 0;
       setLobbyStatus(`Connected: ${mpRoom}`, true);
-      mpSendJoin();
+
+      mpWs.send(JSON.stringify({ type:"join", id: mpClientId, name: nm }));
       showGame();
       logLine(`Connected to room ${mpRoom}`, "ok");
     };
@@ -730,24 +617,21 @@
       try { msg = JSON.parse(ev.data); } catch { return; }
 
       if (msg.type === "players") {
-        // server provides seat in worker players; our frontend still uses array index for seat
         mySeat = msg.players.findIndex(p => p.id === mpClientId);
         ensurePlayersFromServer(msg.players);
         render();
       }
 
       if (msg.type === "state") {
-        const payload = msg.payload;
-        applyRemoteState(payload.state);
-      }
-
-      if (msg.type === "reset") {
-        logLine("Game was reset by host", "warn");
-        resetLocalState();
-        render();
+        applyRemoteState(msg.payload?.state);
       }
 
       if (msg.type === "pong") {}
+      if (msg.type === "reset") {
+        logLine("Game reset", "warn");
+        resetLocalState();
+        render();
+      }
     };
 
     mpWs.onclose = () => {
@@ -763,13 +647,24 @@
 
     setInterval(() => {
       if (mpWs && mpWs.readyState === WebSocket.OPEN) {
-        mpWs.send(JSON.stringify({ type: "ping" }));
+        mpWs.send(JSON.stringify({ type:"ping" }));
       }
     }, 30000);
   }
 
-  // Server-authoritative: send ACTION instead of broadcast
-  function mpSendAction(actionType, nextState) {
+  function handleReconnect(room){
+    if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+      logLine("Failed to reconnect", "bad");
+      return;
+    }
+    reconnectAttempts++;
+    const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000);
+    setLobbyStatus(`Reconnecting… (${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`, false);
+    reconnectTimer = setTimeout(() => mpConnect(room), delay);
+  }
+
+  // server-authoritative action sender
+  function mpSendAction(actionType, nextState){
     if (!mpWs || mpWs.readyState !== WebSocket.OPEN) {
       logLine("Cannot sync - not connected", "warn");
       return;
@@ -780,58 +675,57 @@
     }));
   }
 
-  function mpLeave() {
+  function mpLeave(){
     if (reconnectTimer) clearTimeout(reconnectTimer);
     if (mpWs) mpWs.close();
+    mpWs = null;
     mpConnected = false;
     mpRoom = null;
     mySeat = null;
     clearConnectionInfo();
-    resetLocalState();
     selected.clear();
+    resetLocalState();
     render();
     showLobby();
     setLobbyStatus("Not connected", false);
     logLine("Left room", "warn");
   }
 
-  // Lobby buttons
-  document.getElementById("hostBtnLobby").onclick = () => {
-    const name = (mpNameLobby.value || "").trim();
-    if (!name) return alert("Enter your name first");
+  // lobby buttons
+  document.getElementById("hostBtn").onclick = () => {
+    const nm = (nameInput.value || "").trim();
+    if (!nm) return alert("Enter your name");
     const code = Math.random().toString(36).slice(2, 8).toUpperCase();
-    mpRoomLobby.value = code;
+    roomInput.value = code;
     mpConnect(code);
     alert("Room code: " + code + "\nShare this with others to join!");
   };
-
-  document.getElementById("joinBtnLobby").onclick = () => {
-    const name = (mpNameLobby.value || "").trim();
-    const code = (mpRoomLobby.value || "").trim();
-    if (!name) return alert("Enter your name first");
+  document.getElementById("joinBtn").onclick = () => {
+    const nm = (nameInput.value || "").trim();
+    const code = (roomInput.value || "").trim();
+    if (!nm) return alert("Enter your name");
     if (!code) return alert("Enter room code");
     mpConnect(code);
   };
 
-  // Game buttons
-  document.getElementById("leaveBtn").onclick = mpLeave;
-  document.getElementById("clearSelBtn").onclick = () => {
-    selected.clear();
-    renderSelectionPill();
-    render();
-  };
+  // game buttons
+  leaveBtn.onclick = mpLeave;
+  clearSelBtn.onclick = () => { selected.clear(); renderSelectionPill(); render(); };
+  playBtn.onclick = () => { animateSelectedToPile(); playSelected(); };
+  pickupBtn.onclick = pickup;
+  newGameBtn.onclick = newGame;
 
-  // Restore last room/name
+  // restore saved info
   window.addEventListener("load", () => {
     const info = loadConnectionInfo();
-    if (info.name) mpNameLobby.value = info.name;
-    if (info.room) mpRoomLobby.value = info.room;
+    if (info.name) nameInput.value = info.name;
+    if (info.room) roomInput.value = info.room;
     showLobby();
     setLobbyStatus("Not connected", false);
     logLine("Welcome! Host or join a room.", "ok");
   });
 
-  // ===== Game Logic =====
+  // ---------- Game model helpers ----------
   function ensurePlayersFromServer(players) {
     while (state.players.length < players.length) {
       const idx = state.players.length;
@@ -857,8 +751,8 @@
     state.currentPlayer = remote.currentPlayer;
     state.mustPlayAny = remote.mustPlayAny;
     selected.clear();
-    render();
     renderSelectionPill();
+    render();
   }
 
   function resetLocalState() {
@@ -867,7 +761,6 @@
     state.pile = [];
     state.currentPlayer = 0;
     state.mustPlayAny = false;
-    // keep players array sizing
     state.players.forEach(p => {
       p.hand = [];
       p.tableUp = Array.from({ length: 4 }, () => null);
@@ -893,7 +786,9 @@
     const d = [];
     for (let k = 0; k < 2; k++) {
       for (const s of SUITS) {
-        for (const r of RANKS) d.push({ id: crypto.randomUUID(), rank: r, suit: s });
+        for (const r of RANKS) {
+          d.push({ id: crypto.randomUUID(), rank: r, suit: s });
+        }
       }
     }
     for (let j = 0; j < 4; j++) d.push({ id: crypto.randomUUID(), rank: "JOKER", suit: "★" });
@@ -942,8 +837,6 @@
     mpSendAction("START", state);
     render();
   }
-
-  document.getElementById("newGame").onclick = newGame;
 
   function playSelected() {
     if (!isMyTurn()) { logLine("Not your turn", "warn"); return; }
@@ -1009,8 +902,6 @@
     render();
   }
 
-  document.getElementById("playBtn").onclick = playSelected;
-
   function pickup() {
     if (!isMyTurn()) { logLine("Not your turn", "warn"); return; }
     if (mySeat === null) return;
@@ -1026,16 +917,13 @@
     render();
   }
 
-  document.getElementById("pickupBtn").onclick = pickup;
-
-  // ===== Grouping + selection =====
+  // ---------- Grouping ----------
   function groupByRank(cards){
     const m = new Map();
-    for(const c of cards){
-      if(!m.has(c.rank)) m.set(c.rank, []);
+    for (const c of cards){
+      if (!m.has(c.rank)) m.set(c.rank, []);
       m.get(c.rank).push(c);
     }
-    // stable sort by rank order: A..K + JOKER last
     const ranks = Array.from(m.keys()).sort((a,b) => {
       if (a === "JOKER" && b !== "JOKER") return 1;
       if (b === "JOKER" && a !== "JOKER") return -1;
@@ -1045,82 +933,117 @@
   }
 
   function renderSelectionPill(){
-    const pill = el("selPill");
-    if (!selected.size) { pill.textContent = "Selected: —"; return; }
-    // compute selected rank(s)
-    if (mySeat === null || !state.players[mySeat]) { pill.textContent = `Selected: ${selected.size}`; return; }
+    if (!selected.size) { selPill.textContent = "Selected: —"; return; }
+    if (mySeat === null || !state.players[mySeat]) { selPill.textContent = `Selected: ${selected.size}`; return; }
     const me = state.players[mySeat];
     const anyId = selected.values().next().value;
     const anyCard = me.hand.find(x => x.id === anyId) || me.tableUp.find(x => x && x.id === anyId);
-    pill.textContent = anyCard ? `Selected: ${anyCard.rank} × ${selected.size}` : `Selected: ${selected.size}`;
+    selPill.textContent = anyCard ? `Selected: ${anyCard.rank} × ${selected.size}` : `Selected: ${selected.size}`;
   }
 
-  // ===== Drag to pile =====
+  // ---------- Snap animation ----------
+  function animateElementToPile(fromEl){
+    if (!fromEl) return;
+    const from = fromEl.getBoundingClientRect();
+    const to = pileVisual.getBoundingClientRect();
+
+    const clone = fromEl.cloneNode(true);
+    clone.classList.add("snapClone");
+    document.body.appendChild(clone);
+
+    clone.style.left = from.left + "px";
+    clone.style.top = from.top + "px";
+    clone.style.width = from.width + "px";
+    clone.style.height = from.height + "px";
+
+    const tx = (to.left + to.width/2) - (from.left + from.width/2);
+    const ty = (to.top + to.height/2) - (from.top + from.height/2);
+
+    requestAnimationFrame(() => {
+      clone.style.transform = `translate(${tx}px, ${ty}px) scale(.7)`;
+      clone.style.opacity = "0";
+    });
+
+    setTimeout(() => clone.remove(), 240);
+  }
+
+  function animateSelectedToPile(){
+    // prefer stack element (hand) if exists
+    const stack = handStacks.querySelector(".c.selected")?.parentElement; // cardStack container
+    if (stack) { animateElementToPile(stack); return; }
+    // else try table card selected
+    const card = yourTable.querySelector(".c.selected");
+    if (card) animateElementToPile(card);
+  }
+
+  // ---------- Drag to pile ----------
   function isOverPile(x,y){
-    const r = el("pileVisual").getBoundingClientRect();
+    const r = pileVisual.getBoundingClientRect();
     return x>=r.left && x<=r.right && y>=r.top && y<=r.bottom;
   }
-  function dragStart(rank, ids, stackEl, pid, x, y){
+  function dragStart(ids, el, pid, x, y){
     drag.active = true;
-    drag.rank = rank;
     drag.ids = ids;
-    drag.el = stackEl;
+    drag.el = el;
     drag.pid = pid;
     drag.moved = false;
     drag.sx = x; drag.sy = y;
-    el("pileVisual").classList.toggle("dragOver", false);
-    stackEl.classList.add("dragging");
-    stackEl.setPointerCapture(pid);
+    el.setPointerCapture(pid);
   }
   function dragMove(x,y){
     if(!drag.active) return;
     const dx = Math.abs(x - drag.sx);
     const dy = Math.abs(y - drag.sy);
-    if(dx + dy > 6) drag.moved = true;
-    el("pileVisual").classList.toggle("dragOver", isOverPile(x,y));
+    if (dx + dy > 6) drag.moved = true;
+    pileVisual.classList.toggle("dragOver", isOverPile(x,y));
   }
   function dragEnd(x,y){
     if(!drag.active) return;
-    el("pileVisual").classList.remove("dragOver");
+    pileVisual.classList.remove("dragOver");
     try{ drag.el.releasePointerCapture(drag.pid); }catch{}
-    drag.el.classList.remove("dragging");
-
     if(drag.moved && isOverPile(x,y)){
+      // snap animation
+      animateElementToPile(drag.el);
       selected.clear();
-      for (const id of drag.ids) selected.add(id);
+      drag.ids.forEach(id => selected.add(id));
       renderSelectionPill();
       playSelected();
     }
-
-    drag.active=false; drag.rank=null; drag.ids=null; drag.el=null; drag.pid=null; drag.moved=false;
+    drag.active=false; drag.ids=null; drag.el=null; drag.pid=null; drag.moved=false;
   }
 
-  // ===== Render =====
-  function render(){
-    el("pileCount").textContent = String(state.pile.length);
-    el("deckCount").textContent = String(state.deck.length);
-    el("discardCount").textContent = String(state.discard.length);
-    el("topValue").textContent = state.mustPlayAny ? "ANY" : (topRank() || "—");
-    el("turnInfo").textContent = "Turn: " + (state.players[state.currentPlayer]?.name || "—");
-    el("turnHint").textContent = isMyTurn() ? "👉 Your turn!" : "Waiting…";
+  // ---------- Rendering ----------
+  function cardHTML(c){
+    return `<div class="corner top">${c.rank}<br>${c.suit}</div>
+            <div class="pip">${c.suit}</div>
+            <div class="corner bottom">${c.rank}<br>${c.suit}</div>`;
+  }
 
-    const pr = el("playersRow");
-    pr.innerHTML = "";
+  function render(){
+    // counters & turn info
+    deckCount.textContent = String(state.deck.length);
+    discardCount.textContent = String(state.discard.length);
+    pileCount.textContent = String(state.pile.length);
+    topValue.textContent = state.mustPlayAny ? "ANY" : (topRank() || "—");
+    turnInfo.textContent = "Turn: " + (state.players[state.currentPlayer]?.name || "—");
+    turnHint.textContent = isMyTurn() ? "👉 Your turn!" : "Waiting…";
+
+    // players
+    playersRow.innerHTML = "";
     state.players.forEach((p, idx) => {
       const d = document.createElement("div");
-      d.className = `playerChip ${idx === state.currentPlayer ? "active" : ""}`;
+      d.className = "playerChip" + (idx === state.currentPlayer ? " active" : "");
       d.innerHTML = `
         <div class="avatar"><span class="emo">${p.emoji}</span><span class="seat">${idx+1}</span></div>
         <div style="min-width:0">
           <div style="font-weight:900; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${p.name}</div>
           <div class="muted" style="font-size:11px">Hand: ${p.hand.length} | Table: ${p.tableUp.filter(c => c).length}</div>
         </div>`;
-      pr.appendChild(d);
+      playersRow.appendChild(d);
     });
 
     // pile visual last 6
-    const pv = el("pileVisual");
-    pv.innerHTML = "";
+    pileVisual.innerHTML = "";
     state.pile.slice(-6).forEach((c, i) => {
       const d = document.createElement("div");
       d.className = "c";
@@ -1128,55 +1051,54 @@
       d.style.left = "50%";
       d.style.top = `${14 + i * 4}px`;
       d.style.transform = `translateX(-50%) rotate(${i * 4 - 8}deg)`;
-      d.innerHTML = `<div class="corner top">${c.rank}<br>${c.suit}</div><div class="pip">${c.suit}</div><div class="corner bottom">${c.rank}<br>${c.suit}</div>`;
-      pv.appendChild(d);
+      d.innerHTML = cardHTML(c);
+      pileVisual.appendChild(d);
     });
 
-    const handEl = el("yourHand");
-    const tableEl = el("yourTable");
-    handEl.innerHTML = "";
-    tableEl.innerHTML = "";
+    // hand + table
+    handStacks.innerHTML = "";
+    yourTable.innerHTML = "";
 
     if (mySeat === null || !state.players[mySeat]) {
-      handEl.innerHTML = '<div class="muted" style="padding:10px;text-align:center;">Join a room to see your cards</div>';
+      handStacks.innerHTML = '<div class="muted" style="padding:10px;text-align:center;">Join a room to see your cards</div>';
       renderSelectionPill();
       return;
     }
 
     const me = state.players[mySeat];
 
-    // Render grouped hand stacks
+    // grouped hand stacks
     const groups = groupByRank(me.hand);
-
     groups.forEach(g => {
       const ids = g.cards.map(c => c.id);
       const top = g.cards[g.cards.length - 1];
-      const legal = canPlayOnTop(g.rank);
+      const legal = true; // allow select; legality handled on play
 
       const stack = document.createElement("div");
       stack.className = "cardStack";
 
-      // ghosts for count
       if (g.cards.length >= 2){
         const ghost1 = document.createElement("div");
         ghost1.className = "c stackGhost g1";
-        ghost1.innerHTML = `<div class="corner top">${top.rank}<br>${top.suit}</div><div class="pip">${top.suit}</div><div class="corner bottom">${top.rank}<br>${top.suit}</div>`;
+        ghost1.innerHTML = cardHTML(top);
         stack.appendChild(ghost1);
       }
       if (g.cards.length >= 3){
         const ghost2 = document.createElement("div");
         ghost2.className = "c stackGhost g2";
-        ghost2.innerHTML = `<div class="corner top">${top.rank}<br>${top.suit}</div><div class="pip">${top.suit}</div><div class="corner bottom">${top.rank}<br>${top.suit}</div>`;
+        ghost2.innerHTML = cardHTML(top);
         stack.appendChild(ghost2);
       }
 
       const card = document.createElement("div");
-      card.className = "c selectable";
-      if (!legal) card.classList.add("illegal");
-      // if any id selected in this rank, show selected highlight on top card
+      card.className = "c";
+      card.dataset.rank = g.rank;
+      card.innerHTML = cardHTML(top);
+
       const selectedThisRank = ids.some(id => selected.has(id));
       if (selectedThisRank) card.classList.add("selected");
-      card.innerHTML = `<div class="corner top">${top.rank}<br>${top.suit}</div><div class="pip">${top.suit}</div><div class="corner bottom">${top.rank}<br>${top.suit}</div>`;
+      if (!canPlayOnTop(g.rank)) card.classList.add("illegal");
+
       stack.appendChild(card);
 
       if (g.cards.length > 1){
@@ -1186,54 +1108,50 @@
         stack.appendChild(badge);
       }
 
-      // Tap: toggle selection of entire rank stack
+      // tap stack: toggle select whole rank (one rank at a time)
       stack.onclick = () => {
         if (!isMyTurn()) { logLine("Wait for your turn", "warn"); return; }
-        if (!legal) { logLine("Cannot play " + g.rank + " on " + topRank(), "bad"); return; }
+        if (!canPlayOnTop(g.rank)) { logLine("Cannot play " + g.rank + " on " + topRank(), "bad"); return; }
 
         const anySelected = ids.some(id => selected.has(id));
-        // Always keep selection to ONE rank at a time (consistent with game rules)
         selected.clear();
-        if (!anySelected){
-          ids.forEach(id => selected.add(id));
-        }
+        if (!anySelected) ids.forEach(id => selected.add(id));
         renderSelectionPill();
         render();
       };
 
-      // Drag stack to pile
+      // drag stack to pile
       stack.addEventListener("pointerdown", (e) => {
         if (!isMyTurn()) return;
-        if (!legal) return;
-        // keep selection in sync with drag
+        if (!canPlayOnTop(g.rank)) return;
         selected.clear();
         ids.forEach(id => selected.add(id));
         renderSelectionPill();
-        dragStart(g.rank, ids, stack, e.pointerId, e.clientX, e.clientY);
+        dragStart(ids, stack, e.pointerId, e.clientX, e.clientY);
       });
       stack.addEventListener("pointermove", (e) => { if(!drag.active) return; dragMove(e.clientX, e.clientY); });
       stack.addEventListener("pointerup",   (e) => { if(!drag.active) return; dragEnd(e.clientX, e.clientY); });
       stack.addEventListener("pointercancel",(e)=> { if(!drag.active) return; dragEnd(e.clientX, e.clientY); });
 
-      handEl.appendChild(stack);
+      handStacks.appendChild(stack);
     });
 
-    // Render tableUp cards (individual) – still 5 per row layout
+    // tableUp cards (must play hand first)
     for (let i = 0; i < 4; i++){
       const up = me.tableUp[i];
       if (up){
         const d = document.createElement("div");
-        d.className = "c selectable";
-        const legal = canPlayOnTop(up.rank);
-        if (!legal) d.classList.add("illegal");
+        d.className = "c";
+        if (!canPlayOnTop(up.rank)) d.classList.add("illegal");
         if (selected.has(up.id)) d.classList.add("selected");
+        d.dataset.id = up.id;
+        d.innerHTML = cardHTML(up);
 
         d.onclick = () => {
           if (!isMyTurn()) { logLine("Wait for your turn", "warn"); return; }
-          if (me.hand.length > 0) { logLine("Must play hand cards first", "warn"); return; }
-          if (!legal) { logLine("Cannot play " + up.rank + " on " + topRank(), "bad"); return; }
+          if (me.hand.length > 0) { logLine("Must play hand first", "warn"); return; }
+          if (!canPlayOnTop(up.rank)) { logLine("Cannot play " + up.rank + " on " + topRank(), "bad"); return; }
 
-          // only one rank at a time
           selected.clear();
           selected.add(up.id);
           renderSelectionPill();
@@ -1243,37 +1161,36 @@
         d.addEventListener("pointerdown", (e) => {
           if (!isMyTurn()) return;
           if (me.hand.length > 0) return;
-          if (!legal) return;
+          if (!canPlayOnTop(up.rank)) return;
           selected.clear();
           selected.add(up.id);
           renderSelectionPill();
-          dragStart(up.rank, [up.id], d, e.pointerId, e.clientX, e.clientY);
+          dragStart([up.id], d, e.pointerId, e.clientX, e.clientY);
         });
         d.addEventListener("pointermove", (e) => { if(!drag.active) return; dragMove(e.clientX, e.clientY); });
         d.addEventListener("pointerup",   (e) => { if(!drag.active) return; dragEnd(e.clientX, e.clientY); });
         d.addEventListener("pointercancel",(e)=> { if(!drag.active) return; dragEnd(e.clientX, e.clientY); });
 
-        d.innerHTML = `<div class="corner top">${up.rank}<br>${up.suit}</div><div class="pip">${up.suit}</div><div class="corner bottom">${up.rank}<br>${up.suit}</div>`;
-        tableEl.appendChild(d);
+        yourTable.appendChild(d);
       } else {
         const empty = document.createElement("div");
         empty.className = "c";
         empty.style.opacity = "0.18";
         empty.innerHTML = `<div class="pip">—</div>`;
-        tableEl.appendChild(empty);
+        yourTable.appendChild(empty);
       }
     }
-
-    // keep layout stable (grid expects 5 columns). add one empty filler
+    // filler to keep 5 columns stable
     const filler = document.createElement("div");
     filler.style.width = "var(--card-w)";
     filler.style.height = "var(--card-h)";
     filler.style.opacity = "0";
-    tableEl.appendChild(filler);
+    yourTable.appendChild(filler);
 
-    el("newGame").disabled = (mySeat !== 0 || !mpConnected);
-    el("playBtn").disabled = (!isMyTurn() || !mpConnected || !selected.size);
-    el("pickupBtn").disabled = (!isMyTurn() || !mpConnected);
+    // buttons
+    newGameBtn.disabled = (mySeat !== 0 || !mpConnected);
+    playBtn.disabled = (!isMyTurn() || !mpConnected || !selected.size);
+    pickupBtn.disabled = (!isMyTurn() || !mpConnected);
 
     renderSelectionPill();
   }
