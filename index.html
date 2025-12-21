@@ -7,78 +7,55 @@
 
   <style>
     /* =========================
-       THEME SYSTEM
+       THEME VARIABLES
        ========================= */
     :root{
-      /* layout sizing */
-      --card-w: clamp(46px, 8.2vw, 74px);
+      --card-w: clamp(46px, 8vw, 72px);
       --card-h: calc(var(--card-w) * 1.45);
-      --pile-h: 112px;
-      --panel-h: 180px;
+      --pile-h: 100px;
+      --panel-h: 175px;
+      --gap: 10px;
       --radius-xl: 22px;
       --radius-lg: 18px;
       --radius-md: 14px;
-      --gap: 10px;
 
-      /* default theme vars (overridden per theme class) */
-      --bg0: #0b1220;
-      --bg1: #142046;
-      --surface: rgba(255,255,255,.05);
-      --surface2: rgba(0,0,0,.22);
-      --border: rgba(255,255,255,.12);
-      --text: #e6edf7;
-      --muted: rgba(230,237,247,.72);
+      --bg0:#0b1220;
+      --bg1:#142046;
+      --table1:#12204a;
+      --table2:#0c1430;
 
-      --accent: #63b3ed;
-      --accent2: rgba(99,179,237,.18);
-      --danger: #ff7b72;
-      --ok: #7ee787;
+      --accent:#63b3ed;
+      --accent2:rgba(99,179,237,.18);
+      --danger:#ff7b72;
 
-      --table1: #12204a;
-      --table2: #0c1430;
-
-      --shadow: 0 10px 26px rgba(0,0,0,.45);
-      --shadow2: 0 12px 34px rgba(0,0,0,.55);
-
-      --btn: rgba(255,255,255,.08);
-      --btnBorder: rgba(255,255,255,.18);
+      --text:#e6edf7;
+      --muted:rgba(230,237,247,.72);
+      --border:rgba(255,255,255,.14);
+      --shadow:0 12px 30px rgba(0,0,0,.45);
+      --shadow2:0 16px 44px rgba(0,0,0,.55);
     }
 
-    /* 🌊 Ocean (default) */
     body.theme-ocean{
       --bg0:#0b1220; --bg1:#142046;
       --table1:#12204a; --table2:#0c1430;
       --accent:#63b3ed; --accent2:rgba(99,179,237,.18);
-      --danger:#ff7b72;
     }
-
-    /* 💜 Purple */
     body.theme-purple{
       --bg0:#0a0716; --bg1:#25115a;
       --table1:#2b0e6a; --table2:#120a2d;
       --accent:#b47bff; --accent2:rgba(180,123,255,.18);
-      --danger:#ff7b72;
     }
-
-    /* 🌵 Desert */
-    body.theme-desert{
-      --bg0:#0f0d08; --bg1:#2a2011;
-      --table1:#3a2a13; --table2:#1a1309;
-      --accent:#f2cc60; --accent2:rgba(242,204,96,.18);
-      --danger:#ff7b72;
-    }
-
-    /* 🌿 Emerald */
     body.theme-emerald{
       --bg0:#07130f; --bg1:#0f2c22;
       --table1:#10382a; --table2:#081a13;
       --accent:#40e0a0; --accent2:rgba(64,224,160,.18);
-      --danger:#ff7b72;
+    }
+    body.theme-desert{
+      --bg0:#0f0d08; --bg1:#2a2011;
+      --table1:#3a2a13; --table2:#1a1309;
+      --accent:#f2cc60; --accent2:rgba(242,204,96,.18);
     }
 
-    /* =========================
-       GLOBAL / NO SCROLL
-       ========================= */
     *{ box-sizing:border-box; }
     html,body{ height:100%; margin:0; overflow:hidden; }
     body{
@@ -89,8 +66,8 @@
     }
 
     button,input,select{
-      background:var(--btn);
-      border:1px solid var(--btnBorder);
+      background:rgba(255,255,255,.08);
+      border:1px solid var(--border);
       color:var(--text);
       padding:10px 12px;
       border-radius:var(--radius-md);
@@ -99,26 +76,24 @@
     }
     button{ cursor:pointer; }
     button:disabled{ opacity:.55; cursor:not-allowed; }
-
     button.primary{
-      background: var(--accent2);
+      background:var(--accent2);
       border-color: color-mix(in srgb, var(--accent) 55%, transparent);
     }
     button.danger{
       background: color-mix(in srgb, var(--danger) 18%, transparent);
       border-color: color-mix(in srgb, var(--danger) 55%, transparent);
     }
-
     .muted{ color:var(--muted); font-size:12px; }
     .pill{
       padding:5px 10px;
       border-radius:999px;
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(255,255,255,.05);
       font-size:12px;
       display:inline-flex;
-      gap:6px;
       align-items:center;
+      gap:6px;
       white-space:nowrap;
     }
 
@@ -135,8 +110,8 @@
       padding:16px;
     }
     .lobbyCard{
-      width:min(620px,100%);
-      background:var(--surface);
+      width:min(640px,100%);
+      background:rgba(255,255,255,.05);
       border:1px solid var(--border);
       border-radius:var(--radius-xl);
       box-shadow:var(--shadow2);
@@ -147,31 +122,20 @@
       align-items:flex-start;
       justify-content:space-between;
       gap:12px;
-      margin-bottom:12px;
     }
-    .brand h1{
-      margin:0;
-      font-size:22px;
-      font-weight:950;
-      letter-spacing:.2px;
-    }
-    .brand .sub{
-      margin-top:4px;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.25;
-    }
+    .brand h1{ margin:0; font-size:22px; font-weight:950; letter-spacing:.2px; }
+    .brand .sub{ margin-top:4px; color:var(--muted); font-size:13px; line-height:1.25; }
     .lobbyGrid{
       display:grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns:1fr 1fr;
       gap:10px;
-      margin-top:10px;
+      margin-top:12px;
     }
-    .lobbyGrid label{ display:block; font-size:12px; color:var(--muted); margin:0 0 6px; }
-    .lobbyGrid input, .lobbyGrid select{ width:100%; }
+    .lobbyGrid label{ display:block; margin:0 0 6px; color:var(--muted); font-size:12px; }
+    .lobbyGrid input,.lobbyGrid select{ width:100%; }
     .lobbyActions{
       display:grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns:1fr 1fr;
       gap:10px;
       margin-top:12px;
     }
@@ -183,50 +147,28 @@
       flex-direction:column;
       gap:8px;
     }
-    @media (max-width: 520px){
-      .lobbyGrid{ grid-template-columns:1fr; }
-      .lobbyActions{ grid-template-columns:1fr; }
+    @media(max-width:520px){
+      .lobbyGrid,.lobbyActions{ grid-template-columns:1fr; }
     }
 
     /* =========================
        GAME
        ========================= */
-    #gameView{
-      height:100%;
-      display:none;
-      flex-direction:column;
-    }
+    #gameView{ height:100%; display:none; flex-direction:column; }
 
     header{
       padding:10px 12px;
-      border-bottom:1px solid rgba(255,255,255,.08);
+      border-bottom:1px solid rgba(255,255,255,.10);
       display:flex;
       gap:10px;
       align-items:center;
       flex-wrap:wrap;
-      background: color-mix(in srgb, rgba(0,0,0,.35) 70%, transparent);
       backdrop-filter: blur(10px);
+      background: rgba(0,0,0,.22);
     }
-    header .left{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-      min-width:0;
-    }
-    header .title{
-      font-weight:950;
-      letter-spacing:.2px;
-      white-space:nowrap;
-      font-size:14px;
-    }
-    header .right{
-      margin-left:auto;
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-    }
+    header .left{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; min-width:0; }
+    header .title{ font-weight:950; letter-spacing:.2px; font-size:14px; white-space:nowrap; }
+    header .right{ margin-left:auto; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
 
     main{
       flex:1;
@@ -258,8 +200,8 @@
 
     .playerChip{
       display:flex;
-      align-items:center;
       gap:8px;
+      align-items:center;
       padding:8px 10px;
       border-radius:16px;
       background:rgba(255,255,255,.06);
@@ -270,16 +212,16 @@
       outline:2px solid var(--accent);
       box-shadow:0 0 18px color-mix(in srgb, var(--accent) 35%, transparent);
     }
+
     .avatar{
       width:38px;height:38px;border-radius:50%;
       background:rgba(255,255,255,.9);
       color:#0b1220;
       display:flex;align-items:center;justify-content:center;
       font-weight:900;
-      flex:0 0 auto;
       position:relative;
+      flex:0 0 auto;
     }
-    .avatar .emo{ font-size:18px; }
     .avatar .seat{
       position:absolute;
       bottom:-2px; right:-2px;
@@ -288,6 +230,15 @@
       font-size:10px;
       padding:1px 5px;
       border-radius:999px;
+    }
+
+    .cardBack{
+      width:16px;
+      height:22px;
+      border-radius:4px;
+      background:linear-gradient(135deg, rgba(255,255,255,.18), rgba(0,0,0,.3));
+      border:1px solid rgba(255,255,255,.25);
+      box-shadow:0 2px 4px rgba(0,0,0,.35);
     }
 
     .pileBox{
@@ -317,8 +268,8 @@
       transition:.15s ease;
     }
     .pileVisual.dragOver{
-      border-color:var(--accent);
-      background:color-mix(in srgb, var(--accent) 14%, transparent);
+      border-color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 14%, transparent);
     }
 
     .zoneTitle{
@@ -331,7 +282,7 @@
       flex:0 0 auto;
     }
 
-    /* ---------- Cards ---------- */
+    /* Cards */
     .c{
       width:var(--card-w);
       height:var(--card-h);
@@ -361,12 +312,17 @@
       transform:translate(-50%,-50%);
       font-size:28px;
     }
+    @media(max-width:600px){
+      :root{ --pile-h: 95px; --panel-h: 170px; }
+      .corner{ font-size:11px; }
+      .pip{ font-size:24px; }
+    }
 
-    /* ---------- Hand stacks (5 per row) ---------- */
+    /* Hand stacks */
     .handStacks{
       flex:0 0 auto;
-      min-height: 150px;     /* ensures visible */
-      max-height: 190px;
+      min-height:140px;
+      max-height:190px;
       display:grid;
       grid-template-columns: repeat(5, minmax(0, 1fr));
       gap:8px;
@@ -380,12 +336,9 @@
       position:relative;
     }
     .cardStack .c{ position:absolute; top:0; left:0; }
-    .stackGhost{
-      opacity:.18;
-      filter:saturate(.9);
-    }
-    .stackGhost.g1{ transform: translate(7px, -7px); }
-    .stackGhost.g2{ transform: translate(14px, -14px); }
+    .stackGhost{ opacity:.18; filter:saturate(.9); }
+    .stackGhost.g1{ transform: translate(7px,-7px); }
+    .stackGhost.g2{ transform: translate(14px,-14px); }
     .stackCount{
       position:absolute;
       top:-6px; right:-6px;
@@ -398,7 +351,6 @@
       font-weight:900;
     }
 
-    /* Table cards row (kept, but we hide it on mobile when hand not empty via JS) */
     .tableCards{
       flex:0 0 auto;
       display:grid;
@@ -409,15 +361,14 @@
     }
     .hidden{ display:none !important; }
 
-    /* ---------- Bottom panel ---------- */
     .panel{
       position:fixed;
       left:10px;
       right:10px;
       bottom: calc(10px + env(safe-area-inset-bottom));
       height:var(--panel-h);
-      background: color-mix(in srgb, rgba(15,20,40,.96) 85%, transparent);
-      border:1px solid rgba(255,255,255,.14);
+      background: rgba(15,20,40,.95);
+      border:1px solid var(--border);
       border-radius:var(--radius-xl);
       padding:12px;
       display:flex;
@@ -428,14 +379,8 @@
     }
     .panel .row{ display:flex; gap:10px; }
     .panel button{ flex:1; }
-    .panel .metaRow{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-    }
+    .panel .metaRow{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
 
-    /* Log drawer inside panel (compact) */
     .logWrap{
       flex:1 1 auto;
       min-height:0;
@@ -469,7 +414,7 @@
     }
     .logLine:last-child{ border-bottom:none; }
 
-    /* Snap animation clone */
+    /* Snap clone */
     .snapClone{
       position:fixed;
       z-index:5000;
@@ -477,20 +422,10 @@
       transition: transform .22s ease, opacity .22s ease;
       transform-origin:center center;
     }
-
-    @media (max-width: 600px){
-      :root{
-        --pile-h: 100px;
-        --panel-h: 170px;
-      }
-      .corner{ font-size:11px; }
-      .pip{ font-size:24px; }
-      .handStacks{ min-height:140px; max-height:180px; }
-    }
   </style>
 </head>
 
-<body class="theme-ocean">
+<body class="theme-purple">
 <div id="app">
 
   <!-- LOBBY -->
@@ -499,7 +434,7 @@
       <div class="lobbyTop">
         <div class="brand">
           <h1>🃏 Splash</h1>
-          <div class="sub">Family room. Pick a theme. Enter your name. Play.</div>
+          <div class="sub">Fixed family room. Pick a theme, enter your name, play.</div>
         </div>
         <span class="pill" id="lobbyStatus">Not connected</span>
       </div>
@@ -513,7 +448,7 @@
           <label for="themeSelectLobby">Theme</label>
           <select id="themeSelectLobby">
             <option value="ocean">Ocean</option>
-            <option value="purple">Purple</option>
+            <option value="purple" selected>Purple</option>
             <option value="emerald">Emerald</option>
             <option value="desert">Desert</option>
           </select>
@@ -526,8 +461,8 @@
       </div>
 
       <div class="lobbyFooter">
-        <div class="muted">Room is fixed for your family: <b>FAMILY</b> (no codes).</div>
-        <div class="muted">In-game: tap a stack to select, drag stack to pile to play (with snap).</div>
+        <div class="muted">Room is fixed: <b>FAMILY</b> (no codes).</div>
+        <div class="muted">Each player sees only their own cards. Others show face-down stacks.</div>
       </div>
     </div>
   </section>
@@ -537,13 +472,13 @@
     <header>
       <div class="left">
         <div class="title">🃏 Splash</div>
-        <span class="pill" id="roomPill">ROOM: —</span>
+        <span class="pill" id="roomPill">ROOM: FAMILY</span>
         <span class="pill" id="turnInfo">Turn: —</span>
       </div>
       <div class="right">
         <select id="themeSelectGame" title="Theme">
           <option value="ocean">Ocean</option>
-          <option value="purple">Purple</option>
+          <option value="purple" selected>Purple</option>
           <option value="emerald">Emerald</option>
           <option value="desert">Desert</option>
         </select>
@@ -605,17 +540,13 @@
         <div id="log" class="logBody"></div>
       </div>
     </div>
-  </section>
 
+  </section>
 </div>
 
 <script>
 (() => {
-  /* =========================
-     FIXED FAMILY ROOM
-     ========================= */
   const FIXED_ROOM = "FAMILY";
-
   const WS_BASE = "wss://splash-multiplayer.azimaymen.workers.dev";
   const mpClientId = crypto.randomUUID();
 
@@ -632,7 +563,6 @@
 
   // Game controls
   const themeSelectGame = document.getElementById("themeSelectGame");
-  const roomPill = document.getElementById("roomPill");
   const turnInfo = document.getElementById("turnInfo");
   const turnHint = document.getElementById("turnHint");
   const playersRow = document.getElementById("playersRow");
@@ -657,12 +587,12 @@
   // Multiplayer state
   let mpWs = null;
   let mpConnected = false;
-  let mySeat = null;
+  let mySeat = null; // ✅ seat comes from server welcome
   let reconnectAttempts = 0;
   let reconnectTimer = null;
   const MAX_RECONNECT_ATTEMPTS = 5;
 
-  // Drag state (stack dragging)
+  // Drag state
   const drag = { active:false, ids:null, el:null, pid:null, moved:false, sx:0, sy:0 };
 
   // Game constants
@@ -673,7 +603,7 @@
   const isFace = (r) => r === "J" || r === "Q" || r === "K";
   const EMOJIS = ["🦊", "🐼", "🐯", "🦁", "🐸", "🐙", "🦉", "🦄", "🐲", "🐶", "🐱", "🐵"];
 
-  // Game state
+  // Game state (authoritative snapshot synced via Worker)
   const state = {
     players: [],
     deck: [],
@@ -685,11 +615,9 @@
 
   let selected = new Set(); // card ids
 
-  /* =========================
-     THEME
-     ========================= */
+  /* ===== Theme ===== */
   function applyTheme(theme){
-    const t = theme || "ocean";
+    const t = theme || "purple";
     document.body.classList.remove("theme-ocean","theme-purple","theme-emerald","theme-desert");
     document.body.classList.add("theme-" + t);
     localStorage.setItem("splash_theme", t);
@@ -697,9 +625,7 @@
     themeSelectGame.value = t;
   }
 
-  /* =========================
-     STORAGE
-     ========================= */
+  /* ===== Storage ===== */
   function saveName(name){ localStorage.setItem("splash_name", name); }
   function loadName(){ return localStorage.getItem("splash_name") || ""; }
   function clearName(){ localStorage.removeItem("splash_name"); }
@@ -709,14 +635,8 @@
     lobbyStatus.style.borderColor = ok ? "rgba(126,231,135,.5)" : "rgba(255,255,255,.14)";
   }
 
-  function showLobby(){
-    gameView.style.display = "none";
-    lobbyView.style.display = "flex";
-  }
-  function showGame(){
-    lobbyView.style.display = "none";
-    gameView.style.display = "flex";
-  }
+  function showLobby(){ gameView.style.display = "none"; lobbyView.style.display = "flex"; }
+  function showGame(){ lobbyView.style.display = "none"; gameView.style.display = "flex"; }
 
   function logLine(text, tone=""){
     const div = document.createElement("div");
@@ -726,24 +646,19 @@
     logEl.prepend(div);
   }
 
-  /* =========================
-     WS CONNECT
-     ========================= */
+  /* ===== WebSocket connect ===== */
   function mpConnect(){
     const nm = (nameInput.value || "").trim();
     if (!nm) return alert("Enter your name");
     saveName(nm);
 
-    roomPill.textContent = `ROOM: ${FIXED_ROOM}`;
     setLobbyStatus(`Connecting to ${FIXED_ROOM}…`, false);
-
     mpWs = new WebSocket(`${WS_BASE}?room=${FIXED_ROOM}`);
 
     mpWs.onopen = () => {
       mpConnected = true;
       reconnectAttempts = 0;
       setLobbyStatus(`Connected: ${FIXED_ROOM}`, true);
-
       mpWs.send(JSON.stringify({ type:"join", id: mpClientId, name: nm }));
       showGame();
       logLine(`Connected to room ${FIXED_ROOM}`, "ok");
@@ -753,8 +668,12 @@
       let msg;
       try { msg = JSON.parse(ev.data); } catch { return; }
 
+      if (msg.type === "welcome") {
+        mySeat = msg.seat;
+        render();
+      }
+
       if (msg.type === "players") {
-        mySeat = msg.players.findIndex(p => p.id === mpClientId);
         ensurePlayersFromServer(msg.players);
         render();
       }
@@ -764,11 +683,6 @@
       }
 
       if (msg.type === "pong") {}
-      if (msg.type === "reset") {
-        logLine("Game reset", "warn");
-        resetLocalState();
-        render();
-      }
     };
 
     mpWs.onclose = () => {
@@ -825,9 +739,7 @@
     logLine("Left room", "warn");
   }
 
-  /* =========================
-     GAME LOGIC (original)
-     ========================= */
+  /* ===== Game logic ===== */
   function ensurePlayersFromServer(players) {
     while (state.players.length < players.length) {
       const idx = state.players.length;
@@ -870,9 +782,7 @@
     });
   }
 
-  function topRank() {
-    return state.pile.length ? state.pile[state.pile.length - 1].rank : null;
-  }
+  function topRank() { return state.pile.length ? state.pile[state.pile.length - 1].rank : null; }
 
   function canPlayOnTop(rank) {
     if (state.mustPlayAny) return true;
@@ -887,9 +797,7 @@
   function makeDeck() {
     const d = [];
     for (let k = 0; k < 2; k++) {
-      for (const s of SUITS) {
-        for (const r of RANKS) d.push({ id: crypto.randomUUID(), rank: r, suit: s });
-      }
+      for (const s of SUITS) for (const r of RANKS) d.push({ id: crypto.randomUUID(), rank: r, suit: s });
     }
     for (let j = 0; j < 4; j++) d.push({ id: crypto.randomUUID(), rank: "JOKER", suit: "★" });
     for (let i = d.length - 1; i > 0; i--) {
@@ -899,9 +807,7 @@
     return d;
   }
 
-  function isMyTurn() {
-    return mySeat !== null && mySeat === state.currentPlayer;
-  }
+  function isMyTurn() { return mySeat !== null && mySeat === state.currentPlayer; }
 
   function newGame() {
     if (!mpConnected) { logLine("Must be connected to start", "bad"); return; }
@@ -942,8 +848,7 @@
     if (!isMyTurn()) { logLine("Not your turn", "warn"); return; }
     if (mySeat === null) return;
     const me = state.players[mySeat];
-    if (!me) return;
-    if (!selected.size) return;
+    if (!me || !selected.size) return;
 
     const ids = Array.from(selected);
     const chosen = [];
@@ -965,6 +870,7 @@
       if (x.zone === "tableUp") me.tableUp[x.idx] = null;
       state.pile.push(x.card);
     });
+
     selected.clear();
     renderSelectionPill();
 
@@ -1011,9 +917,7 @@
     render();
   }
 
-  /* =========================
-     HAND GROUPING
-     ========================= */
+  /* ===== Grouping & UI helpers ===== */
   function groupByRank(cards){
     const m = new Map();
     for (const c of cards){
@@ -1037,57 +941,47 @@
     selPill.textContent = anyCard ? `Selected: ${anyCard.rank} × ${selected.size}` : `Selected: ${selected.size}`;
   }
 
-  /* =========================
-     SNAP ANIMATION
-     ========================= */
+  function cardHTML(c){
+    return `<div class="corner top">${c.rank}<br>${c.suit}</div>
+            <div class="pip">${c.suit}</div>
+            <div class="corner bottom">${c.rank}<br>${c.suit}</div>`;
+  }
+
+  /* ===== Snap animation ===== */
   function animateElementToPile(fromEl){
     if (!fromEl) return;
     const from = fromEl.getBoundingClientRect();
     const to = pileVisual.getBoundingClientRect();
-
     const clone = fromEl.cloneNode(true);
     clone.classList.add("snapClone");
     document.body.appendChild(clone);
-
     clone.style.left = from.left + "px";
     clone.style.top = from.top + "px";
     clone.style.width = from.width + "px";
     clone.style.height = from.height + "px";
-
     const tx = (to.left + to.width/2) - (from.left + from.width/2);
     const ty = (to.top + to.height/2) - (from.top + from.height/2);
-
     requestAnimationFrame(() => {
       clone.style.transform = `translate(${tx}px, ${ty}px) scale(.72)`;
       clone.style.opacity = "0";
     });
-
     setTimeout(() => clone.remove(), 240);
   }
 
   function animateSelectedToPile(){
-    // selected stack (preferred)
     const stack = handStacks.querySelector(".c.selected")?.parentElement;
     if (stack) { animateElementToPile(stack); return; }
-    // selected table card
     const card = yourTable.querySelector(".c.selected");
     if (card) animateElementToPile(card);
   }
 
-  /* =========================
-     DRAG TO PILE
-     ========================= */
+  /* ===== Drag to pile ===== */
   function isOverPile(x,y){
     const r = pileVisual.getBoundingClientRect();
     return x>=r.left && x<=r.right && y>=r.top && y<=r.bottom;
   }
   function dragStart(ids, el, pid, x, y){
-    drag.active = true;
-    drag.ids = ids;
-    drag.el = el;
-    drag.pid = pid;
-    drag.moved = false;
-    drag.sx = x; drag.sy = y;
+    drag.active = true; drag.ids = ids; drag.el = el; drag.pid = pid; drag.moved = false; drag.sx = x; drag.sy = y;
     el.setPointerCapture(pid);
   }
   function dragMove(x,y){
@@ -1111,17 +1005,8 @@
     drag.active=false; drag.ids=null; drag.el=null; drag.pid=null; drag.moved=false;
   }
 
-  /* =========================
-     RENDER
-     ========================= */
-  function cardHTML(c){
-    return `<div class="corner top">${c.rank}<br>${c.suit}</div>
-            <div class="pip">${c.suit}</div>
-            <div class="corner bottom">${c.rank}<br>${c.suit}</div>`;
-  }
-
+  /* ===== Render ===== */
   function render(){
-    // counters & turn info
     deckCount.textContent = String(state.deck.length);
     discardCount.textContent = String(state.discard.length);
     pileCount.textContent = String(state.pile.length);
@@ -1129,16 +1014,23 @@
     turnInfo.textContent = "Turn: " + (state.players[state.currentPlayer]?.name || "—");
     turnHint.textContent = isMyTurn() ? "👉 Your turn!" : "Waiting…";
 
-    // players
+    // Players row (show face-down for others)
     playersRow.innerHTML = "";
     state.players.forEach((p, idx) => {
       const d = document.createElement("div");
       d.className = "playerChip" + (idx === state.currentPlayer ? " active" : "");
+      const isMe = (mySeat !== null && idx === mySeat);
+      const handCount = (p.hand?.length ?? 0);
+      const tableCount = (p.tableUp?.filter(c => c).length ?? 0);
       d.innerHTML = `
-        <div class="avatar"><span class="emo">${p.emoji}</span><span class="seat">${idx+1}</span></div>
+        <div class="avatar">${(p.emoji || "🙂")}<span class="seat">${idx+1}</span></div>
         <div style="min-width:0">
-          <div style="font-weight:900; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${p.name}</div>
-          <div class="muted" style="font-size:11px">Hand: ${p.hand.length} | Table: ${p.tableUp.filter(c => c).length}</div>
+          <div style="font-weight:900; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${p.name || ("Player " + (idx+1))}</div>
+          <div class="muted" style="font-size:11px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <span>Hand:</span>
+            ${isMe ? `<span>${handCount}</span>` : `<span class="cardBack" title="Hidden"></span><span>×${handCount}</span>`}
+            <span>| Table: ${tableCount}</span>
+          </div>
         </div>`;
       playersRow.appendChild(d);
     });
@@ -1156,20 +1048,20 @@
       pileVisual.appendChild(d);
     });
 
-    // hand + table
+    // clear zones
     handStacks.innerHTML = "";
     yourTable.innerHTML = "";
 
     if (mySeat === null || !state.players[mySeat]) {
-      handStacks.innerHTML = '<div class="muted" style="padding:10px;text-align:center;">Join to see your cards</div>';
+      handStacks.innerHTML = '<div class="muted" style="padding:10px;text-align:center;">Connecting…</div>';
       renderSelectionPill();
       return;
     }
 
     const me = state.players[mySeat];
 
-    // grouped hand stacks
-    const groups = groupByRank(me.hand);
+    // grouped hand stacks (ONLY ME)
+    const groups = groupByRank(me.hand || []);
     groups.forEach(g => {
       const ids = g.cards.map(c => c.id);
       const top = g.cards[g.cards.length - 1];
@@ -1226,21 +1118,22 @@
         dragStart(ids, stack, e.pointerId, e.clientX, e.clientY);
       });
       stack.addEventListener("pointermove", (e) => { if(!drag.active) return; dragMove(e.clientX, e.clientY); });
-      stack.addEventListener("pointerup",   (e) => { if(!drag.active) return; dragEnd(e.clientX, e.clientY); });
-      stack.addEventListener("pointercancel",(e)=> { if(!drag.active) return; dragEnd(e.clientX, e.clientY); });
+      stack.addEventListener("pointerup", (e) => { if(!drag.active) return; dragEnd(e.clientX, e.clientY); });
+      stack.addEventListener("pointercancel", (e) => { if(!drag.active) return; dragEnd(e.clientX, e.clientY); });
 
       handStacks.appendChild(stack);
     });
 
-    // Show/hide table cards on mobile when hand not empty
+    // hide table cards on small screens if hand not empty
     const isSmall = window.matchMedia("(max-width: 600px)").matches;
-    const showTable = !isSmall || (me.hand.length === 0);
+    const showTable = !isSmall || ((me.hand?.length || 0) === 0);
     yourTable.classList.toggle("hidden", !showTable);
     tableTitle.classList.toggle("hidden", !showTable);
 
-    // tableUp cards (only meaningful when hand empty)
+    // render tableUp
+    const tableUp = me.tableUp || Array.from({length:4}, ()=>null);
     for (let i = 0; i < 4; i++){
-      const up = me.tableUp[i];
+      const up = tableUp[i];
       if (up){
         const d = document.createElement("div");
         d.className = "c";
@@ -1250,7 +1143,7 @@
 
         d.onclick = () => {
           if (!isMyTurn()) { logLine("Wait for your turn", "warn"); return; }
-          if (me.hand.length > 0) { logLine("Must play hand first", "warn"); return; }
+          if ((me.hand?.length || 0) > 0) { logLine("Must play hand first", "warn"); return; }
           if (!canPlayOnTop(up.rank)) { logLine("Cannot play " + up.rank + " on " + topRank(), "bad"); return; }
           selected.clear();
           selected.add(up.id);
@@ -1260,7 +1153,7 @@
 
         d.addEventListener("pointerdown", (e) => {
           if (!isMyTurn()) return;
-          if (me.hand.length > 0) return;
+          if ((me.hand?.length || 0) > 0) return;
           if (!canPlayOnTop(up.rank)) return;
           selected.clear();
           selected.add(up.id);
@@ -1268,8 +1161,8 @@
           dragStart([up.id], d, e.pointerId, e.clientX, e.clientY);
         });
         d.addEventListener("pointermove", (e) => { if(!drag.active) return; dragMove(e.clientX, e.clientY); });
-        d.addEventListener("pointerup",   (e) => { if(!drag.active) return; dragEnd(e.clientX, e.clientY); });
-        d.addEventListener("pointercancel",(e)=> { if(!drag.active) return; dragEnd(e.clientX, e.clientY); });
+        d.addEventListener("pointerup", (e) => { if(!drag.active) return; dragEnd(e.clientX, e.clientY); });
+        d.addEventListener("pointercancel", (e) => { if(!drag.active) return; dragEnd(e.clientX, e.clientY); });
 
         yourTable.appendChild(d);
       } else {
@@ -1280,7 +1173,6 @@
         yourTable.appendChild(empty);
       }
     }
-    // filler for 5 columns
     const filler = document.createElement("div");
     filler.style.width = "var(--card-w)";
     filler.style.height = "var(--card-h)";
@@ -1295,9 +1187,7 @@
     renderSelectionPill();
   }
 
-  /* =========================
-     UI WIRING
-     ========================= */
+  /* ===== UI wiring ===== */
   enterBtn.onclick = mpConnect;
   resetNameBtn.onclick = () => { clearName(); nameInput.value = ""; };
 
@@ -1312,15 +1202,9 @@
 
   window.addEventListener("resize", () => render());
 
-  /* =========================
-     INIT
-     ========================= */
-  const savedTheme = localStorage.getItem("splash_theme") || "ocean";
-  applyTheme(savedTheme);
-
-  const savedName = loadName();
-  if (savedName) nameInput.value = savedName;
-
+  /* ===== INIT ===== */
+  applyTheme(localStorage.getItem("splash_theme") || "purple");
+  nameInput.value = loadName();
   setLobbyStatus("Not connected", false);
   showLobby();
   logLine("Welcome! Enter your name and tap Enter Game.", "ok");
