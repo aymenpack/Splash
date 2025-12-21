@@ -554,10 +554,6 @@
     if (info.room && info.name) {
       document.getElementById("mpName").value = info.name;
       document.getElementById("mpRoom").value = info.room;
-      setTimeout(() => {
-        logLine("Attempting to reconnect to previous room...", "warn");
-        mpConnect(info.room, info.isHost);
-      }, 1000);
     }
   });
 
@@ -663,8 +659,12 @@
       logLine("Must be connected to start game", "bad");
       return;
     }
+    
+    // Check if we're actually the host - debug info
+    console.log("My seat:", mySeat, "Players:", state.players.length);
+    
     if (mySeat !== 0) {
-      logLine("Only Host (Player 1) can start a new game", "warn");
+      logLine("Only Host (Player 1) can start - you are Player " + (mySeat + 1), "warn");
       return;
     }
 
