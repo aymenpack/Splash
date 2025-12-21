@@ -10,6 +10,6 @@ bindings = [
 ]
 
 [[migrations]]
-tag = "v2"
+tag = "v3"
 deleted_classes = ["GameRoom"]
-new_classes = ["Room"]
+new_sqlite_classes = ["Room"]
