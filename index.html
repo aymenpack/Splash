@@ -10,14 +10,11 @@
       --bg:#0b1220;
       --table1:#12204a;
       --table2:#0c1430;
-      --panel:rgba(255,255,255,.04);
-      --panelBorder:rgba(255,255,255,.10);
       --accent:#63b3ed;
       --danger:#ff7b72;
       --ok:#7ee787;
       --muted:rgba(230,237,247,.72);
       --shadow:0 10px 26px rgba(0,0,0,.45);
-
       --card-w:76px;
       --card-h:110px;
       --avatar:44px;
@@ -77,10 +74,15 @@
       gap:12px;
     }
 
+    @media (max-width: 900px){
+      .grid{
+        grid-template-columns: 1fr;
+      }
+    }
+
     .controls{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
 
     .muted{ color:var(--muted); font-size:12px; }
-    .small{ font-size:12px; }
     .pill{
       padding:4px 10px;
       border-radius:999px;
@@ -121,11 +123,6 @@
     .playerChip.active{
       outline:2px solid var(--accent);
       box-shadow:0 0 16px rgba(99,179,237,.45);
-    }
-
-    .playerChip.disconnected{
-      opacity: 0.4;
-      border-color: var(--danger);
     }
 
     .seat-bottom{ left:50%; bottom:0; transform:translateX(-50%); }
@@ -185,6 +182,7 @@
       transition:.12s ease;
     }
 
+    .c.selectable{ cursor:pointer; }
     .c.selectable:hover{ transform:translateY(-4px); }
     .c.selected{ outline:3px solid var(--accent); transform:translateY(-6px); }
 
@@ -204,7 +202,7 @@
       font-size:32px;
     }
 
-    .c.illegal{ opacity:.55; }
+    .c.illegal{ opacity:.55; pointer-events:none; }
 
     .zoneTitle{
       margin:10px 0 6px;
@@ -389,7 +387,6 @@
   let reconnectTimer = null;
   const MAX_RECONNECT_ATTEMPTS = 5;
 
-  // Save connection info to localStorage for reconnection
   function saveConnectionInfo(room, name, isHost) {
     localStorage.setItem('splash_room', room);
     localStorage.setItem('splash_name', name);
@@ -468,7 +465,6 @@
       }
 
       if (msg.type === "pong") {
-        // Keep-alive response
       }
     };
 
@@ -483,7 +479,6 @@
       mpSetStatus("Connection Error", "error");
     };
 
-    // Ping every 30 seconds to keep connection alive
     setInterval(() => {
       if (mpWs && mpWs.readyState === WebSocket.OPEN) {
         mpWs.send(JSON.stringify({ type: "ping" }));
@@ -554,13 +549,11 @@
 
   document.getElementById("leaveBtn").onclick = mpLeave;
 
-  // Try to auto-reconnect on page load
   window.addEventListener('load', () => {
     const info = loadConnectionInfo();
     if (info.room && info.name) {
       document.getElementById("mpName").value = info.name;
       document.getElementById("mpRoom").value = info.room;
-      // Auto-reconnect after 1 second
       setTimeout(() => {
         logLine("Attempting to reconnect to previous room...", "warn");
         mpConnect(info.room, info.isHost);
@@ -568,7 +561,6 @@
     }
   });
 
-  /* ========================================================= GAME LOGIC */
   const SUITS = ["♠", "♥", "♦", "♣"];
   const RANKS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
   const RANK_ORDER = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
@@ -818,121 +810,4 @@
       d.style.position = "absolute";
       d.style.left = "50%";
       d.style.top = `${20 + i * 4}px`;
-      d.style.transform = `translateX(-50%) rotate(${i * 4 - 8}deg)`;
-      d.innerHTML = `<div class="corner top">${c.rank}<br>${c.suit}</div><div class="pip">${c.suit}</div><div class="corner bottom">${c.rank}<br>${c.suit}</div>`;
-      pv.appendChild(d);
-    });
-
-    const handEl = el("yourHand");
-    const tableEl = el("yourTable");
-    handEl.innerHTML = "";
-    tableEl.innerHTML = "";
-
-    if (mySeat === null || !state.players[mySeat]) {
-      handEl.innerHTML = '<div class="muted" style="padding:20px;text-align:center;">Join a room to see your cards</div>';
-      return;
-    }
-
-    const me = state.players[mySeat];
-
-    me.hand.forEach(card => {
-      const d = document.createElement("div");
-      d.className = "c selectable";
-      const legal = canPlayOnTop(card.rank);
-      if (!legal) d.classList.add("illegal");
-      if (selected.has(card.id)) d.classList.add("selected");
-
-      d.onclick = () => {
-        if (!isMyTurn()) {
-          logLine("Wait for your turn", "warn");
-          return;
-        }
-        if (!legal) {
-          logLine("Cannot play " + card.rank + " on " + topRank(), "bad");
-          return;
-        }
-        if (selected.has(card.id)) {
-          selected.delete(card.id);
-        } else {
-          if (selected.size) {
-            const anyId = selected.values().next().value;
-            const anyCard = me.hand.find(x => x.id === anyId) || me.tableUp.find(x => x && x.id === anyId);
-            if (anyCard && anyCard.rank !== card.rank) {
-              logLine("Must select same rank", "warn");
-              selected.clear();
-            }
-          }
-          selected.add(card.id);
-        }
-        render();
-      };
-
-      d.innerHTML = `<div class="corner top">${card.rank}<br>${card.suit}</div><div class="pip">${card.suit}</div><div class="corner bottom">${card.rank}<br>${card.suit}</div>`;
-      handEl.appendChild(d);
-    });
-
-    for (let i = 0; i < 4; i++) {
-      const up = me.tableUp[i];
-      if (up) {
-        const d = document.createElement("div");
-        d.className = "c selectable";
-        const legal = canPlayOnTop(up.rank);
-        if (!legal) d.classList.add("illegal");
-        if (selected.has(up.id)) d.classList.add("selected");
-
-        d.onclick = () => {
-          if (!isMyTurn()) {
-            logLine("Wait for your turn", "warn");
-            return;
-          }
-          if (me.hand.length > 0) {
-            logLine("Must play hand cards first", "warn");
-            return;
-          }
-          if (!legal) {
-            logLine("Cannot play " + up.rank + " on " + topRank(), "bad");
-            return;
-          }
-          if (selected.has(up.id)) {
-            selected.delete(up.id);
-          } else {
-            if (selected.size) {
-              const anyId = selected.values().next().value;
-              const anyCard = me.tableUp.find(x => x && x.id === anyId);
-              if (anyCard && anyCard.rank !== up.rank) {
-                logLine("Must select same rank", "warn");
-                selected.clear();
-              }
-            }
-            selected.add(up.id);
-          }
-          render();
-        };
-
-        d.innerHTML = `<div class="corner top">${up.rank}<br>${up.suit}</div><div class="pip">${up.suit}</div><div class="corner bottom">${up.rank}<br>${up.suit}</div>`;
-        tableEl.appendChild(d);
-      } else {
-        const empty = document.createElement("div");
-        empty.className = "c";
-        empty.style.opacity = "0.2";
-        empty.innerHTML = `<div class="pip">—</div>`;
-        tableEl.appendChild(empty);
-      }
-    }
-
-    el("newGame").disabled = (mySeat !== 0 || !mpConnected);
-    el("playBtn").disabled = (!isMyTurn() || !mpConnected);
-    el("pickupBtn").disabled = (!isMyTurn() || !mpConnected);
-  }
-
-  el("newGame").onclick = newGame;
-  el("playBtn").onclick = playSelected;
-  el("pickupBtn").onclick = pickup;
-
-  logLine("Welcome to Splash! Host or join a room to start.", "ok");
-  mpSetStatus("Not connected");
-  render();
-})();
-</script>
-</body>
-</html>
+      d.style.transform = `translateX(-50%) rotate(${i * 4 - 8}deg)
