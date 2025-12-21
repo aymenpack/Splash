@@ -503,16 +503,20 @@
     }, delay);
   }
 
-  function mpBroadcastState() {
-    if (!mpWs || mpWs.readyState !== WebSocket.OPEN) {
-      logLine("Cannot sync - not connected", "warn");
-      return;
-    }
-    mpWs.send(JSON.stringify({
-      type: "broadcast",
-      payload: { senderId: mpClientId, state: JSON.parse(JSON.stringify(state)) }
-    }));
+function mpSendAction(actionType, newState) {
+  if (!mpWs || mpWs.readyState !== WebSocket.OPEN) {
+    logLine("Cannot sync - not connected", "warn");
+    return;
   }
+
+  mpWs.send(JSON.stringify({
+    type: "action",
+    action: {
+      type: actionType,
+      state: JSON.parse(JSON.stringify(newState))
+    }
+  }));
+}
 
   function mpLeave() {
     if (reconnectTimer) clearTimeout(reconnectTimer);
@@ -693,7 +697,7 @@
     }
 
     logLine("Game started by host", "ok");
-    mpBroadcastState();
+    mpSendAction("START", state);
     render();
   }
 
@@ -744,7 +748,7 @@
       state.pile = [];
       state.mustPlayAny = true;
       logLine("🎉 Clear! Play again", "ok");
-      mpBroadcastState();
+      mpSendAction("UPDATE", state);
       render();
       return;
     }
@@ -755,7 +759,7 @@
       state.pile = [];
       state.mustPlayAny = true;
       logLine("🎊 Triple clear! Play again", "ok");
-      mpBroadcastState();
+      mpSendAction("UPDATE", state);
       render();
       return;
     }
@@ -763,7 +767,7 @@
     state.mustPlayAny = false;
     state.currentPlayer = (state.currentPlayer + 1) % state.players.length;
     logLine("Played " + rank, "ok");
-    mpBroadcastState();
+    mpSendAction("UPDATE", state);
     render();
   }
 
@@ -780,7 +784,7 @@
     state.mustPlayAny = true;
     selected.clear();
     state.currentPlayer = (state.currentPlayer + 1) % state.players.length;
-    mpBroadcastState();
+    mpSendAction("UPDATE", state);
     render();
   }
 
