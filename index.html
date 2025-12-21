@@ -1,299 +1,1049 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Splash</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Splash</title>
 
-<style>
-:root{
-  --bg:#0b1220;
-  --table1:#12204a;
-  --table2:#0c1430;
-  --accent:#63b3ed;
-  --danger:#ff7b72;
-  --ok:#7ee787;
-  --muted:rgba(230,237,247,.7);
-  --card-w: clamp(48px, 9vw, 76px);
-  --card-h: calc(var(--card-w) * 1.45);
-}
+  <style>
+    :root{
+      --bg:#0b1220;
+      --table1:#12204a;
+      --table2:#0c1430;
+      --panel:rgba(255,255,255,.04);
+      --panelBorder:rgba(255,255,255,.10);
+      --accent:#63b3ed;
+      --danger:#ff7b72;
+      --ok:#7ee787;
+      --muted:rgba(230,237,247,.72);
+      --shadow:0 10px 26px rgba(0,0,0,.45);
 
-*{ box-sizing:border-box; }
+      /* Mobile-first responsive card sizing */
+      --card-w: clamp(46px, 9vw, 76px);
+      --card-h: calc(var(--card-w) * 1.45);
 
-body{
-  margin:0;
-  font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  color:#e6edf7;
-  background: radial-gradient(circle at top, #142046, var(--bg) 65%);
-  overflow-x:hidden;
-}
+      --avatar:44px;
+      --pile-h:150px;
+      --gap:10px;
+    }
 
-header{
-  padding:10px 12px;
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  align-items:center;
-  border-bottom:1px solid rgba(255,255,255,.08);
-}
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      color:#e6edf7;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background: radial-gradient(circle at top, #142046, var(--bg) 60%);
+      -webkit-tap-highlight-color: transparent;
+      overflow-x:hidden; /* kill horizontal page scroll */
+    }
 
-h1{ margin:0; font-size:16px; font-weight:800; }
+    header{
+      padding:10px 12px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
 
-input,button{
-  background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.18);
-  color:#e6edf7;
-  padding:8px 10px;
-  border-radius:12px;
-  font-size:13px;
-}
+    header h1{
+      margin:0;
+      font-size:15px;
+      font-weight:900;
+      letter-spacing:.2px;
+      white-space:nowrap;
+    }
 
-button.primary{ background:rgba(99,179,237,.25); border-color:rgba(99,179,237,.5); }
-button.danger{ background:rgba(255,123,114,.2); border-color:rgba(255,123,114,.5); }
+    select,button,input{
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.16);
+      color:#e6edf7;
+      padding:8px 12px;
+      border-radius:12px;
+      font-size:13px;
+      outline:none;
+    }
 
-main{ padding:12px 12px 140px; }
+    button{ cursor:pointer; }
+    button.primary{ background:rgba(99,179,237,.22); border-color:rgba(99,179,237,.45); }
+    button.danger{ background:rgba(255,123,114,.18); border-color:rgba(255,123,114,.45); }
+    button:disabled{ opacity:.5; cursor:not-allowed; }
 
-.playersRow{
-  display:grid;
-  grid-template-columns: repeat(auto-fit,minmax(140px,1fr));
-  gap:8px;
-  margin-bottom:10px;
-}
+    main{
+      max-width:1300px;
+      margin:auto;
+      padding:12px 12px calc(16px + env(safe-area-inset-bottom));
+    }
 
-.playerChip{
-  display:flex;
-  gap:8px;
-  align-items:center;
-  padding:6px 8px;
-  border-radius:14px;
-  background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.12);
-}
+    /* Mobile-first: single column.
+       Desktop: two columns only on big screens */
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:12px;
+    }
+    @media (min-width: 1200px){
+      .grid{
+        grid-template-columns: 1fr 380px;
+      }
+    }
 
-.playerChip.active{
-  outline:2px solid var(--accent);
-}
+    .controls{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
 
-.avatar{
-  width:36px;height:36px;
-  border-radius:50%;
-  background:#fff;
-  color:#000;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:18px;
-  font-weight:900;
-}
+    .muted{ color:var(--muted); font-size:12px; }
+    .pill{
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.04);
+      font-size:12px;
+      display:inline-flex;
+      gap:6px;
+      align-items:center;
+      white-space:nowrap;
+    }
 
-.table{
-  background: linear-gradient(180deg,var(--table1),var(--table2));
-  border-radius:20px;
-  padding:12px;
-}
+    .table{
+      background: linear-gradient(180deg, var(--table1), var(--table2));
+      border-radius:20px;
+      padding:12px;
+      box-shadow: var(--shadow);
+    }
 
-.pileWrap{
-  margin:12px 0;
-  height:140px;
-  border-radius:16px;
-  border:2px dashed rgba(255,255,255,.25);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  transition:.15s ease;
-}
+    /* Players row: absolute on desktop, compact grid on mobile/tablet */
+    .playersRow{
+      position:relative;
+      height:180px;
+      margin-bottom:10px;
+    }
 
-.pileWrap.drag-over{
-  border-color:var(--accent);
-  background:rgba(99,179,237,.15);
-}
+    .playerChip{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:14px;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
+      min-width:150px;
+      position:absolute;
+    }
 
-.handGrid{
-  display:grid;
-  grid-template-columns: repeat(auto-fill, minmax(var(--card-w),1fr));
-  gap:8px;
-  justify-items:center;
-}
+    .playerChip.active{
+      outline:2px solid var(--accent);
+      box-shadow:0 0 16px rgba(99,179,237,.45);
+    }
 
-.c{
-  width:var(--card-w);
-  height:var(--card-h);
-  border-radius:12px;
-  background:#fff;
-  color:#111;
-  position:relative;
-  box-shadow:0 6px 16px rgba(0,0,0,.45);
-  touch-action:none;
-}
+    .seat-bottom{ left:50%; bottom:0; transform:translateX(-50%); }
+    .seat-top{ left:50%; top:0; transform:translateX(-50%); }
+    .seat-left{ left:0; top:50%; transform:translateY(-50%); }
+    .seat-right{ right:0; top:50%; transform:translateY(-50%); }
+    .seat-tl{ left:0; top:0; transform:none; }
+    .seat-tr{ right:0; top:0; transform:none; }
 
-.c.illegal{ opacity:.4; }
+    .avatar{
+      width:var(--avatar);
+      height:var(--avatar);
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:900;
+      color:#0b1220;
+      position:relative;
+      background: rgba(255,255,255,.85);
+    }
 
-.corner{
-  position:absolute;
-  font-weight:800;
-  font-size:12px;
-}
-.corner.top{ top:6px; left:6px; }
-.corner.bottom{ bottom:6px; right:6px; transform:rotate(180deg); }
+    .avatar .emo{ font-size:20px; }
+    .avatar .init{
+      position:absolute;
+      bottom:-2px; right:-2px;
+      font-size:10px;
+      padding:1px 5px;
+      border-radius:999px;
+      background:#000;
+      color:#fff;
+    }
 
-.pip{
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:26px;
-}
+    @media (max-width: 900px){
+      .playersRow{
+        position:static;
+        height:auto;
+        display:grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap:8px;
+        margin-bottom:10px;
+      }
+      .playerChip{
+        position:static;
+        transform:none !important;
+        min-width:0;
+      }
+    }
 
-.panel{
-  position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
-  padding:10px;
-  background:rgba(15,20,40,.96);
-  border-top:1px solid rgba(255,255,255,.12);
-  display:flex;
-  gap:10px;
-}
+    .c{
+      width:var(--card-w);
+      height:var(--card-h);
+      border-radius:12px;
+      background:#fff;
+      color:#111;
+      position:relative;
+      box-shadow:0 6px 18px rgba(0,0,0,.45);
+      transition:.12s ease;
+      touch-action:none; /* enables pointer drag on mobile */
+      user-select:none;
+    }
 
-@media(min-width:900px){
-  main{ padding-bottom:16px; }
-  .panel{ position:static; background:none; border:none; }
-}
+    .c.selectable{ cursor:pointer; }
+    .c.selectable:hover{ transform:translateY(-3px); }
+    .c.selected{ outline:3px solid var(--accent); transform:translateY(-5px); }
+    .c.dragging{ opacity:.92; outline:3px solid rgba(99,179,237,.7); transform:scale(1.03); }
 
-@media(max-width:900px){
-  #playBtn{ display:none; }
-}
-</style>
+    .corner{
+      position:absolute;
+      font-weight:900;
+      font-size:12px;
+      line-height:1;
+    }
+    .corner.top{ top:6px; left:6px; }
+    .corner.bottom{ bottom:6px; right:6px; transform:rotate(180deg); }
+
+    .pip{
+      position:absolute;
+      left:50%; top:50%;
+      transform:translate(-50%,-50%);
+      font-size:30px;
+    }
+
+    @media (max-width: 600px){
+      .corner{ font-size:11px; }
+      .pip{ font-size:24px; }
+    }
+
+    .c.illegal{ opacity:.55; pointer-events:none; }
+
+    .zoneTitle{
+      margin:10px 0 6px;
+      font-size:12px;
+      color:var(--muted);
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+    }
+
+    .hand{ display:flex; gap:var(--gap); flex-wrap:wrap; }
+
+    /* BIG FIX: wrap hand into a grid (no horizontal scrolling) */
+    .handScroll{
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(var(--card-w), 1fr));
+      gap:8px;
+      align-items:start;
+    }
+
+    .note{
+      margin-top:10px;
+      padding:10px;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+    }
+
+    .pileRow{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .pileVisualWrap{
+      width:100%;
+      height:var(--pile-h);
+      border-radius:16px;
+      border:2px dashed rgba(255,255,255,.22);
+      background:rgba(0,0,0,.18);
+      margin-top:8px;
+      position:relative;
+      overflow:hidden;
+      transition:.15s ease;
+    }
+
+    /* Drag target feedback */
+    .pileVisualWrap.dragOver{
+      border-color: var(--accent);
+      background: rgba(99,179,237,.14);
+    }
+    .pileVisualWrap.dragBad{
+      border-color: var(--danger);
+      background: rgba(255,123,114,.14);
+    }
+
+    .panel{
+      background:rgba(255,255,255,.04);
+      border-radius:18px;
+      padding:12px;
+    }
+
+    /* Mobile: sticky action bar (no scrolling to buttons) */
+    @media (max-width: 900px){
+      .panel{
+        position:fixed;
+        left:10px;
+        right:10px;
+        bottom: calc(10px + env(safe-area-inset-bottom));
+        z-index:1000;
+        border:1px solid rgba(255,255,255,.12);
+        backdrop-filter: blur(10px);
+      }
+      main{
+        padding-bottom: 170px; /* space for sticky panel */
+      }
+    }
+
+    .log{
+      background:rgba(0,0,0,.35);
+      border-radius:14px;
+      padding:8px;
+      font-family:ui-monospace,monospace;
+      font-size:12px;
+      max-height:300px;
+      overflow:auto;
+    }
+
+    .log .line{ padding:2px 0; border-bottom:1px dashed rgba(255,255,255,.07); }
+    .log .line:last-child{ border-bottom:none; }
+
+    .ok{ color:var(--ok); }
+    .warn{ color:#f2cc60; }
+    .bad{ color:var(--danger); }
+
+    .mpbar{
+      display:flex;
+      gap:6px;
+      align-items:center;
+      flex-wrap:wrap;
+      margin-left:auto;
+    }
+    .mpbar input{ width:110px; }
+    .mpbar #mpRoom{ text-transform:uppercase; width:100px; }
+    .mpStatus{ font-size:12px; opacity:.7; }
+    .mpStatus.connected{ color: var(--ok); }
+    .mpStatus.error{ color: var(--danger); }
+
+    .connectionIndicator{
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--danger);
+      display: inline-block;
+      margin-right: 6px;
+    }
+    .connectionIndicator.connected{
+      background: var(--ok);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    /* Mobile button text */
+    @media (max-width: 600px){
+      button{ padding:8px 10px; }
+      #playBtn{ flex:1; }
+      #pickupBtn{ flex:1; }
+    }
+  </style>
 </head>
 
 <body>
-
 <header>
   <h1>🃏 Splash</h1>
-  <input id="mpName" placeholder="Name">
-  <input id="mpRoom" placeholder="ROOM">
-  <button id="hostBtn" class="primary">Host</button>
-  <button id="joinBtn" class="primary">Join</button>
+
+  <div class="mpbar">
+    <input id="mpName" placeholder="Name" />
+    <input id="mpRoom" placeholder="ROOM" />
+    <button id="hostBtn" class="primary">Host</button>
+    <button id="joinBtn" class="primary">Join</button>
+    <button id="leaveBtn" class="danger" style="display:none;">Leave</button>
+    <span id="mpStatus" class="mpStatus"></span>
+  </div>
+
+  <div class="controls">
+    <button id="newGame" class="primary">New Game</button>
+    <span class="pill" id="turnInfo">Turn: —</span>
+  </div>
 </header>
 
 <main>
-  <div class="playersRow" id="playersRow"></div>
+  <div class="grid">
 
-  <section class="table">
-    <div class="pileWrap" id="pileWrap">DROP HERE</div>
+    <section class="table">
+      <div class="playersRow" id="playersRow"></div>
 
-    <h3>Your Hand</h3>
-    <div id="yourHand" class="handGrid"></div>
-  </section>
+      <div class="note">
+        <div class="pileRow">
+          <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+            <span class="pill">Deck: <span id="deckCount">—</span></span>
+            <span class="pill">Discard: <span id="discardCount">—</span></span>
+            <span class="pill">Pile: <span id="pileCount">—</span></span>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <span class="muted">Top:</span>
+            <span class="pill" id="topValue">—</span>
+          </div>
+        </div>
+
+        <div class="pileVisualWrap" id="pileVisualWrap"></div>
+
+        <div class="muted" style="margin-top:10px;">
+          Tip (mobile): drag a card onto the pile to play.
+        </div>
+      </div>
+
+      <div class="zoneTitle">
+        <span id="handLabel">Your hand</span>
+        <span class="muted" id="turnHint"></span>
+      </div>
+      <div id="yourHand" class="handScroll"></div>
+
+      <div class="zoneTitle">
+        <span id="tableLabel">Your table cards</span>
+      </div>
+      <div id="yourTable" class="hand"></div>
+    </section>
+
+    <section class="panel">
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+        <button id="playBtn" class="primary">Play</button>
+        <button id="pickupBtn" class="danger">Pick Up</button>
+      </div>
+
+      <div class="zoneTitle" style="margin-top:12px;">
+        <span>Game Log</span>
+      </div>
+      <div id="log" class="log"></div>
+    </section>
+
+  </div>
 </main>
 
-<div class="panel">
-  <button id="pickupBtn" class="danger">Pick Up Pile</button>
-  <button id="playBtn" class="primary">Play Selected</button>
-</div>
-
 <script>
-const WS_BASE = "wss://splash-multiplayer.azimaymen.workers.dev";
-const clientId = crypto.randomUUID();
-let ws, room, mySeat = null, dragged = null;
+(() => {
+  const WS_BASE = "wss://splash-multiplayer.azimaymen.workers.dev";
+  const mpClientId = crypto.randomUUID();
+  let mpWs = null;
+  let mpRoom = null;
+  let mpConnected = false;
+  let mySeat = null;
+  let reconnectAttempts = 0;
+  let reconnectTimer = null;
+  const MAX_RECONNECT_ATTEMPTS = 5;
 
-const state = {
-  players: [],
-  pile: [],
-  currentPlayer: 0
-};
+  // Drag-to-play state
+  let drag = { active:false, cardId:null, startX:0, startY:0, moved:false, el:null };
 
-const el = id => document.getElementById(id);
+  function saveConnectionInfo(room, name, isHost) {
+    localStorage.setItem('splash_room', room);
+    localStorage.setItem('splash_name', name);
+    localStorage.setItem('splash_isHost', isHost.toString());
+  }
+  function clearConnectionInfo() {
+    localStorage.removeItem('splash_room');
+    localStorage.removeItem('splash_name');
+    localStorage.removeItem('splash_isHost');
+  }
+  function loadConnectionInfo() {
+    return {
+      room: localStorage.getItem('splash_room'),
+      name: localStorage.getItem('splash_name'),
+      isHost: localStorage.getItem('splash_isHost') === 'true'
+    };
+  }
 
-function connect(roomCode, isHost){
-  room = roomCode;
-  ws = new WebSocket(`${WS_BASE}?room=${room}`);
-  ws.onopen = () => ws.send(JSON.stringify({
-    type:"join",
-    id:clientId,
-    name:el("mpName").value
-  }));
+  function mpSetStatus(t, type = 'normal') {
+    const status = document.getElementById("mpStatus");
+    const indicator = '<span class="connectionIndicator' + (type === 'connected' ? ' connected' : '') + '"></span>';
+    status.innerHTML = indicator + t;
+    status.className = 'mpStatus ' + type;
+  }
 
-  ws.onmessage = e => {
-    const msg = JSON.parse(e.data);
-    if(msg.type==="players"){
-      state.players = msg.players;
-      mySeat = msg.players.find(p=>p.id===clientId)?.seat ?? null;
-      renderPlayers();
-    }
-    if(msg.type==="state"){
-      Object.assign(state, msg.payload.state);
-      renderHand();
-    }
-  };
-}
+  function mpSendJoin(isHost) {
+    if (!mpWs || mpWs.readyState !== WebSocket.OPEN) return;
+    mpWs.send(JSON.stringify({
+      type: "join",
+      id: mpClientId,
+      name: document.getElementById("mpName").value || (isHost ? "Host" : "Player"),
+      isHost
+    }));
+  }
 
-el("hostBtn").onclick = () => {
-  const code = Math.random().toString(36).slice(2,6).toUpperCase();
-  el("mpRoom").value = code;
-  connect(code,true);
-};
+  function mpConnect(room, isHost) {
+    mpRoom = room.toUpperCase();
+    mpWs = new WebSocket(`${WS_BASE}?room=${mpRoom}`);
 
-el("joinBtn").onclick = () => {
-  connect(el("mpRoom").value,false);
-};
+    const name = document.getElementById("mpName").value || (isHost ? "Host" : "Player");
+    saveConnectionInfo(mpRoom, name, isHost);
 
-function renderPlayers(){
-  el("playersRow").innerHTML="";
-  state.players.forEach((p,i)=>{
-    const d=document.createElement("div");
-    d.className="playerChip"+(i===state.currentPlayer?" active":"");
-    d.innerHTML=`<div class="avatar">${p.name[0]}</div><div>${p.name}</div>`;
-    el("playersRow").appendChild(d);
-  });
-}
-
-function renderHand(){
-  const h=el("yourHand");
-  h.innerHTML="";
-  if(mySeat===null) return;
-  const me=state.players[mySeat];
-  if(!me?.hand) return;
-
-  me.hand.forEach(card=>{
-    const d=document.createElement("div");
-    d.className="c";
-    d.innerHTML=`<div class="corner top">${card.rank}</div>
-                 <div class="pip">${card.suit}</div>
-                 <div class="corner bottom">${card.rank}</div>`;
-
-    d.onpointerdown = e=>{
-      if(state.currentPlayer!==mySeat) return;
-      dragged=card.id;
-      d.setPointerCapture(e.pointerId);
+    mpWs.onopen = () => {
+      mpConnected = true;
+      reconnectAttempts = 0;
+      mpSetStatus(`${mpRoom}${isHost ? " (HOST)" : ""}`, 'connected');
+      mpSendJoin(isHost);
+      document.getElementById("hostBtn").style.display = "none";
+      document.getElementById("joinBtn").style.display = "none";
+      document.getElementById("leaveBtn").style.display = "inline-block";
+      logLine(`Connected to room ${mpRoom}`, "ok");
     };
 
-    d.onpointermove = e=>{
-      if(!dragged) return;
-      const pile=el("pileWrap").getBoundingClientRect();
-      const over =
-        e.clientX>pile.left && e.clientX<pile.right &&
-        e.clientY>pile.top && e.clientY<pile.bottom;
-      el("pileWrap").classList.toggle("drag-over",over);
-    };
+    mpWs.onmessage = (ev) => {
+      let msg;
+      try { msg = JSON.parse(ev.data); } catch { return; }
 
-    d.onpointerup = ()=>{
-      el("pileWrap").classList.remove("drag-over");
-      if(dragged){
-        ws.send(JSON.stringify({
-          type:"action",
-          action:{ type:"UPDATE", state }
-        }));
+      if (msg.type === "players") {
+        mySeat = msg.players.findIndex(p => p.id === mpClientId);
+        ensurePlayersFromServer(msg.players);
+        render();
       }
-      dragged=null;
+
+      if (msg.type === "state") {
+        const payload = msg.payload;
+        applyRemoteState(payload.state);
+      }
+
+      if (msg.type === "reset") {
+        logLine("Game was reset by host", "warn");
+        resetLocalState();
+        render();
+      }
+
+      if (msg.type === "pong") {}
     };
 
-    h.appendChild(d);
-  });
-}
-</script>
+    mpWs.onclose = () => {
+      mpConnected = false;
+      mpSetStatus("Disconnected", "error");
+      handleReconnect(room, isHost);
+    };
 
+    mpWs.onerror = () => {
+      mpConnected = false;
+      mpSetStatus("Connection Error", "error");
+    };
+
+    setInterval(() => {
+      if (mpWs && mpWs.readyState === WebSocket.OPEN) {
+        mpWs.send(JSON.stringify({ type: "ping" }));
+      }
+    }, 30000);
+  }
+
+  function handleReconnect(room, isHost) {
+    if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+      logLine("Failed to reconnect after multiple attempts", "bad");
+      mpSetStatus("Disconnected - Reload to try again", "error");
+      return;
+    }
+    reconnectAttempts++;
+    const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000);
+    mpSetStatus(`Reconnecting... (${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`, "error");
+    reconnectTimer = setTimeout(() => {
+      logLine(`Reconnecting (attempt ${reconnectAttempts})...`, "warn");
+      mpConnect(room, isHost);
+    }, delay);
+  }
+
+  // Server-authoritative: send ACTION instead of broadcast
+  function mpSendAction(actionType, nextState) {
+    if (!mpWs || mpWs.readyState !== WebSocket.OPEN) {
+      logLine("Cannot sync - not connected", "warn");
+      return;
+    }
+    mpWs.send(JSON.stringify({
+      type: "action",
+      action: { type: actionType, state: JSON.parse(JSON.stringify(nextState)) }
+    }));
+  }
+
+  function mpLeave() {
+    if (reconnectTimer) clearTimeout(reconnectTimer);
+    if (mpWs) mpWs.close();
+    mpConnected = false;
+    mpRoom = null;
+    mySeat = null;
+    clearConnectionInfo();
+    document.getElementById("hostBtn").style.display = "inline-block";
+    document.getElementById("joinBtn").style.display = "inline-block";
+    document.getElementById("leaveBtn").style.display = "none";
+    mpSetStatus("Not connected");
+    logLine("Left room", "warn");
+    resetLocalState();
+    render();
+  }
+
+  document.getElementById("hostBtn").onclick = () => {
+    const name = document.getElementById("mpName").value.trim();
+    if (!name) return alert("Enter your name first");
+    const code = Math.random().toString(36).slice(2, 8).toUpperCase();
+    document.getElementById("mpRoom").value = code;
+    mpConnect(code, true);
+    alert("Room code: " + code + "\nShare this with others to join!");
+  };
+
+  document.getElementById("joinBtn").onclick = () => {
+    const name = document.getElementById("mpName").value.trim();
+    const code = document.getElementById("mpRoom").value.trim();
+    if (!name) return alert("Enter your name first");
+    if (!code) return alert("Enter room code");
+    mpConnect(code, false);
+  };
+
+  document.getElementById("leaveBtn").onclick = mpLeave;
+
+  window.addEventListener('load', () => {
+    const info = loadConnectionInfo();
+    if (info.room && info.name) {
+      document.getElementById("mpName").value = info.name;
+      document.getElementById("mpRoom").value = info.room;
+    }
+  });
+
+  const SUITS = ["♠", "♥", "♦", "♣"];
+  const RANKS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
+  const RANK_ORDER = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
+  const rankOrder = (r) => RANK_ORDER.indexOf(r);
+  const isFace = (r) => r === "J" || r === "Q" || r === "K";
+
+  const EMOJIS = ["🦊", "🐼", "🐯", "🦁", "🐸", "🐙", "🦉", "🦄", "🐲", "🐶", "🐱", "🐵"];
+  const SEAT_CLASSES = ["seat-bottom", "seat-left", "seat-top", "seat-right", "seat-tl", "seat-tr"];
+
+  const state = {
+    players: [],
+    deck: [],
+    discard: [],
+    pile: [],
+    currentPlayer: 0,
+    mustPlayAny: false
+  };
+
+  let selected = new Set();
+  const el = (id) => document.getElementById(id);
+
+  function logLine(text, tone = "") {
+    const div = document.createElement("div");
+    div.className = "line";
+    const timestamp = new Date().toLocaleTimeString();
+    div.innerHTML = `<span class="muted">[${timestamp}]</span> ` + (tone ? `<span class="${tone}">●</span> ` : "") + text;
+    el("log").prepend(div);
+  }
+
+  function ensurePlayersFromServer(players) {
+    while (state.players.length < players.length) {
+      const idx = state.players.length;
+      state.players.push({
+        name: `Player ${idx + 1}`,
+        emoji: EMOJIS[idx % EMOJIS.length],
+        hand: [],
+        tableUp: Array.from({ length: 4 }, () => null),
+        tableDown: Array.from({ length: 4 }, () => null)
+      });
+    }
+    players.forEach((p, idx) => {
+      if (state.players[idx]) state.players[idx].name = p.name || `Player ${idx + 1}`;
+    });
+  }
+
+  function applyRemoteState(remote) {
+    if (!remote) return;
+    state.players = remote.players;
+    state.deck = remote.deck;
+    state.discard = remote.discard;
+    state.pile = remote.pile;
+    state.currentPlayer = remote.currentPlayer;
+    state.mustPlayAny = remote.mustPlayAny;
+    selected.clear();
+    render();
+  }
+
+  function resetLocalState() {
+    state.deck = [];
+    state.discard = [];
+    state.pile = [];
+    state.currentPlayer = 0;
+    state.mustPlayAny = false;
+    selected.clear();
+  }
+
+  function topRank() {
+    return state.pile.length ? state.pile[state.pile.length - 1].rank : null;
+  }
+
+  function canPlayOnTop(rank) {
+    if (state.mustPlayAny) return true;
+    const top = topRank();
+    if (!top) return true;
+    if (rank === "10" || rank === "JOKER") return true;
+    if (top === "10" || top === "JOKER") return false;
+    if (isFace(rank) && !isFace(top)) return false;
+    return rankOrder(rank) <= rankOrder(top);
+  }
+
+  function makeDeck() {
+    const d = [];
+    for (let k = 0; k < 2; k++) {
+      for (const s of SUITS) {
+        for (const r of RANKS) {
+          d.push({ id: crypto.randomUUID(), rank: r, suit: s });
+        }
+      }
+    }
+    for (let j = 0; j < 4; j++) d.push({ id: crypto.randomUUID(), rank: "JOKER", suit: "★" });
+    for (let i = d.length - 1; i > 0; i--) {
+      const k = Math.floor(Math.random() * (i + 1));
+      [d[i], d[k]] = [d[k], d[i]];
+    }
+    return d;
+  }
+
+  function newGame() {
+    if (!mpConnected) {
+      logLine("Must be connected to start game", "bad");
+      return;
+    }
+    if (mySeat !== 0) {
+      logLine("Only Host (Player 1) can start", "warn");
+      return;
+    }
+
+    state.deck = makeDeck();
+    state.discard = [];
+    state.pile = [];
+    state.mustPlayAny = false;
+    state.currentPlayer = 0;
+
+    state.players.forEach(p => {
+      p.hand = [];
+      p.tableUp = Array.from({ length: 4 }, () => null);
+      p.tableDown = Array.from({ length: 4 }, () => null);
+    });
+
+    for (let i = 0; i < 4; i++) state.players.forEach(p => p.tableDown[i] = state.deck.pop());
+    for (let i = 0; i < 4; i++) state.players.forEach(p => p.tableUp[i] = state.deck.pop());
+    for (let i = 0; i < 11; i++) state.players.forEach(p => p.hand.push(state.deck.pop()));
+
+    const start = state.deck.pop();
+    state.pile.push(start);
+    if (start.rank === "10" || start.rank === "JOKER") {
+      state.discard.push(...state.pile);
+      state.pile = [];
+      state.mustPlayAny = true;
+    }
+
+    logLine("Game started by host", "ok");
+    mpSendAction("START", state);
+    render();
+  }
+
+  function isMyTurn() {
+    return mySeat !== null && mySeat === state.currentPlayer;
+  }
+
+  function playSelected() {
+    if (!isMyTurn()) {
+      logLine("Not your turn", "warn");
+      return;
+    }
+    if (mySeat === null) return;
+    const me = state.players[mySeat];
+    if (!me) return;
+    if (!selected.size) return;
+
+    const ids = Array.from(selected);
+    const chosen = [];
+
+    for (const id of ids) {
+      const h = me.hand.find(c => c.id === id);
+      if (h) chosen.push({ card: h, zone: "hand" });
+      const upIdx = me.tableUp.findIndex(c => c && c.id === id);
+      if (upIdx !== -1) chosen.push({ card: me.tableUp[upIdx], zone: "tableUp", idx: upIdx });
+    }
+    if (!chosen.length) return;
+
+    const rank = chosen[0].card.rank;
+    if (!chosen.every(x => x.card.rank === rank)) {
+      logLine("Must play same rank", "bad");
+      return;
+    }
+    if (!canPlayOnTop(rank)) {
+      logLine("Illegal play - cannot play " + rank + " on " + topRank(), "bad");
+      return;
+    }
+
+    chosen.forEach(x => {
+      if (x.zone === "hand") me.hand = me.hand.filter(c => c.id !== x.card.id);
+      if (x.zone === "tableUp") me.tableUp[x.idx] = null;
+      state.pile.push(x.card);
+    });
+    selected.clear();
+
+    if (rank === "10" || rank === "JOKER") {
+      state.discard.push(...state.pile);
+      state.pile = [];
+      state.mustPlayAny = true;
+      logLine("🎉 Clear! Play again", "ok");
+      mpSendAction("UPDATE", state);
+      render();
+      return;
+    }
+
+    const cnt = state.pile.reduce((a, c) => a + (c.rank === rank ? 1 : 0), 0);
+    if (cnt >= 3) {
+      state.discard.push(...state.pile);
+      state.pile = [];
+      state.mustPlayAny = true;
+      logLine("🎊 Triple clear! Play again", "ok");
+      mpSendAction("UPDATE", state);
+      render();
+      return;
+    }
+
+    state.mustPlayAny = false;
+    state.currentPlayer = (state.currentPlayer + 1) % state.players.length;
+    logLine("Played " + rank, "ok");
+    mpSendAction("UPDATE", state);
+    render();
+  }
+
+  function pickup() {
+    if (!isMyTurn()) {
+      logLine("Not your turn", "warn");
+      return;
+    }
+    if (mySeat === null) return;
+    const me = state.players[mySeat];
+    me.hand.push(...state.pile);
+    logLine("Picked up " + state.pile.length + " cards", "warn");
+    state.pile = [];
+    state.mustPlayAny = true;
+    selected.clear();
+    state.currentPlayer = (state.currentPlayer + 1) % state.players.length;
+    mpSendAction("UPDATE", state);
+    render();
+  }
+
+  // --- Mobile drag-to-play helper: drag a single card onto pile ---
+  function isOverPile(x, y) {
+    const r = el("pileVisualWrap").getBoundingClientRect();
+    return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom;
+  }
+
+  function startDrag(cardId, cardEl, pointerId, startX, startY) {
+    drag.active = true;
+    drag.cardId = cardId;
+    drag.startX = startX;
+    drag.startY = startY;
+    drag.moved = false;
+    drag.el = cardEl;
+    cardEl.classList.add("dragging");
+    cardEl.setPointerCapture(pointerId);
+  }
+
+  function moveDrag(clientX, clientY) {
+    if (!drag.active || !drag.el) return;
+    const dx = Math.abs(clientX - drag.startX);
+    const dy = Math.abs(clientY - drag.startY);
+    if (dx + dy > 6) drag.moved = true;
+
+    const over = isOverPile(clientX, clientY);
+    el("pileVisualWrap").classList.toggle("dragOver", over);
+  }
+
+  function endDrag(pointerId, clientX, clientY) {
+    if (!drag.active || !drag.el) return;
+
+    el("pileVisualWrap").classList.remove("dragOver");
+    el("pileVisualWrap").classList.remove("dragBad");
+
+    drag.el.releasePointerCapture(pointerId);
+    drag.el.classList.remove("dragging");
+
+    // If dropped on pile, attempt play
+    if (drag.moved && isOverPile(clientX, clientY)) {
+      selected.clear();
+      selected.add(drag.cardId);
+      playSelected();
+    }
+
+    drag.active = false;
+    drag.cardId = null;
+    drag.el = null;
+    drag.moved = false;
+  }
+
+  function render() {
+    el("pileCount").textContent = String(state.pile.length);
+    el("deckCount").textContent = String(state.deck.length);
+    el("discardCount").textContent = String(state.discard.length);
+    el("topValue").textContent = state.mustPlayAny ? "ANY" : (topRank() || "—");
+    el("turnInfo").textContent = "Turn: " + (state.players[state.currentPlayer]?.name || "—");
+    el("turnHint").textContent = isMyTurn() ? "👉 Your turn!" : "Waiting for others...";
+
+    const pr = el("playersRow");
+    pr.innerHTML = "";
+    state.players.forEach((p, idx) => {
+      const d = document.createElement("div");
+      const seat = SEAT_CLASSES[idx] || "";
+      d.className = `playerChip ${seat} ${idx === state.currentPlayer ? "active" : ""}`;
+      d.innerHTML = `
+        <div class="avatar"><span class="emo">${p.emoji}</span><span class="init">${idx + 1}</span></div>
+        <div>
+          <div style="font-weight:900">${p.name}</div>
+          <div class="muted" style="font-size:11px">Hand: ${p.hand.length} | Table: ${p.tableUp.filter(c => c).length}</div>
+        </div>`;
+      pr.appendChild(d);
+    });
+
+    const pv = el("pileVisualWrap");
+    pv.innerHTML = "";
+    state.pile.slice(-6).forEach((c, i) => {
+      const d = document.createElement("div");
+      d.className = "c";
+      d.style.position = "absolute";
+      d.style.left = "50%";
+      d.style.top = `${20 + i * 4}px`;
+      d.style.transform = `translateX(-50%) rotate(${i * 4 - 8}deg)`;
+      d.innerHTML = `<div class="corner top">${c.rank}<br>${c.suit}</div><div class="pip">${c.suit}</div><div class="corner bottom">${c.rank}<br>${c.suit}</div>`;
+      pv.appendChild(d);
+    });
+
+    const handEl = el("yourHand");
+    const tableEl = el("yourTable");
+    handEl.innerHTML = "";
+    tableEl.innerHTML = "";
+
+    if (mySeat === null || !state.players[mySeat]) {
+      handEl.innerHTML = '<div class="muted" style="padding:20px;text-align:center;">Join a room to see your cards</div>';
+      return;
+    }
+
+    const me = state.players[mySeat];
+
+    me.hand.forEach(card => {
+      const d = document.createElement("div");
+      d.className = "c selectable";
+      const legal = canPlayOnTop(card.rank);
+      if (!legal) d.classList.add("illegal");
+      if (selected.has(card.id)) d.classList.add("selected");
+
+      // Tap to select (desktop + mobile)
+      d.onclick = () => {
+        if (!isMyTurn()) { logLine("Wait for your turn", "warn"); return; }
+        if (!legal) { logLine("Cannot play " + card.rank + " on " + topRank(), "bad"); return; }
+        if (selected.has(card.id)) selected.delete(card.id);
+        else {
+          if (selected.size) {
+            const anyId = selected.values().next().value;
+            const anyCard = me.hand.find(x => x.id === anyId) || me.tableUp.find(x => x && x.id === anyId);
+            if (anyCard && anyCard.rank !== card.rank) { logLine("Must select same rank", "warn"); selected.clear(); }
+          }
+          selected.add(card.id);
+        }
+        render();
+      };
+
+      // Drag to pile (mobile/tablet)
+      d.addEventListener("pointerdown", (e) => {
+        if (!isMyTurn()) return;
+        if (!legal) return;
+        startDrag(card.id, d, e.pointerId, e.clientX, e.clientY);
+      });
+      d.addEventListener("pointermove", (e) => {
+        if (!drag.active) return;
+        moveDrag(e.clientX, e.clientY);
+      });
+      d.addEventListener("pointerup", (e) => {
+        if (!drag.active) return;
+        endDrag(e.pointerId, e.clientX, e.clientY);
+      });
+      d.addEventListener("pointercancel", (e) => {
+        if (!drag.active) return;
+        endDrag(e.pointerId, e.clientX, e.clientY);
+      });
+
+      d.innerHTML = `<div class="corner top">${card.rank}<br>${card.suit}</div><div class="pip">${card.suit}</div><div class="corner bottom">${card.rank}<br>${card.suit}</div>`;
+      handEl.appendChild(d);
+    });
+
+    for (let i = 0; i < 4; i++) {
+      const up = me.tableUp[i];
+      if (up) {
+        const d = document.createElement("div");
+        d.className = "c selectable";
+        const legal = canPlayOnTop(up.rank);
+        if (!legal) d.classList.add("illegal");
+        if (selected.has(up.id)) d.classList.add("selected");
+
+        d.onclick = () => {
+          if (!isMyTurn()) { logLine("Wait for your turn", "warn"); return; }
+          if (me.hand.length > 0) { logLine("Must play hand cards first", "warn"); return; }
+          if (!legal) { logLine("Cannot play " + up.rank + " on " + topRank(), "bad"); return; }
+          if (selected.has(up.id)) selected.delete(up.id);
+          else {
+            if (selected.size) {
+              const anyId = selected.values().next().value;
+              const anyCard = me.tableUp.find(x => x && x.id === anyId);
+              if (anyCard && anyCard.rank !== up.rank) { logLine("Must select same rank", "warn"); selected.clear(); }
+            }
+            selected.add(up.id);
+          }
+          render();
+        };
+
+        d.addEventListener("pointerdown", (e) => {
+          if (!isMyTurn()) return;
+          if (me.hand.length > 0) return;
+          if (!legal) return;
+          startDrag(up.id, d, e.pointerId, e.clientX, e.clientY);
+        });
+        d.addEventListener("pointermove", (e) => {
+          if (!drag.active) return;
+          moveDrag(e.clientX, e.clientY);
+        });
+        d.addEventListener("pointerup", (e) => {
+          if (!drag.active) return;
+          endDrag(e.pointerId, e.clientX, e.clientY);
+        });
+        d.addEventListener("pointercancel", (e) => {
+          if (!drag.active) return;
+          endDrag(e.pointerId, e.clientX, e.clientY);
+        });
+
+        d.innerHTML = `<div class="corner top">${up.rank}<br>${up.suit}</div><div class="pip">${up.suit}</div><div class="corner bottom">${up.rank}<br>${up.suit}</div>`;
+        tableEl.appendChild(d);
+      } else {
+        const empty = document.createElement("div");
+        empty.className = "c";
+        empty.style.opacity = "0.2";
+        empty.innerHTML = `<div class="pip">—</div>`;
+        tableEl.appendChild(empty);
+      }
+    }
+
+    el("newGame").disabled = (mySeat !== 0 || !mpConnected);
+    el("playBtn").disabled = (!isMyTurn() || !mpConnected);
+    el("pickupBtn").disabled = (!isMyTurn() || !mpConnected);
+  }
+
+  el("newGame").onclick = newGame;
+  el("playBtn").onclick = playSelected;
+  el("pickupBtn").onclick = pickup;
+
+  logLine("Welcome to Splash! Host or join a room to start.", "ok");
+  mpSetStatus("Not connected");
+  render();
+})();
+</script>
 </body>
 </html>
