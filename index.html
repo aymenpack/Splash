@@ -8,39 +8,131 @@
   <style>
     :root{
       --bg:#0b1220;
-      --table1:#12204a;
-      --table2:#0c1430;
-      --panel:rgba(255,255,255,.04);
-      --panelBorder:rgba(255,255,255,.10);
+      --card-w: clamp(46px, 8.2vw, 74px);
+      --card-h: calc(var(--card-w) * 1.45);
       --accent:#63b3ed;
       --danger:#ff7b72;
       --ok:#7ee787;
       --muted:rgba(230,237,247,.72);
-      --shadow:0 10px 26px rgba(0,0,0,.45);
-      --card-w: clamp(46px, 8.6vw, 76px);
-      --card-h: calc(var(--card-w) * 1.45);
-      --avatar:44px;
-      --pile-h:130px;
+      --shadow:0 12px 30px rgba(0,0,0,.45);
+      --panel:rgba(255,255,255,.05);
+      --border:rgba(255,255,255,.12);
+      --table1:#12204a;
+      --table2:#0c1430;
       --gap:8px;
     }
 
     *{ box-sizing:border-box; }
-
-    /* ✅ NO PAGE SCROLL */
-    html,body{
-      height:100%;
-      margin:0;
-      overflow:hidden;
-    }
-
+    html,body{ height:100%; margin:0; overflow:hidden; }
     body{
       color:#e6edf7;
       font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      background: radial-gradient(circle at top, #142046, var(--bg) 60%);
+      background: radial-gradient(circle at top, #142046, var(--bg) 62%);
       -webkit-tap-highlight-color: transparent;
     }
 
+    button,input{
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.16);
+      color:#e6edf7;
+      padding:10px 12px;
+      border-radius:14px;
+      font-size:14px;
+      outline:none;
+    }
+    button{ cursor:pointer; }
+    button.primary{ background:rgba(99,179,237,.22); border-color:rgba(99,179,237,.45); }
+    button.danger{ background:rgba(255,123,114,.18); border-color:rgba(255,123,114,.45); }
+    button:disabled{ opacity:.55; cursor:not-allowed; }
+
+    .muted{ color:var(--muted); font-size:12px; }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:5px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.04);
+      font-size:12px;
+      white-space:nowrap;
+    }
+
+    /* App shell */
+    #app{ height:100%; display:flex; flex-direction:column; }
+    .view{ height:100%; display:flex; flex-direction:column; }
+
+    /* LOBBY */
+    #lobbyView{
+      padding:18px 14px calc(18px + env(safe-area-inset-bottom));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .lobbyCard{
+      width:min(520px, 100%);
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:22px;
+      box-shadow:var(--shadow);
+      padding:18px;
+    }
+    .lobbyTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:12px;
+    }
+    .brand{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+    .brand h1{
+      margin:0;
+      font-size:18px;
+      font-weight:900;
+      letter-spacing:.2px;
+    }
+    .brand .muted{ font-size:12px; }
+    .lobbyGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin-top:10px;
+    }
+    .lobbyGrid input{ width:100%; }
+    .lobbyActions{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin-top:12px;
+    }
+    .lobbyFoot{
+      margin-top:12px;
+      padding-top:12px;
+      border-top:1px solid rgba(255,255,255,.10);
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .roomHint{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+    }
+    @media (max-width: 520px){
+      .lobbyGrid{ grid-template-columns: 1fr; }
+      .lobbyActions{ grid-template-columns: 1fr; }
+    }
+
+    /* GAME */
+    #gameView{ display:none; }
     header{
+      flex:0 0 auto;
       padding:10px 12px;
       border-bottom:1px solid rgba(255,255,255,.08);
       display:flex;
@@ -48,58 +140,25 @@
       align-items:center;
       flex-wrap:wrap;
     }
-
-    header h1{
-      margin:0;
-      font-size:15px;
+    header .left{
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+    }
+    header .right{
+      margin-left:auto;
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+    }
+    header .title{
       font-weight:900;
       letter-spacing:.2px;
+      font-size:14px;
       white-space:nowrap;
-    }
-
-    select,button,input{
-      background:rgba(255,255,255,.08);
-      border:1px solid rgba(255,255,255,.16);
-      color:#e6edf7;
-      padding:8px 12px;
-      border-radius:12px;
-      font-size:13px;
-      outline:none;
-    }
-
-    button{ cursor:pointer; }
-    button.primary{ background:rgba(99,179,237,.22); border-color:rgba(99,179,237,.45); }
-    button.danger{ background:rgba(255,123,114,.18); border-color:rgba(255,123,114,.45); }
-    button:disabled{ opacity:.5; cursor:not-allowed; }
-
-    .controls{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-
-    .muted{ color:var(--muted); font-size:12px; }
-    .pill{
-      padding:4px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(255,255,255,.04);
-      font-size:12px;
-      display:inline-flex;
-      gap:6px;
-      align-items:center;
-      white-space:nowrap;
-    }
-
-    /* ======== App layout: fixed viewport, no scroll ======== */
-    #app{
-      height:100%;
-      display:flex;
-      flex-direction:column;
     }
 
     main{
-      flex:1;
+      flex:1 1 auto;
       min-height:0;
-      max-height:100%;
       padding:10px 10px calc(10px + env(safe-area-inset-bottom));
-      overflow:hidden; /* ✅ no scroll */
+      overflow:hidden;
     }
 
     .grid{
@@ -108,92 +167,109 @@
       grid-template-columns: 1fr;
       gap:10px;
     }
-
-    /* Desktop can show side panel area but still no page scroll */
     @media (min-width: 1200px){
       .grid{ grid-template-columns: 1fr 380px; }
     }
 
     .table{
       height:100%;
-      background: linear-gradient(180deg, var(--table1), var(--table2));
-      border-radius:20px;
-      padding:10px;
-      box-shadow: var(--shadow);
+      min-height:0;
       display:flex;
       flex-direction:column;
-      min-height:0;
+      gap:10px;
+      background: linear-gradient(180deg, var(--table1), var(--table2));
+      border-radius:22px;
+      padding:12px;
+      box-shadow:var(--shadow);
       overflow:hidden;
     }
 
     .playersRow{
-      position:relative;
-      height:160px;
-      margin-bottom:8px;
       flex:0 0 auto;
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap:8px;
+    }
+    @media (min-width: 900px){
+      .playersRow{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
     }
 
     .playerChip{
       display:flex;
       align-items:center;
       gap:8px;
-      padding:6px 10px;
-      border-radius:14px;
+      padding:8px 10px;
+      border-radius:16px;
       background:rgba(255,255,255,.06);
       border:1px solid rgba(255,255,255,.12);
-      min-width:150px;
-      position:absolute;
+      min-width:0;
     }
-
     .playerChip.active{
       outline:2px solid var(--accent);
-      box-shadow:0 0 16px rgba(99,179,237,.45);
+      box-shadow:0 0 16px rgba(99,179,237,.35);
     }
-
-    .seat-bottom{ left:50%; bottom:0; transform:translateX(-50%); }
-    .seat-top{ left:50%; top:0; transform:translateX(-50%); }
-    .seat-left{ left:0; top:50%; transform:translateY(-50%); }
-    .seat-right{ right:0; top:50%; transform:translateY(-50%); }
-    .seat-tl{ left:0; top:0; transform:none; }
-    .seat-tr{ right:0; top:0; transform:none; }
-
     .avatar{
-      width:var(--avatar);
-      height:var(--avatar);
+      width:38px; height:38px;
       border-radius:50%;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-weight:900;
-      color:#0b1220;
-      position:relative;
+      display:flex; align-items:center; justify-content:center;
       background:rgba(255,255,255,.9);
+      color:#0b1220;
+      font-weight:900;
+      flex:0 0 auto;
+      position:relative;
     }
-
-    .avatar .emo{ font-size:20px; }
-    .avatar .init{
+    .avatar .emo{ font-size:18px; }
+    .avatar .seat{
       position:absolute;
       bottom:-2px; right:-2px;
+      background:#000;
+      color:#fff;
       font-size:10px;
       padding:1px 5px;
       border-radius:999px;
-      background:#000;
-      color:#fff;
     }
 
-    /* Compact players on mobile/tablet */
-    @media (max-width: 900px){
-      .playersRow{
-        position:static;
-        height:auto;
-        display:grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap:8px;
-        margin-bottom:8px;
-      }
-      .playerChip{ position:static; transform:none !important; min-width:0; }
+    .pileBox{
+      flex:0 0 auto;
+      background:rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:18px;
+      padding:10px;
+      overflow:hidden;
+    }
+    .pileRow{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      justify-content:space-between;
+      align-items:center;
+    }
+    .pileVisual{
+      width:100%;
+      height:130px;
+      border-radius:16px;
+      border:2px dashed rgba(255,255,255,.20);
+      background:rgba(0,0,0,.18);
+      margin-top:10px;
+      position:relative;
+      overflow:hidden;
+      transition:.15s ease;
+    }
+    .pileVisual.dragOver{
+      border-color:var(--accent);
+      background:rgba(99,179,237,.14);
     }
 
+    .zoneTitle{
+      flex:0 0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-top:2px;
+    }
+
+    /* Cards */
     .c{
       width:var(--card-w);
       height:var(--card-h);
@@ -202,15 +278,12 @@
       color:#111;
       position:relative;
       box-shadow:0 6px 18px rgba(0,0,0,.45);
-      transition:.12s ease;
-      touch-action:none;
       user-select:none;
+      touch-action:none;
+      transition:.12s ease;
     }
-
-    .c.selectable{ cursor:pointer; }
-    .c.selectable:hover{ transform:translateY(-3px); }
-    .c.selected{ outline:3px solid var(--accent); transform:translateY(-4px); }
-    .c.illegal{ opacity:.55; pointer-events:none; }
+    .c.illegal{ opacity:.55; }
+    .c.selected{ outline:3px solid var(--accent); transform:translateY(-3px); }
     .c.dragging{ outline:3px solid rgba(99,179,237,.55); transform:scale(1.03); }
 
     .corner{
@@ -221,355 +294,434 @@
     }
     .corner.top{ top:6px; left:6px; }
     .corner.bottom{ bottom:6px; right:6px; transform:rotate(180deg); }
-
     .pip{
       position:absolute;
       left:50%; top:50%;
       transform:translate(-50%,-50%);
       font-size:30px;
     }
-
-    @media(max-width:600px){
+    @media (max-width: 600px){
       .corner{ font-size:11px; }
       .pip{ font-size:24px; }
     }
 
-    .note{
-      padding:8px;
-      border-radius:18px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.03);
-      flex:0 0 auto;
-    }
-
-    .pileRow{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:8px;
-      flex-wrap:wrap;
-    }
-
-    .pileVisualWrap{
-      width:100%;
-      height:var(--pile-h);
-      border-radius:16px;
-      border:2px dashed rgba(255,255,255,.18);
-      background:rgba(0,0,0,.18);
-      margin-top:8px;
-      position:relative;
-      overflow:hidden;
-      transition:.15s ease;
-    }
-    .pileVisualWrap.dragOver{
-      border-color: var(--accent);
-      background: rgba(99,179,237,.14);
-    }
-
-    .zoneTitle{
-      margin:8px 0 6px;
-      font-size:12px;
-      color:var(--muted);
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      align-items:center;
-      flex:0 0 auto;
-    }
-
-    /* ✅ FORCE 5 PER ROW (no horizontal scroll) */
-    .handScroll{
-      display:grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap:6px;
-      justify-items:center;
+    /* ✅ Hand grouped by rank into stacks – 5 stacks per row */
+    .handStacks{
       flex:1 1 auto;
       min-height:0;
-      overflow:hidden; /* ✅ no scroll */
+      display:grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap:8px;
+      overflow:hidden;
+      justify-items:center;
+      align-content:start;
+      padding-bottom:2px;
     }
 
-    .hand{
-      display:grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap:6px;
-      justify-items:center;
+    .cardStack{
+      width:var(--card-w);
+      height:var(--card-h);
+      position:relative;
+    }
+    .cardStack .c{ position:absolute; top:0; left:0; }
+    .stackGhost{
+      opacity:.20;
+      filter:saturate(.9);
+    }
+    .stackGhost.g1{ transform: translate(7px, -7px); }
+    .stackGhost.g2{ transform: translate(14px, -14px); }
+    .stackCount{
+      position:absolute;
+      top:-8px; right:-8px;
+      background:rgba(0,0,0,.8);
+      border:1px solid rgba(255,255,255,.18);
+      color:#fff;
+      font-size:11px;
+      padding:2px 7px;
+      border-radius:999px;
+      font-weight:900;
+    }
+
+    /* Table cards: 5 per row too (only 4 used) */
+    .tableCards{
       flex:0 0 auto;
+      display:grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap:8px;
+      justify-items:center;
       overflow:hidden;
     }
 
-    /* ===== Action panel fixed, no page scroll ===== */
+    /* Right panel / controls */
     .panel{
-      background:rgba(255,255,255,.04);
-      border-radius:18px;
-      padding:10px;
-      border:1px solid rgba(255,255,255,.10);
+      height:100%;
+      min-height:0;
       display:flex;
       flex-direction:column;
       gap:10px;
-      height:100%;
-      min-height:0;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:22px;
+      padding:12px;
       overflow:hidden;
     }
 
-    /* On mobile/tablet, keep actions always visible */
+    .actionRow{
+      display:flex;
+      gap:10px;
+    }
+    .actionRow button{ flex:1; }
+
+    .logWrap{
+      flex:1 1 auto;
+      min-height:0;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:16px;
+      background:rgba(0,0,0,.22);
+      display:flex;
+      flex-direction:column;
+    }
+    .logHead{
+      flex:0 0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:8px 10px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .logBody{
+      flex:1 1 auto;
+      min-height:0;
+      overflow:auto;
+      padding:8px 10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size:12px;
+    }
+    .logLine{
+      padding:2px 0;
+      border-bottom:1px dashed rgba(255,255,255,.08);
+    }
+    .logLine:last-child{ border-bottom:none; }
+
+    /* Mobile: keep panel as bottom bar, but still no scrolling */
     @media (max-width: 900px){
+      .grid{ grid-template-columns: 1fr; }
       .panel{
         position:fixed;
         left:10px;
         right:10px;
         bottom: calc(10px + env(safe-area-inset-bottom));
+        height: 170px;
         z-index:1000;
         backdrop-filter: blur(10px);
       }
-      main{ padding-bottom: 160px; }
-      /* Hide secondary column on mobile since panel is floating */
-      @media (max-width: 900px){
-        .grid{ grid-template-columns: 1fr; }
-      }
+      main{ padding-bottom: 190px; }
+      .logWrap{ display:none; } /* log still available via button -> overlay */
     }
 
-    .ok{ color:var(--ok); }
-    .warn{ color:#f2cc60; }
-    .bad{ color:var(--danger); }
-
-    .mpbar{
-      display:flex;
-      gap:6px;
-      align-items:center;
-      flex-wrap:wrap;
-      margin-left:auto;
-    }
-    .mpbar input{ width:95px; }
-    .mpbar #mpRoom{ text-transform:uppercase; width:90px; }
-    .mpStatus{ font-size:12px; opacity:.7; }
-    .mpStatus.connected{ color: var(--ok); }
-    .mpStatus.error{ color: var(--danger); }
-
-    .connectionIndicator{
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--danger);
-      display: inline-block;
-      margin-right: 6px;
-    }
-    .connectionIndicator.connected{
-      background: var(--ok);
-      animation: pulse 2s infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
-
-    /* ===== Log drawer (no scrolling the page) ===== */
-    #logDrawer{
+    /* Mobile log overlay */
+    #logOverlay{
       position:fixed;
-      left:0;
-      right:0;
-      bottom:0;
-      height:45%;
-      background:rgba(10,14,30,.96);
-      border-top:1px solid rgba(255,255,255,.15);
-      transform:translateY(100%);
-      transition:.25s ease;
-      z-index:3000;
+      inset:0;
+      background:rgba(0,0,0,.55);
+      display:none;
+      z-index:5000;
+      padding:14px;
+    }
+    #logOverlay .logModal{
+      height:100%;
+      background:rgba(10,14,30,.98);
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:20px;
+      overflow:hidden;
       display:flex;
       flex-direction:column;
     }
-    #logDrawer.open{ transform:translateY(0); }
-
-    #logToggle{
-      position:absolute;
-      top:-30px;
-      left:50%;
-      transform:translateX(-50%);
-      background:rgba(20,25,50,.95);
-      border:1px solid rgba(255,255,255,.2);
-      border-radius:14px;
-      padding:4px 12px;
-      font-size:16px;
-      cursor:pointer;
-      user-select:none;
-    }
-
-    .log{
-      padding:10px;
-      font-family:ui-monospace,monospace;
-      font-size:12px;
-      overflow:auto;
-      min-height:0;
-    }
-    .log .line{ padding:2px 0; border-bottom:1px dashed rgba(255,255,255,.07); }
-    .log .line:last-child{ border-bottom:none; }
-
-    /* Compact action row inside panel */
-    .actionRow{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-    }
-    .actionRow button{ flex:1; }
-
-    .topRow{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-    }
+    #logOverlay .logHead{ padding:10px 12px; }
+    #logOverlay .logBody{ padding:10px 12px; }
   </style>
 </head>
 
 <body>
 <div id="app">
-<header>
-  <h1>🃏 Splash</h1>
 
-  <div class="mpbar">
-    <input id="mpName" placeholder="Name" />
-    <input id="mpRoom" placeholder="ROOM" />
-    <button id="hostBtn" class="primary">Host</button>
-    <button id="joinBtn" class="primary">Join</button>
-    <button id="leaveBtn" class="danger" style="display:none;">Leave</button>
-    <span id="mpStatus" class="mpStatus"></span>
-  </div>
-
-  <div class="controls">
-    <button id="newGame" class="primary">New Game</button>
-    <span class="pill" id="turnInfo">Turn: —</span>
-  </div>
-</header>
-
-<main>
-  <div class="grid">
-
-    <section class="table">
-      <div class="playersRow" id="playersRow"></div>
-
-      <div class="note">
-        <div class="pileRow">
-          <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
-            <span class="pill">Deck: <span id="deckCount">—</span></span>
-            <span class="pill">Discard: <span id="discardCount">—</span></span>
-            <span class="pill">Pile: <span id="pileCount">—</span></span>
-          </div>
-          <div style="display:flex; gap:8px; align-items:center;">
-            <span class="muted">Top:</span>
-            <span class="pill" id="topValue">—</span>
-          </div>
+  <!-- LOBBY VIEW -->
+  <section id="lobbyView" class="view">
+    <div class="lobbyCard">
+      <div class="lobbyTop">
+        <div class="brand">
+          <h1>🃏 Splash</h1>
+          <div class="muted">Host a room or join your family’s room.</div>
         </div>
+        <span class="pill" id="lobbyStatus">Not connected</span>
+      </div>
 
-        <div class="pileVisualWrap" id="pileVisualWrap"></div>
-
-        <div class="muted" style="margin-top:8px;">
-          Mobile: drag a card onto the pile to play. No scrolling required.
+      <div class="lobbyGrid">
+        <div>
+          <div class="muted" style="margin:0 0 6px;">Your name</div>
+          <input id="mpNameLobby" placeholder="Aymen" />
+        </div>
+        <div>
+          <div class="muted" style="margin:0 0 6px;">Room code</div>
+          <input id="mpRoomLobby" placeholder="ROOM" style="text-transform:uppercase;" />
         </div>
       </div>
 
-      <div class="zoneTitle">
-        <span id="handLabel">Your hand</span>
-        <span class="muted" id="turnHint"></span>
-      </div>
-      <div id="yourHand" class="handScroll"></div>
-
-      <div class="zoneTitle">
-        <span id="tableLabel">Your table cards</span>
-      </div>
-      <div id="yourTable" class="hand"></div>
-    </section>
-
-    <section class="panel">
-      <div class="topRow">
-        <span class="pill" id="turnPill">—</span>
-        <button id="logOpenBtn" class="primary" style="margin-left:auto;">⬆ Log</button>
+      <div class="lobbyActions">
+        <button id="hostBtnLobby" class="primary">Host</button>
+        <button id="joinBtnLobby" class="primary">Join</button>
       </div>
 
-      <div class="actionRow">
-        <button id="playBtn" class="primary">Play Selected</button>
-        <button id="pickupBtn" class="danger">Pick Up Pile</button>
+      <div class="lobbyFoot">
+        <div class="roomHint">
+          <div class="muted">Tip: share the room code with everyone.</div>
+          <div class="pill">No observers • Online players only</div>
+        </div>
+        <div class="muted">In-game: tap a stack to select that rank. Drag a stack to the pile to play it.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GAME VIEW -->
+  <section id="gameView" class="view">
+    <header>
+      <div class="left">
+        <div class="title">🃏 Splash</div>
+        <span class="pill" id="roomPill">ROOM: —</span>
+        <span class="pill" id="turnInfo">Turn: —</span>
       </div>
 
-      <div class="muted" style="font-size:12px;">
-        Tip: on mobile you can drag a card to the pile instead of tapping Play.
+      <div class="right">
+        <button id="newGame" class="primary">New Game</button>
+        <button id="leaveBtn" class="danger">Leave</button>
       </div>
-    </section>
+    </header>
 
+    <main>
+      <div class="grid">
+        <section class="table">
+          <div class="playersRow" id="playersRow"></div>
+
+          <div class="pileBox">
+            <div class="pileRow">
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <span class="pill">Deck: <span id="deckCount">—</span></span>
+                <span class="pill">Discard: <span id="discardCount">—</span></span>
+                <span class="pill">Pile: <span id="pileCount">—</span></span>
+              </div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                <span class="muted">Top:</span>
+                <span class="pill" id="topValue">—</span>
+              </div>
+            </div>
+            <div class="pileVisual" id="pileVisual"></div>
+            <div class="muted" style="margin-top:8px;">
+              Tap a stack to select. Drag a stack onto the pile to play. (Or use buttons.)
+            </div>
+          </div>
+
+          <div class="zoneTitle">
+            <span>Your hand (grouped)</span>
+            <span class="muted" id="turnHint"></span>
+          </div>
+          <div id="yourHand" class="handStacks"></div>
+
+          <div class="zoneTitle">
+            <span>Your table cards</span>
+            <span class="muted">Play hand first</span>
+          </div>
+          <div id="yourTable" class="tableCards"></div>
+        </section>
+
+        <section class="panel">
+          <div class="actionRow">
+            <button id="playBtn" class="primary">Play Selected</button>
+            <button id="pickupBtn" class="danger">Pick Up Pile</button>
+          </div>
+
+          <div class="actionRow">
+            <button id="openLogBtn" class="primary">Log</button>
+            <button id="clearSelBtn">Clear Selection</button>
+          </div>
+
+          <div class="pill" id="selPill">Selected: —</div>
+
+          <div class="logWrap">
+            <div class="logHead">
+              <div style="font-weight:900;">Game Log</div>
+              <span class="muted">Latest on top</span>
+            </div>
+            <div id="log" class="logBody"></div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </section>
+
+  <!-- Mobile log overlay -->
+  <div id="logOverlay">
+    <div class="logModal">
+      <div class="logHead">
+        <div style="font-weight:900;">Game Log</div>
+        <button id="closeLogBtn" class="danger">Close</button>
+      </div>
+      <div id="logMobile" class="logBody"></div>
+    </div>
   </div>
-</main>
-</div>
 
-<!-- Log Drawer -->
-<div id="logDrawer">
-  <div id="logToggle">⬆</div>
-  <div id="log" class="log"></div>
 </div>
 
 <script>
 (() => {
   const WS_BASE = "wss://splash-multiplayer.azimaymen.workers.dev";
   const mpClientId = crypto.randomUUID();
+
+  // Views
+  const lobbyView = document.getElementById("lobbyView");
+  const gameView  = document.getElementById("gameView");
+
+  // Lobby inputs
+  const mpNameLobby = document.getElementById("mpNameLobby");
+  const mpRoomLobby = document.getElementById("mpRoomLobby");
+  const lobbyStatus = document.getElementById("lobbyStatus");
+
+  // Game header pills
+  const roomPill = document.getElementById("roomPill");
+
+  // Mobile log overlay
+  const logOverlay = document.getElementById("logOverlay");
+  const logMobile  = document.getElementById("logMobile");
+  document.getElementById("openLogBtn").onclick = () => {
+    syncMobileLog();
+    logOverlay.style.display = "block";
+  };
+  document.getElementById("closeLogBtn").onclick = () => {
+    logOverlay.style.display = "none";
+  };
+  logOverlay.addEventListener("click", (e) => {
+    if (e.target === logOverlay) logOverlay.style.display = "none";
+  });
+
+  function showLobby(){
+    gameView.style.display = "none";
+    lobbyView.style.display = "flex";
+  }
+  function showGame(){
+    lobbyView.style.display = "none";
+    gameView.style.display = "flex";
+  }
+
+  // Multiplayer
   let mpWs = null;
   let mpRoom = null;
   let mpConnected = false;
   let mySeat = null;
+
   let reconnectAttempts = 0;
   let reconnectTimer = null;
   const MAX_RECONNECT_ATTEMPTS = 5;
 
-  // drag state
-  const drag = { active:false, cardId:null, el:null, pid:null, moved:false, sx:0, sy:0 };
+  // Drag state for stacks
+  const drag = { active:false, rank:null, ids:null, el:null, pid:null, moved:false, sx:0, sy:0 };
 
-  function saveConnectionInfo(room, name, isHost) {
+  // Game constants
+  const SUITS = ["♠", "♥", "♦", "♣"];
+  const RANKS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
+  const RANK_ORDER = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
+  const rankOrder = (r) => RANK_ORDER.indexOf(r);
+  const isFace = (r) => r === "J" || r === "Q" || r === "K";
+
+  const EMOJIS = ["🦊", "🐼", "🐯", "🦁", "🐸", "🐙", "🦉", "🦄", "🐲", "🐶", "🐱", "🐵"];
+
+  const state = {
+    players: [],
+    deck: [],
+    discard: [],
+    pile: [],
+    currentPlayer: 0,
+    mustPlayAny: false
+  };
+
+  // selection now can contain many ids (stack selection)
+  let selected = new Set(); // card ids
+
+  // Helpers
+  const el = (id) => document.getElementById(id);
+
+  function setLobbyStatus(text, ok=false){
+    lobbyStatus.textContent = text;
+    lobbyStatus.style.borderColor = ok ? "rgba(126,231,135,.5)" : "rgba(255,255,255,.14)";
+  }
+
+  function saveConnectionInfo(room, name) {
     localStorage.setItem('splash_room', room);
     localStorage.setItem('splash_name', name);
-    localStorage.setItem('splash_isHost', isHost.toString());
   }
   function clearConnectionInfo() {
     localStorage.removeItem('splash_room');
     localStorage.removeItem('splash_name');
-    localStorage.removeItem('splash_isHost');
   }
   function loadConnectionInfo() {
     return {
       room: localStorage.getItem('splash_room'),
-      name: localStorage.getItem('splash_name'),
-      isHost: localStorage.getItem('splash_isHost') === 'true'
+      name: localStorage.getItem('splash_name')
     };
   }
 
-  function mpSetStatus(t, type = 'normal') {
-    const status = document.getElementById("mpStatus");
-    const indicator = '<span class="connectionIndicator' + (type === 'connected' ? ' connected' : '') + '"></span>';
-    status.innerHTML = indicator + t;
-    status.className = 'mpStatus ' + type;
+  function logLine(text, tone="") {
+    const div = document.createElement("div");
+    div.className = "logLine";
+    const ts = new Date().toLocaleTimeString();
+    div.innerHTML = `<span class="muted">[${ts}]</span> ${tone ? `<span class="${tone}">●</span> ` : ""}${text}`;
+    const log = el("log");
+    log.prepend(div);
+    syncMobileLog();
   }
 
-  function mpSendJoin(isHost) {
+  function syncMobileLog(){
+    // mirror desktop log HTML into mobile
+    logMobile.innerHTML = el("log").innerHTML;
+  }
+
+  function mpSendJoin() {
     if (!mpWs || mpWs.readyState !== WebSocket.OPEN) return;
     mpWs.send(JSON.stringify({
       type: "join",
       id: mpClientId,
-      name: document.getElementById("mpName").value || (isHost ? "Host" : "Player"),
-      isHost: isHost
+      name: (mpNameLobby.value || "Player").trim()
     }));
   }
 
-  function mpConnect(room, isHost) {
-    mpRoom = room.toUpperCase();
-    mpWs = new WebSocket(`${WS_BASE}?room=${mpRoom}`);
+  function handleReconnect(room) {
+    if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+      setLobbyStatus("Disconnected", false);
+      logLine("Failed to reconnect after multiple attempts", "bad");
+      return;
+    }
+    reconnectAttempts++;
+    const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000);
+    setLobbyStatus(`Reconnecting… (${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`, false);
+    reconnectTimer = setTimeout(() => {
+      mpConnect(room);
+    }, delay);
+  }
 
-    const name = document.getElementById("mpName").value || (isHost ? "Host" : "Player");
-    saveConnectionInfo(mpRoom, name, isHost);
+  function mpConnect(room) {
+    mpRoom = room.toUpperCase();
+    roomPill.textContent = `ROOM: ${mpRoom}`;
+    setLobbyStatus(`Connecting to ${mpRoom}…`, false);
+
+    mpWs = new WebSocket(`${WS_BASE}?room=${mpRoom}`);
+    saveConnectionInfo(mpRoom, (mpNameLobby.value || "").trim());
 
     mpWs.onopen = () => {
       mpConnected = true;
       reconnectAttempts = 0;
-      mpSetStatus(`${mpRoom}${isHost ? " (HOST)" : ""}`, 'connected');
-      mpSendJoin(isHost);
-      document.getElementById("hostBtn").style.display = "none";
-      document.getElementById("joinBtn").style.display = "none";
-      document.getElementById("leaveBtn").style.display = "inline-block";
+      setLobbyStatus(`Connected: ${mpRoom}`, true);
+      mpSendJoin();
+      showGame();
       logLine(`Connected to room ${mpRoom}`, "ok");
     };
 
@@ -578,6 +730,7 @@
       try { msg = JSON.parse(ev.data); } catch { return; }
 
       if (msg.type === "players") {
+        // server provides seat in worker players; our frontend still uses array index for seat
         mySeat = msg.players.findIndex(p => p.id === mpClientId);
         ensurePlayersFromServer(msg.players);
         render();
@@ -599,13 +752,13 @@
 
     mpWs.onclose = () => {
       mpConnected = false;
-      mpSetStatus("Disconnected", "error");
-      handleReconnect(room, isHost);
+      setLobbyStatus("Disconnected", false);
+      handleReconnect(room);
     };
 
     mpWs.onerror = () => {
       mpConnected = false;
-      mpSetStatus("Connection Error", "error");
+      setLobbyStatus("Connection error", false);
     };
 
     setInterval(() => {
@@ -615,24 +768,7 @@
     }, 30000);
   }
 
-  function handleReconnect(room, isHost) {
-    if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
-      logLine("Failed to reconnect after multiple attempts", "bad");
-      mpSetStatus("Disconnected - Reload to try again", "error");
-      return;
-    }
-
-    reconnectAttempts++;
-    const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000);
-    mpSetStatus(`Reconnecting... (${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`, "error");
-
-    reconnectTimer = setTimeout(() => {
-      logLine(`Reconnecting (attempt ${reconnectAttempts})...`, "warn");
-      mpConnect(room, isHost);
-    }, delay);
-  }
-
-  // ✅ server-authoritative action sender
+  // Server-authoritative: send ACTION instead of broadcast
   function mpSendAction(actionType, nextState) {
     if (!mpWs || mpWs.readyState !== WebSocket.OPEN) {
       logLine("Cannot sync - not connected", "warn");
@@ -640,10 +776,7 @@
     }
     mpWs.send(JSON.stringify({
       type: "action",
-      action: {
-        type: actionType,
-        state: JSON.parse(JSON.stringify(nextState))
-      }
+      action: { type: actionType, state: JSON.parse(JSON.stringify(nextState)) }
     }));
   }
 
@@ -654,85 +787,51 @@
     mpRoom = null;
     mySeat = null;
     clearConnectionInfo();
-    document.getElementById("hostBtn").style.display = "inline-block";
-    document.getElementById("joinBtn").style.display = "inline-block";
-    document.getElementById("leaveBtn").style.display = "none";
-    mpSetStatus("Not connected");
-    logLine("Left room", "warn");
     resetLocalState();
+    selected.clear();
     render();
+    showLobby();
+    setLobbyStatus("Not connected", false);
+    logLine("Left room", "warn");
   }
 
-  document.getElementById("hostBtn").onclick = () => {
-    const name = document.getElementById("mpName").value.trim();
+  // Lobby buttons
+  document.getElementById("hostBtnLobby").onclick = () => {
+    const name = (mpNameLobby.value || "").trim();
     if (!name) return alert("Enter your name first");
     const code = Math.random().toString(36).slice(2, 8).toUpperCase();
-    document.getElementById("mpRoom").value = code;
-    mpConnect(code, true);
-    alert("Room code: " + code + "\\nShare this with others to join!");
+    mpRoomLobby.value = code;
+    mpConnect(code);
+    alert("Room code: " + code + "\nShare this with others to join!");
   };
 
-  document.getElementById("joinBtn").onclick = () => {
-    const name = document.getElementById("mpName").value.trim();
-    const code = document.getElementById("mpRoom").value.trim();
+  document.getElementById("joinBtnLobby").onclick = () => {
+    const name = (mpNameLobby.value || "").trim();
+    const code = (mpRoomLobby.value || "").trim();
     if (!name) return alert("Enter your name first");
     if (!code) return alert("Enter room code");
-    mpConnect(code, false);
+    mpConnect(code);
   };
 
+  // Game buttons
   document.getElementById("leaveBtn").onclick = mpLeave;
+  document.getElementById("clearSelBtn").onclick = () => {
+    selected.clear();
+    renderSelectionPill();
+    render();
+  };
 
-  window.addEventListener('load', () => {
+  // Restore last room/name
+  window.addEventListener("load", () => {
     const info = loadConnectionInfo();
-    if (info.room && info.name) {
-      document.getElementById("mpName").value = info.name;
-      document.getElementById("mpRoom").value = info.room;
-    }
+    if (info.name) mpNameLobby.value = info.name;
+    if (info.room) mpRoomLobby.value = info.room;
+    showLobby();
+    setLobbyStatus("Not connected", false);
+    logLine("Welcome! Host or join a room.", "ok");
   });
 
-  // ===== Log drawer controls =====
-  const drawer = document.getElementById("logDrawer");
-  const toggle = document.getElementById("logToggle");
-  const openBtn = document.getElementById("logOpenBtn");
-
-  function setDrawer(open){
-    drawer.classList.toggle("open", open);
-    toggle.textContent = open ? "⬇" : "⬆";
-    openBtn.textContent = open ? "⬇ Log" : "⬆ Log";
-  }
-  toggle.onclick = () => setDrawer(!drawer.classList.contains("open"));
-  openBtn.onclick = () => setDrawer(!drawer.classList.contains("open"));
-
-  // ===== Game logic (your original rules) =====
-  const SUITS = ["♠", "♥", "♦", "♣"];
-  const RANKS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
-  const RANK_ORDER = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
-  const rankOrder = (r) => RANK_ORDER.indexOf(r);
-  const isFace = (r) => r === "J" || r === "Q" || r === "K";
-
-  const EMOJIS = ["🦊", "🐼", "🐯", "🦁", "🐸", "🐙", "🦉", "🦄", "🐲", "🐶", "🐱", "🐵"];
-  const SEAT_CLASSES = ["seat-bottom", "seat-left", "seat-top", "seat-right", "seat-tl", "seat-tr"];
-
-  const state = {
-    players: [],
-    deck: [],
-    discard: [],
-    pile: [],
-    currentPlayer: 0,
-    mustPlayAny: false
-  };
-
-  let selected = new Set();
-  const el = (id) => document.getElementById(id);
-
-  function logLine(text, tone = "") {
-    const div = document.createElement("div");
-    div.className = "line";
-    const timestamp = new Date().toLocaleTimeString();
-    div.innerHTML = `<span class="muted">[${timestamp}]</span> ` + (tone ? `<span class="${tone}">●</span> ` : "") + text;
-    el("log").prepend(div);
-  }
-
+  // ===== Game Logic =====
   function ensurePlayersFromServer(players) {
     while (state.players.length < players.length) {
       const idx = state.players.length;
@@ -759,6 +858,7 @@
     state.mustPlayAny = remote.mustPlayAny;
     selected.clear();
     render();
+    renderSelectionPill();
   }
 
   function resetLocalState() {
@@ -767,7 +867,12 @@
     state.pile = [];
     state.currentPlayer = 0;
     state.mustPlayAny = false;
-    selected.clear();
+    // keep players array sizing
+    state.players.forEach(p => {
+      p.hand = [];
+      p.tableUp = Array.from({ length: 4 }, () => null);
+      p.tableDown = Array.from({ length: 4 }, () => null);
+    });
   }
 
   function topRank() {
@@ -788,9 +893,7 @@
     const d = [];
     for (let k = 0; k < 2; k++) {
       for (const s of SUITS) {
-        for (const r of RANKS) {
-          d.push({ id: crypto.randomUUID(), rank: r, suit: s });
-        }
+        for (const r of RANKS) d.push({ id: crypto.randomUUID(), rank: r, suit: s });
       }
     }
     for (let j = 0; j < 4; j++) d.push({ id: crypto.randomUUID(), rank: "JOKER", suit: "★" });
@@ -801,16 +904,13 @@
     return d;
   }
 
-  function newGame() {
-    if (!mpConnected) {
-      logLine("Must be connected to start game", "bad");
-      return;
-    }
+  function isMyTurn() {
+    return mySeat !== null && mySeat === state.currentPlayer;
+  }
 
-    if (mySeat !== 0) {
-      logLine("Only Host (Player 1) can start", "warn");
-      return;
-    }
+  function newGame() {
+    if (!mpConnected) { logLine("Must be connected to start", "bad"); return; }
+    if (mySeat !== 0) { logLine("Only Host (Player 1) can start", "warn"); return; }
 
     state.deck = makeDeck();
     state.discard = [];
@@ -836,20 +936,17 @@
       state.mustPlayAny = true;
     }
 
+    selected.clear();
+    renderSelectionPill();
     logLine("Game started by host", "ok");
     mpSendAction("START", state);
     render();
   }
 
-  function isMyTurn() {
-    return mySeat !== null && mySeat === state.currentPlayer;
-  }
+  document.getElementById("newGame").onclick = newGame;
 
   function playSelected() {
-    if (!isMyTurn()) {
-      logLine("Not your turn", "warn");
-      return;
-    }
+    if (!isMyTurn()) { logLine("Not your turn", "warn"); return; }
     if (mySeat === null) return;
     const me = state.players[mySeat];
     if (!me) return;
@@ -882,6 +979,7 @@
       state.pile.push(x.card);
     });
     selected.clear();
+    renderSelectionPill();
 
     if (rank === "10" || rank === "JOKER") {
       state.discard.push(...state.pile);
@@ -911,11 +1009,10 @@
     render();
   }
 
+  document.getElementById("playBtn").onclick = playSelected;
+
   function pickup() {
-    if (!isMyTurn()) {
-      logLine("Not your turn", "warn");
-      return;
-    }
+    if (!isMyTurn()) { logLine("Not your turn", "warn"); return; }
     if (mySeat === null) return;
     const me = state.players[mySeat];
     me.hand.push(...state.pile);
@@ -923,73 +1020,106 @@
     state.pile = [];
     state.mustPlayAny = true;
     selected.clear();
+    renderSelectionPill();
     state.currentPlayer = (state.currentPlayer + 1) % state.players.length;
     mpSendAction("UPDATE", state);
     render();
   }
 
-  // Drag helpers
-  function isOverPile(x,y){
-    const r = el("pileVisualWrap").getBoundingClientRect();
-    return x>=r.left && x<=r.right && y>=r.top && y<=r.bottom;
+  document.getElementById("pickupBtn").onclick = pickup;
+
+  // ===== Grouping + selection =====
+  function groupByRank(cards){
+    const m = new Map();
+    for(const c of cards){
+      if(!m.has(c.rank)) m.set(c.rank, []);
+      m.get(c.rank).push(c);
+    }
+    // stable sort by rank order: A..K + JOKER last
+    const ranks = Array.from(m.keys()).sort((a,b) => {
+      if (a === "JOKER" && b !== "JOKER") return 1;
+      if (b === "JOKER" && a !== "JOKER") return -1;
+      return RANK_ORDER.indexOf(a) - RANK_ORDER.indexOf(b);
+    });
+    return ranks.map(r => ({ rank:r, cards:m.get(r) }));
   }
 
-  function dragStart(cardId, cardEl, pid, x, y){
+  function renderSelectionPill(){
+    const pill = el("selPill");
+    if (!selected.size) { pill.textContent = "Selected: —"; return; }
+    // compute selected rank(s)
+    if (mySeat === null || !state.players[mySeat]) { pill.textContent = `Selected: ${selected.size}`; return; }
+    const me = state.players[mySeat];
+    const anyId = selected.values().next().value;
+    const anyCard = me.hand.find(x => x.id === anyId) || me.tableUp.find(x => x && x.id === anyId);
+    pill.textContent = anyCard ? `Selected: ${anyCard.rank} × ${selected.size}` : `Selected: ${selected.size}`;
+  }
+
+  // ===== Drag to pile =====
+  function isOverPile(x,y){
+    const r = el("pileVisual").getBoundingClientRect();
+    return x>=r.left && x<=r.right && y>=r.top && y<=r.bottom;
+  }
+  function dragStart(rank, ids, stackEl, pid, x, y){
     drag.active = true;
-    drag.cardId = cardId;
-    drag.el = cardEl;
+    drag.rank = rank;
+    drag.ids = ids;
+    drag.el = stackEl;
     drag.pid = pid;
     drag.moved = false;
     drag.sx = x; drag.sy = y;
-    cardEl.classList.add("dragging");
-    cardEl.setPointerCapture(pid);
+    el("pileVisual").classList.toggle("dragOver", false);
+    stackEl.classList.add("dragging");
+    stackEl.setPointerCapture(pid);
   }
-
   function dragMove(x,y){
     if(!drag.active) return;
     const dx = Math.abs(x - drag.sx);
     const dy = Math.abs(y - drag.sy);
     if(dx + dy > 6) drag.moved = true;
-    el("pileVisualWrap").classList.toggle("dragOver", isOverPile(x,y));
+    el("pileVisual").classList.toggle("dragOver", isOverPile(x,y));
   }
-
   function dragEnd(x,y){
     if(!drag.active) return;
-    el("pileVisualWrap").classList.remove("dragOver");
-    try{ drag.el && drag.pid && drag.el.releasePointerCapture(drag.pid); }catch{}
-    if(drag.el) drag.el.classList.remove("dragging");
+    el("pileVisual").classList.remove("dragOver");
+    try{ drag.el.releasePointerCapture(drag.pid); }catch{}
+    drag.el.classList.remove("dragging");
 
     if(drag.moved && isOverPile(x,y)){
       selected.clear();
-      selected.add(drag.cardId);
+      for (const id of drag.ids) selected.add(id);
+      renderSelectionPill();
       playSelected();
     }
 
-    drag.active=false; drag.cardId=null; drag.el=null; drag.pid=null; drag.moved=false;
+    drag.active=false; drag.rank=null; drag.ids=null; drag.el=null; drag.pid=null; drag.moved=false;
   }
 
-  function render() {
+  // ===== Render =====
+  function render(){
     el("pileCount").textContent = String(state.pile.length);
     el("deckCount").textContent = String(state.deck.length);
     el("discardCount").textContent = String(state.discard.length);
     el("topValue").textContent = state.mustPlayAny ? "ANY" : (topRank() || "—");
     el("turnInfo").textContent = "Turn: " + (state.players[state.currentPlayer]?.name || "—");
-    el("turnPill").textContent = (state.players[state.currentPlayer]?.name ? ("Turn: " + state.players[state.currentPlayer].name) : "—");
-    el("turnHint").textContent = isMyTurn() ? "👉 Your turn!" : "Waiting...";
+    el("turnHint").textContent = isMyTurn() ? "👉 Your turn!" : "Waiting…";
 
     const pr = el("playersRow");
     pr.innerHTML = "";
     state.players.forEach((p, idx) => {
       const d = document.createElement("div");
-      const seat = SEAT_CLASSES[idx] || "";
-      d.className = `playerChip ${seat} ${idx === state.currentPlayer ? "active" : ""}`;
-      d.innerHTML = `<div class="avatar"><span class="emo">${p.emoji}</span><span class="init">${idx + 1}</span></div>
-                     <div><div style="font-weight:900">${p.name}</div>
-                     <div class="muted" style="font-size:11px">Hand: ${p.hand.length} | Table: ${p.tableUp.filter(c => c).length}</div></div>`;
+      d.className = `playerChip ${idx === state.currentPlayer ? "active" : ""}`;
+      d.innerHTML = `
+        <div class="avatar"><span class="emo">${p.emoji}</span><span class="seat">${idx+1}</span></div>
+        <div style="min-width:0">
+          <div style="font-weight:900; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${p.name}</div>
+          <div class="muted" style="font-size:11px">Hand: ${p.hand.length} | Table: ${p.tableUp.filter(c => c).length}</div>
+        </div>`;
       pr.appendChild(d);
     });
 
-    const pv = el("pileVisualWrap");
+    // pile visual last 6
+    const pv = el("pileVisual");
     pv.innerHTML = "";
     state.pile.slice(-6).forEach((c, i) => {
       const d = document.createElement("div");
@@ -1008,51 +1138,90 @@
     tableEl.innerHTML = "";
 
     if (mySeat === null || !state.players[mySeat]) {
-      handEl.innerHTML = '<div class="muted" style="padding:12px;text-align:center;">Join a room to see your cards</div>';
+      handEl.innerHTML = '<div class="muted" style="padding:10px;text-align:center;">Join a room to see your cards</div>';
+      renderSelectionPill();
       return;
     }
 
     const me = state.players[mySeat];
 
-    me.hand.forEach(card => {
-      const d = document.createElement("div");
-      d.className = "c selectable";
-      const legal = canPlayOnTop(card.rank);
-      if (!legal) d.classList.add("illegal");
-      if (selected.has(card.id)) d.classList.add("selected");
+    // Render grouped hand stacks
+    const groups = groupByRank(me.hand);
 
-      d.onclick = () => {
+    groups.forEach(g => {
+      const ids = g.cards.map(c => c.id);
+      const top = g.cards[g.cards.length - 1];
+      const legal = canPlayOnTop(g.rank);
+
+      const stack = document.createElement("div");
+      stack.className = "cardStack";
+
+      // ghosts for count
+      if (g.cards.length >= 2){
+        const ghost1 = document.createElement("div");
+        ghost1.className = "c stackGhost g1";
+        ghost1.innerHTML = `<div class="corner top">${top.rank}<br>${top.suit}</div><div class="pip">${top.suit}</div><div class="corner bottom">${top.rank}<br>${top.suit}</div>`;
+        stack.appendChild(ghost1);
+      }
+      if (g.cards.length >= 3){
+        const ghost2 = document.createElement("div");
+        ghost2.className = "c stackGhost g2";
+        ghost2.innerHTML = `<div class="corner top">${top.rank}<br>${top.suit}</div><div class="pip">${top.suit}</div><div class="corner bottom">${top.rank}<br>${top.suit}</div>`;
+        stack.appendChild(ghost2);
+      }
+
+      const card = document.createElement("div");
+      card.className = "c selectable";
+      if (!legal) card.classList.add("illegal");
+      // if any id selected in this rank, show selected highlight on top card
+      const selectedThisRank = ids.some(id => selected.has(id));
+      if (selectedThisRank) card.classList.add("selected");
+      card.innerHTML = `<div class="corner top">${top.rank}<br>${top.suit}</div><div class="pip">${top.suit}</div><div class="corner bottom">${top.rank}<br>${top.suit}</div>`;
+      stack.appendChild(card);
+
+      if (g.cards.length > 1){
+        const badge = document.createElement("div");
+        badge.className = "stackCount";
+        badge.textContent = g.cards.length;
+        stack.appendChild(badge);
+      }
+
+      // Tap: toggle selection of entire rank stack
+      stack.onclick = () => {
         if (!isMyTurn()) { logLine("Wait for your turn", "warn"); return; }
-        if (!legal) { logLine("Cannot play " + card.rank + " on " + topRank(), "bad"); return; }
+        if (!legal) { logLine("Cannot play " + g.rank + " on " + topRank(), "bad"); return; }
 
-        if (selected.has(card.id)) selected.delete(card.id);
-        else {
-          if (selected.size) {
-            const anyId = selected.values().next().value;
-            const anyCard = me.hand.find(x => x.id === anyId) || me.tableUp.find(x => x && x.id === anyId);
-            if (anyCard && anyCard.rank !== card.rank) { logLine("Must select same rank", "warn"); selected.clear(); }
-          }
-          selected.add(card.id);
+        const anySelected = ids.some(id => selected.has(id));
+        // Always keep selection to ONE rank at a time (consistent with game rules)
+        selected.clear();
+        if (!anySelected){
+          ids.forEach(id => selected.add(id));
         }
+        renderSelectionPill();
         render();
       };
 
-      d.addEventListener("pointerdown", (e) => {
+      // Drag stack to pile
+      stack.addEventListener("pointerdown", (e) => {
         if (!isMyTurn()) return;
         if (!legal) return;
-        dragStart(card.id, d, e.pointerId, e.clientX, e.clientY);
+        // keep selection in sync with drag
+        selected.clear();
+        ids.forEach(id => selected.add(id));
+        renderSelectionPill();
+        dragStart(g.rank, ids, stack, e.pointerId, e.clientX, e.clientY);
       });
-      d.addEventListener("pointermove", (e) => { if(!drag.active) return; dragMove(e.clientX, e.clientY); });
-      d.addEventListener("pointerup", (e) => { if(!drag.active) return; dragEnd(e.clientX, e.clientY); });
-      d.addEventListener("pointercancel", (e) => { if(!drag.active) return; dragEnd(e.clientX, e.clientY); });
+      stack.addEventListener("pointermove", (e) => { if(!drag.active) return; dragMove(e.clientX, e.clientY); });
+      stack.addEventListener("pointerup",   (e) => { if(!drag.active) return; dragEnd(e.clientX, e.clientY); });
+      stack.addEventListener("pointercancel",(e)=> { if(!drag.active) return; dragEnd(e.clientX, e.clientY); });
 
-      d.innerHTML = `<div class="corner top">${card.rank}<br>${card.suit}</div><div class="pip">${card.suit}</div><div class="corner bottom">${card.rank}<br>${card.suit}</div>`;
-      handEl.appendChild(d);
+      handEl.appendChild(stack);
     });
 
-    for (let i = 0; i < 4; i++) {
+    // Render tableUp cards (individual) – still 5 per row layout
+    for (let i = 0; i < 4; i++){
       const up = me.tableUp[i];
-      if (up) {
+      if (up){
         const d = document.createElement("div");
         d.className = "c selectable";
         const legal = canPlayOnTop(up.rank);
@@ -1064,15 +1233,10 @@
           if (me.hand.length > 0) { logLine("Must play hand cards first", "warn"); return; }
           if (!legal) { logLine("Cannot play " + up.rank + " on " + topRank(), "bad"); return; }
 
-          if (selected.has(up.id)) selected.delete(up.id);
-          else {
-            if (selected.size) {
-              const anyId = selected.values().next().value;
-              const anyCard = me.tableUp.find(x => x && x.id === anyId);
-              if (anyCard && anyCard.rank !== up.rank) { logLine("Must select same rank", "warn"); selected.clear(); }
-            }
-            selected.add(up.id);
-          }
+          // only one rank at a time
+          selected.clear();
+          selected.add(up.id);
+          renderSelectionPill();
           render();
         };
 
@@ -1080,35 +1244,40 @@
           if (!isMyTurn()) return;
           if (me.hand.length > 0) return;
           if (!legal) return;
-          dragStart(up.id, d, e.pointerId, e.clientX, e.clientY);
+          selected.clear();
+          selected.add(up.id);
+          renderSelectionPill();
+          dragStart(up.rank, [up.id], d, e.pointerId, e.clientX, e.clientY);
         });
         d.addEventListener("pointermove", (e) => { if(!drag.active) return; dragMove(e.clientX, e.clientY); });
-        d.addEventListener("pointerup", (e) => { if(!drag.active) return; dragEnd(e.clientX, e.clientY); });
-        d.addEventListener("pointercancel", (e) => { if(!drag.active) return; dragEnd(e.clientX, e.clientY); });
+        d.addEventListener("pointerup",   (e) => { if(!drag.active) return; dragEnd(e.clientX, e.clientY); });
+        d.addEventListener("pointercancel",(e)=> { if(!drag.active) return; dragEnd(e.clientX, e.clientY); });
 
         d.innerHTML = `<div class="corner top">${up.rank}<br>${up.suit}</div><div class="pip">${up.suit}</div><div class="corner bottom">${up.rank}<br>${up.suit}</div>`;
         tableEl.appendChild(d);
       } else {
         const empty = document.createElement("div");
         empty.className = "c";
-        empty.style.opacity = "0.22";
+        empty.style.opacity = "0.18";
         empty.innerHTML = `<div class="pip">—</div>`;
         tableEl.appendChild(empty);
       }
     }
 
+    // keep layout stable (grid expects 5 columns). add one empty filler
+    const filler = document.createElement("div");
+    filler.style.width = "var(--card-w)";
+    filler.style.height = "var(--card-h)";
+    filler.style.opacity = "0";
+    tableEl.appendChild(filler);
+
     el("newGame").disabled = (mySeat !== 0 || !mpConnected);
-    el("playBtn").disabled = (!isMyTurn() || !mpConnected);
+    el("playBtn").disabled = (!isMyTurn() || !mpConnected || !selected.size);
     el("pickupBtn").disabled = (!isMyTurn() || !mpConnected);
+
+    renderSelectionPill();
   }
 
-  el("newGame").onclick = newGame;
-  el("playBtn").onclick = playSelected;
-  el("pickupBtn").onclick = pickup;
-
-  logLine("Welcome to Splash! Host or join a room to start.", "ok");
-  mpSetStatus("Not connected");
-  render();
 })();
 </script>
 </body>
