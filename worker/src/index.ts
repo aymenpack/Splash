@@ -2,28 +2,14 @@ export interface Env {
   ROOM: DurableObjectNamespace;
 }
 
-/* ================================
-   MAIN WORKER ENTRY
-================================ */
-
 export default {
-  async fetch(req: Request, env: Env): Promise<Response> {
+  async fetch(req: Request, env: Env) {
     const url = new URL(req.url);
-    const roomCode = url.searchParams.get("room");
-
-    if (!roomCode) {
-      return new Response("Missing room", { status: 400 });
-    }
-
-    const id = env.ROOM.idFromName(roomCode);
-    const room = env.ROOM.get(id);
-    return room.fetch(req);
+    const room = url.searchParams.get("room") || "FAMILY";
+    const id = env.ROOM.idFromName(room);
+    return env.ROOM.get(id).fetch(req);
   }
 };
-
-/* ================================
-   TYPES
-================================ */
 
 type Player = {
   id: string;
@@ -31,93 +17,85 @@ type Player = {
   seat: number;
 };
 
-/* ================================
-   DURABLE OBJECT: ROOM
-================================ */
-
 export class Room {
   state: DurableObjectState;
-
-  sockets: Map<string, WebSocket> = new Map();
+  sockets = new Map<string, WebSocket>();
   players: Player[] = [];
-  hostId: string | null = null;
-
-  // Entire game state lives here
   gameState: any = null;
 
   constructor(state: DurableObjectState) {
     this.state = state;
   }
 
-  /* ================================
-     FETCH → WEBSOCKET
-  ================================ */
-
-  async fetch(req: Request): Promise<Response> {
+  async fetch(req: Request) {
     if (req.headers.get("Upgrade") !== "websocket") {
       return new Response("Expected WebSocket", { status: 426 });
     }
 
     const pair = new WebSocketPair();
     const [client, server] = Object.values(pair);
-
     this.handleSocket(server);
-
-    return new Response(null, {
-      status: 101,
-      webSocket: client
-    });
+    return new Response(null, { status: 101, webSocket: client });
   }
-
-  /* ================================
-     SOCKET HANDLING
-  ================================ */
 
   handleSocket(ws: WebSocket) {
     ws.accept();
     let clientId: string | null = null;
 
-    ws.addEventListener("message", (evt) => {
+    ws.addEventListener("message", evt => {
       let msg: any;
-      try {
-        msg = JSON.parse(evt.data);
-      } catch {
-        return;
-      }
+      try { msg = JSON.parse(evt.data); } catch { return; }
 
-      /* ---------- JOIN ---------- */
+      /* JOIN */
       if (msg.type === "join") {
         clientId = msg.id;
 
-        if (!this.players.find(p => p.id === clientId)) {
-          const seat = this.players.length;
-          this.players.push({
+        let player = this.players.find(p => p.id === clientId);
+        if (!player) {
+          player = {
             id: clientId,
-            name: msg.name || `Player ${seat + 1}`,
-            seat
-          });
-
-          if (seat === 0) {
-            this.hostId = clientId;
-          }
+            name: msg.name || "Player",
+            seat: this.players.length
+          };
+          this.players.push(player);
         }
 
         this.sockets.set(clientId, ws);
 
+        // 🔑 SEND SEAT EXPLICITLY (FIX)
+        ws.send(JSON.stringify({
+          type: "welcome",
+          seat: player.seat
+        }));
+
         this.broadcastPlayers();
-        this.sendState(ws);
+        if (this.gameState) this.sendState(ws);
         return;
       }
 
       if (!clientId) return;
 
-      /* ---------- ACTION ---------- */
+      /* ACTIONS */
       if (msg.type === "action") {
-        this.handleAction(clientId, msg.action);
-        return;
+        const player = this.players.find(p => p.id === clientId);
+        if (!player) return;
+
+        if (msg.action.type === "START") {
+          if (player.seat !== 0) return;
+          this.gameState = msg.action.state;
+          this.broadcastState();
+          return;
+        }
+
+        if (!this.gameState) return;
+        if (player.seat !== this.gameState.currentPlayer) return;
+
+        if (msg.action.type === "UPDATE") {
+          this.gameState = msg.action.state;
+          this.broadcastState();
+        }
       }
 
-      /* ---------- PING ---------- */
       if (msg.type === "ping") {
         ws.send(JSON.stringify({ type: "pong" }));
       }
@@ -125,48 +103,9 @@ export class Room {
 
     ws.addEventListener("close", () => {
       if (!clientId) return;
-
       this.sockets.delete(clientId);
-      this.players = this.players.filter(p => p.id !== clientId);
-
-      this.broadcastPlayers();
     });
   }
-
-  /* ================================
-     GAME AUTHORITY LOGIC
-  ================================ */
-
-  handleAction(clientId: string, action: any) {
-    const player = this.players.find(p => p.id === clientId);
-    if (!player) return;
-
-    /* ----- HOST-ONLY ACTIONS ----- */
-    if (action.type === "START") {
-      if (clientId !== this.hostId) return;
-
-      this.gameState = action.state;
-      this.broadcastState();
-      return;
-    }
-
-    if (!this.gameState) return;
-
-    /* ----- TURN ENFORCEMENT ----- */
-    if (player.seat !== this.gameState.currentPlayer) {
-      return;
-    }
-
-    /* ----- APPLY GAME UPDATE ----- */
-    if (action.type === "UPDATE") {
-      this.gameState = action.state;
-      this.broadcastState();
-    }
-  }
-
-  /* ================================
-     BROADCAST HELPERS
-  ================================ */
 
   broadcastPlayers() {
     this.broadcast({
@@ -176,32 +115,23 @@ export class Room {
   }
 
   sendState(ws: WebSocket) {
-    if (!this.gameState) return;
     ws.send(JSON.stringify({
       type: "state",
-      payload: {
-        state: this.gameState
-      }
+      payload: { state: this.gameState }
     }));
   }
 
   broadcastState() {
     this.broadcast({
       type: "state",
-      payload: {
-        state: this.gameState
-      }
+      payload: { state: this.gameState }
     });
   }
 
   broadcast(msg: any) {
     const data = JSON.stringify(msg);
     for (const ws of this.sockets.values()) {
-      try {
-        ws.send(data);
-      } catch {
-        // ignore broken sockets
-      }
+      try { ws.send(data); } catch {}
     }
   }
 }
