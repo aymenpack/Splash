@@ -1,0 +1,106 @@
+/* =========================
+   GLOBAL + THEMES
+========================= */
+
+:root{
+  --card-w: clamp(46px, 8vw, 72px);
+  --card-h: calc(var(--card-w) * 1.45);
+  --pile-h: 96px;
+  --panel-h: 176px;
+
+  --bg0:#0b1220;
+  --bg1:#142046;
+  --table1:#12204a;
+  --table2:#0c1430;
+
+  --accent:#63b3ed;
+  --accent-soft: rgba(99,179,237,.18);
+
+  --danger:#ff7b72;
+  --ok:#7ee787;
+
+  --text:#e6edf7;
+  --muted:rgba(230,237,247,.72);
+
+  --border:rgba(255,255,255,.14);
+  --glass:rgba(15,20,40,.94);
+
+  --r-xl:22px;
+  --r-lg:18px;
+  --r-md:14px;
+}
+
+body.theme-purple{
+  --bg0:#0a0716;
+  --bg1:#25115a;
+  --table1:#2b0e6a;
+  --table2:#120a2d;
+  --accent:#b47bff;
+  --accent-soft:rgba(180,123,255,.18);
+}
+
+body.theme-ocean{ --accent:#63b3ed; }
+body.theme-emerald{ --accent:#40e0a0; }
+body.theme-desert{ --accent:#f2cc60; }
+
+/* =========================
+   RESET
+========================= */
+
+*{ box-sizing:border-box; }
+html,body{
+  height:100%;
+  margin:0;
+  overflow:hidden;
+}
+
+body{
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  color:var(--text);
+  background:radial-gradient(circle at top,var(--bg1),var(--bg0) 62%);
+}
+
+/* =========================
+   COMMON UI
+========================= */
+
+button,input,select{
+  background:rgba(255,255,255,.08);
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:10px 12px;
+  border-radius:var(--r-md);
+}
+
+button.primary{
+  background:var(--accent-soft);
+  border-color:var(--accent);
+}
+
+button.danger{
+  background:rgba(255,123,114,.18);
+  border-color:var(--danger);
+}
+
+.pill{
+  padding:5px 10px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.18);
+  background:rgba(255,255,255,.05);
+  font-size:12px;
+}
+
+.muted{
+  color:var(--muted);
+  font-size:12px;
+}
+
+/* =========================
+   LAYOUT (MORE COMING)
+========================= */
+
+#app{ height:100%; display:flex; flex-direction:column; }
+#lobbyView,#gameView{ height:100%; }
+#gameView{ display:none; }
+
+/* (THIS FILE WILL GROW A LOT) */
