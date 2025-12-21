@@ -6,50 +6,112 @@
   <title>Splash</title>
 
   <style>
+    /* =========================
+       THEME SYSTEM
+       ========================= */
     :root{
-      --bg:#0b1220;
-      --table1:#12204a;
-      --table2:#0c1430;
-      --accent:#63b3ed;
-      --danger:#ff7b72;
-      --ok:#7ee787;
-      --muted:rgba(230,237,247,.72);
-      --shadow:0 10px 26px rgba(0,0,0,.45);
-
+      /* layout sizing */
       --card-w: clamp(46px, 8.2vw, 74px);
       --card-h: calc(var(--card-w) * 1.45);
+      --pile-h: 112px;
+      --panel-h: 180px;
+      --radius-xl: 22px;
+      --radius-lg: 18px;
+      --radius-md: 14px;
+      --gap: 10px;
 
-      --pile-h: 125px;
-      --panel-h: 200px;
-      --gap: 8px;
+      /* default theme vars (overridden per theme class) */
+      --bg0: #0b1220;
+      --bg1: #142046;
+      --surface: rgba(255,255,255,.05);
+      --surface2: rgba(0,0,0,.22);
+      --border: rgba(255,255,255,.12);
+      --text: #e6edf7;
+      --muted: rgba(230,237,247,.72);
+
+      --accent: #63b3ed;
+      --accent2: rgba(99,179,237,.18);
+      --danger: #ff7b72;
+      --ok: #7ee787;
+
+      --table1: #12204a;
+      --table2: #0c1430;
+
+      --shadow: 0 10px 26px rgba(0,0,0,.45);
+      --shadow2: 0 12px 34px rgba(0,0,0,.55);
+
+      --btn: rgba(255,255,255,.08);
+      --btnBorder: rgba(255,255,255,.18);
     }
 
+    /* 🌊 Ocean (default) */
+    body.theme-ocean{
+      --bg0:#0b1220; --bg1:#142046;
+      --table1:#12204a; --table2:#0c1430;
+      --accent:#63b3ed; --accent2:rgba(99,179,237,.18);
+      --danger:#ff7b72;
+    }
+
+    /* 💜 Purple */
+    body.theme-purple{
+      --bg0:#0a0716; --bg1:#25115a;
+      --table1:#2b0e6a; --table2:#120a2d;
+      --accent:#b47bff; --accent2:rgba(180,123,255,.18);
+      --danger:#ff7b72;
+    }
+
+    /* 🌵 Desert */
+    body.theme-desert{
+      --bg0:#0f0d08; --bg1:#2a2011;
+      --table1:#3a2a13; --table2:#1a1309;
+      --accent:#f2cc60; --accent2:rgba(242,204,96,.18);
+      --danger:#ff7b72;
+    }
+
+    /* 🌿 Emerald */
+    body.theme-emerald{
+      --bg0:#07130f; --bg1:#0f2c22;
+      --table1:#10382a; --table2:#081a13;
+      --accent:#40e0a0; --accent2:rgba(64,224,160,.18);
+      --danger:#ff7b72;
+    }
+
+    /* =========================
+       GLOBAL / NO SCROLL
+       ========================= */
     *{ box-sizing:border-box; }
     html,body{ height:100%; margin:0; overflow:hidden; }
     body{
-      color:#e6edf7;
+      color:var(--text);
       font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      background: radial-gradient(circle at top, #142046, var(--bg) 60%);
+      background: radial-gradient(circle at top, var(--bg1), var(--bg0) 62%);
       -webkit-tap-highlight-color: transparent;
     }
 
-    button,input{
-      background:rgba(255,255,255,.08);
-      border:1px solid rgba(255,255,255,.16);
-      color:#e6edf7;
+    button,input,select{
+      background:var(--btn);
+      border:1px solid var(--btnBorder);
+      color:var(--text);
       padding:10px 12px;
-      border-radius:14px;
+      border-radius:var(--radius-md);
       font-size:14px;
       outline:none;
     }
     button{ cursor:pointer; }
-    button.primary{ background:rgba(99,179,237,.22); border-color:rgba(99,179,237,.45); }
-    button.danger{ background:rgba(255,123,114,.18); border-color:rgba(255,123,114,.45); }
     button:disabled{ opacity:.55; cursor:not-allowed; }
+
+    button.primary{
+      background: var(--accent2);
+      border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+    }
+    button.danger{
+      background: color-mix(in srgb, var(--danger) 18%, transparent);
+      border-color: color-mix(in srgb, var(--danger) 55%, transparent);
+    }
 
     .muted{ color:var(--muted); font-size:12px; }
     .pill{
-      padding:4px 10px;
+      padding:5px 10px;
       border-radius:999px;
       border:1px solid rgba(255,255,255,.14);
       background:rgba(255,255,255,.04);
@@ -62,7 +124,9 @@
 
     #app{ height:100%; display:flex; flex-direction:column; }
 
-    /* ---------------- LOBBY ---------------- */
+    /* =========================
+       LOBBY
+       ========================= */
     #lobbyView{
       flex:1;
       display:flex;
@@ -71,40 +135,47 @@
       padding:16px;
     }
     .lobbyCard{
-      width:min(560px,100%);
-      background:rgba(255,255,255,.05);
-      border:1px solid rgba(255,255,255,.12);
-      border-radius:22px;
-      box-shadow: var(--shadow);
+      width:min(620px,100%);
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:var(--radius-xl);
+      box-shadow:var(--shadow2);
       padding:18px;
     }
     .lobbyTop{
       display:flex;
-      justify-content:space-between;
-      gap:10px;
       align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:12px;
     }
-    .lobbyTop h1{
+    .brand h1{
       margin:0;
-      font-size:20px;
-      font-weight:900;
+      font-size:22px;
+      font-weight:950;
       letter-spacing:.2px;
     }
+    .brand .sub{
+      margin-top:4px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.25;
+    }
     .lobbyGrid{
-      margin-top:12px;
       display:grid;
       grid-template-columns: 1fr 1fr;
       gap:10px;
+      margin-top:10px;
     }
-    .lobbyGrid input{ width:100%; text-transform:none; }
-    #roomInput{ text-transform:uppercase; }
+    .lobbyGrid label{ display:block; font-size:12px; color:var(--muted); margin:0 0 6px; }
+    .lobbyGrid input, .lobbyGrid select{ width:100%; }
     .lobbyActions{
-      margin-top:12px;
       display:grid;
       grid-template-columns: 1fr 1fr;
       gap:10px;
+      margin-top:12px;
     }
-    .lobbyHelp{
+    .lobbyFooter{
       margin-top:12px;
       padding-top:12px;
       border-top:1px solid rgba(255,255,255,.10);
@@ -112,12 +183,14 @@
       flex-direction:column;
       gap:8px;
     }
-    @media(max-width:520px){
+    @media (max-width: 520px){
       .lobbyGrid{ grid-template-columns:1fr; }
       .lobbyActions{ grid-template-columns:1fr; }
     }
 
-    /* ---------------- GAME ---------------- */
+    /* =========================
+       GAME
+       ========================= */
     #gameView{
       height:100%;
       display:none;
@@ -131,25 +204,44 @@
       gap:10px;
       align-items:center;
       flex-wrap:wrap;
+      background: color-mix(in srgb, rgba(0,0,0,.35) 70%, transparent);
+      backdrop-filter: blur(10px);
     }
-    header .left{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-    header .right{ margin-left:auto; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-    header .title{ font-weight:900; letter-spacing:.2px; white-space:nowrap; }
+    header .left{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      min-width:0;
+    }
+    header .title{
+      font-weight:950;
+      letter-spacing:.2px;
+      white-space:nowrap;
+      font-size:14px;
+    }
+    header .right{
+      margin-left:auto;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
 
     main{
       flex:1;
       min-height:0;
       padding:10px;
       overflow:hidden;
-      padding-bottom: calc(var(--panel-h) + 24px + env(safe-area-inset-bottom));
+      padding-bottom: calc(var(--panel-h) + 26px + env(safe-area-inset-bottom));
     }
 
     .table{
       height:100%;
       min-height:0;
       background: linear-gradient(180deg, var(--table1), var(--table2));
-      border-radius:22px;
-      box-shadow: var(--shadow);
+      border-radius:var(--radius-xl);
+      box-shadow:var(--shadow2);
       padding:12px;
       overflow:hidden;
       display:flex;
@@ -176,7 +268,7 @@
     }
     .playerChip.active{
       outline:2px solid var(--accent);
-      box-shadow:0 0 16px rgba(99,179,237,.35);
+      box-shadow:0 0 18px color-mix(in srgb, var(--accent) 35%, transparent);
     }
     .avatar{
       width:38px;height:38px;border-radius:50%;
@@ -226,7 +318,7 @@
     }
     .pileVisual.dragOver{
       border-color:var(--accent);
-      background:rgba(99,179,237,.14);
+      background:color-mix(in srgb, var(--accent) 14%, transparent);
     }
 
     .zoneTitle{
@@ -239,7 +331,7 @@
       flex:0 0 auto;
     }
 
-    /* -------- Cards -------- */
+    /* ---------- Cards ---------- */
     .c{
       width:var(--card-w);
       height:var(--card-h);
@@ -254,6 +346,7 @@
     }
     .c.illegal{ opacity:.55; }
     .c.selected{ outline:3px solid var(--accent); transform:translateY(-3px); }
+
     .corner{
       position:absolute;
       font-weight:900;
@@ -269,10 +362,11 @@
       font-size:28px;
     }
 
-    /* -------- Grouped hand stacks: 5 per row -------- */
+    /* ---------- Hand stacks (5 per row) ---------- */
     .handStacks{
-      flex:1 1 auto;
-      min-height:0;
+      flex:0 0 auto;
+      min-height: 150px;     /* ensures visible */
+      max-height: 190px;
       display:grid;
       grid-template-columns: repeat(5, minmax(0, 1fr));
       gap:8px;
@@ -304,7 +398,7 @@
       font-weight:900;
     }
 
-    /* -------- Table cards: 5 columns, first 4 used -------- */
+    /* Table cards row (kept, but we hide it on mobile when hand not empty via JS) */
     .tableCards{
       flex:0 0 auto;
       display:grid;
@@ -313,17 +407,18 @@
       justify-items:center;
       overflow:hidden;
     }
+    .hidden{ display:none !important; }
 
-    /* -------- Bottom Panel -------- */
+    /* ---------- Bottom panel ---------- */
     .panel{
       position:fixed;
       left:10px;
       right:10px;
       bottom: calc(10px + env(safe-area-inset-bottom));
       height:var(--panel-h);
-      background:rgba(15,20,40,.96);
+      background: color-mix(in srgb, rgba(15,20,40,.96) 85%, transparent);
       border:1px solid rgba(255,255,255,.14);
-      border-radius:22px;
+      border-radius:var(--radius-xl);
       padding:12px;
       display:flex;
       flex-direction:column;
@@ -333,7 +428,14 @@
     }
     .panel .row{ display:flex; gap:10px; }
     .panel button{ flex:1; }
+    .panel .metaRow{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
 
+    /* Log drawer inside panel (compact) */
     .logWrap{
       flex:1 1 auto;
       min-height:0;
@@ -367,7 +469,7 @@
     }
     .logLine:last-child{ border-bottom:none; }
 
-    /* -------- Snap animation clone -------- */
+    /* Snap animation clone */
     .snapClone{
       position:fixed;
       z-index:5000;
@@ -375,42 +477,57 @@
       transition: transform .22s ease, opacity .22s ease;
       transform-origin:center center;
     }
+
+    @media (max-width: 600px){
+      :root{
+        --pile-h: 100px;
+        --panel-h: 170px;
+      }
+      .corner{ font-size:11px; }
+      .pip{ font-size:24px; }
+      .handStacks{ min-height:140px; max-height:180px; }
+    }
   </style>
 </head>
 
-<body>
+<body class="theme-ocean">
 <div id="app">
 
   <!-- LOBBY -->
   <section id="lobbyView">
     <div class="lobbyCard">
       <div class="lobbyTop">
-        <div>
+        <div class="brand">
           <h1>🃏 Splash</h1>
-          <div class="muted">Host a room or join your family’s room.</div>
+          <div class="sub">Family room. Pick a theme. Enter your name. Play.</div>
         </div>
         <span class="pill" id="lobbyStatus">Not connected</span>
       </div>
 
       <div class="lobbyGrid">
         <div>
-          <div class="muted" style="margin:0 0 6px;">Your name</div>
+          <label for="nameInput">Your name</label>
           <input id="nameInput" placeholder="Name" />
         </div>
         <div>
-          <div class="muted" style="margin:0 0 6px;">Room code</div>
-          <input id="roomInput" placeholder="ROOM" />
+          <label for="themeSelectLobby">Theme</label>
+          <select id="themeSelectLobby">
+            <option value="ocean">Ocean</option>
+            <option value="purple">Purple</option>
+            <option value="emerald">Emerald</option>
+            <option value="desert">Desert</option>
+          </select>
         </div>
       </div>
 
       <div class="lobbyActions">
-        <button id="hostBtn" class="primary">Host</button>
-        <button id="joinBtn" class="primary">Join</button>
+        <button id="enterBtn" class="primary">Enter Game</button>
+        <button id="resetNameBtn">Reset Name</button>
       </div>
 
-      <div class="lobbyHelp">
-        <div class="muted">Tip: Share the room code with everyone.</div>
-        <div class="muted">In-game: tap a stack to select that rank, drag it to the pile to play (snap animation).</div>
+      <div class="lobbyFooter">
+        <div class="muted">Room is fixed for your family: <b>FAMILY</b> (no codes).</div>
+        <div class="muted">In-game: tap a stack to select, drag stack to pile to play (with snap).</div>
       </div>
     </div>
   </section>
@@ -424,6 +541,12 @@
         <span class="pill" id="turnInfo">Turn: —</span>
       </div>
       <div class="right">
+        <select id="themeSelectGame" title="Theme">
+          <option value="ocean">Ocean</option>
+          <option value="purple">Purple</option>
+          <option value="emerald">Emerald</option>
+          <option value="desert">Desert</option>
+        </select>
         <button id="newGame" class="primary">New Game</button>
         <button id="leaveBtn" class="danger">Leave</button>
       </div>
@@ -446,7 +569,7 @@
             </div>
           </div>
           <div class="pileVisual" id="pileVisual"></div>
-          <div class="muted" style="margin-top:8px;">Tap a stack to select. Drag it onto the pile to play.</div>
+          <div class="muted" style="margin-top:8px;">Tap a stack to select. Drag it onto the pile to play (snap).</div>
         </div>
 
         <div class="zoneTitle">
@@ -455,7 +578,7 @@
         </div>
         <div id="handStacks" class="handStacks"></div>
 
-        <div class="zoneTitle">
+        <div class="zoneTitle" id="tableTitle">
           <span>Your table cards</span>
           <span class="muted">Play hand first</span>
         </div>
@@ -468,8 +591,9 @@
         <button id="playBtn" class="primary">Play Selected</button>
         <button id="pickupBtn" class="danger">Pick Up Pile</button>
       </div>
-      <div class="row">
-        <button id="clearSelBtn">Clear Selection</button>
+
+      <div class="metaRow">
+        <button id="clearSelBtn">Clear</button>
         <span class="pill" id="selPill" style="flex:1; justify-content:center;">Selected: —</span>
       </div>
 
@@ -481,26 +605,33 @@
         <div id="log" class="logBody"></div>
       </div>
     </div>
-
   </section>
 
 </div>
 
 <script>
 (() => {
+  /* =========================
+     FIXED FAMILY ROOM
+     ========================= */
+  const FIXED_ROOM = "FAMILY";
+
   const WS_BASE = "wss://splash-multiplayer.azimaymen.workers.dev";
   const mpClientId = crypto.randomUUID();
 
-  // views
+  // Views
   const lobbyView = document.getElementById("lobbyView");
   const gameView = document.getElementById("gameView");
 
-  // lobby controls
+  // Lobby controls
   const nameInput = document.getElementById("nameInput");
-  const roomInput = document.getElementById("roomInput");
+  const enterBtn = document.getElementById("enterBtn");
+  const resetNameBtn = document.getElementById("resetNameBtn");
   const lobbyStatus = document.getElementById("lobbyStatus");
+  const themeSelectLobby = document.getElementById("themeSelectLobby");
 
-  // game controls
+  // Game controls
+  const themeSelectGame = document.getElementById("themeSelectGame");
   const roomPill = document.getElementById("roomPill");
   const turnInfo = document.getElementById("turnInfo");
   const turnHint = document.getElementById("turnHint");
@@ -508,6 +639,7 @@
   const pileVisual = document.getElementById("pileVisual");
   const handStacks = document.getElementById("handStacks");
   const yourTable = document.getElementById("yourTable");
+  const tableTitle = document.getElementById("tableTitle");
   const logEl = document.getElementById("log");
 
   const deckCount = document.getElementById("deckCount");
@@ -522,27 +654,26 @@
   const clearSelBtn = document.getElementById("clearSelBtn");
   const selPill = document.getElementById("selPill");
 
-  // multiplayer state
+  // Multiplayer state
   let mpWs = null;
-  let mpRoom = null;
   let mpConnected = false;
   let mySeat = null;
   let reconnectAttempts = 0;
   let reconnectTimer = null;
   const MAX_RECONNECT_ATTEMPTS = 5;
 
-  // drag state (stack dragging)
+  // Drag state (stack dragging)
   const drag = { active:false, ids:null, el:null, pid:null, moved:false, sx:0, sy:0 };
 
-  // game constants
+  // Game constants
   const SUITS = ["♠", "♥", "♦", "♣"];
   const RANKS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
   const RANK_ORDER = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
   const rankOrder = (r) => RANK_ORDER.indexOf(r);
   const isFace = (r) => r === "J" || r === "Q" || r === "K";
-
   const EMOJIS = ["🦊", "🐼", "🐯", "🦁", "🐸", "🐙", "🦉", "🦄", "🐲", "🐶", "🐱", "🐵"];
 
+  // Game state
   const state = {
     players: [],
     deck: [],
@@ -554,6 +685,30 @@
 
   let selected = new Set(); // card ids
 
+  /* =========================
+     THEME
+     ========================= */
+  function applyTheme(theme){
+    const t = theme || "ocean";
+    document.body.classList.remove("theme-ocean","theme-purple","theme-emerald","theme-desert");
+    document.body.classList.add("theme-" + t);
+    localStorage.setItem("splash_theme", t);
+    themeSelectLobby.value = t;
+    themeSelectGame.value = t;
+  }
+
+  /* =========================
+     STORAGE
+     ========================= */
+  function saveName(name){ localStorage.setItem("splash_name", name); }
+  function loadName(){ return localStorage.getItem("splash_name") || ""; }
+  function clearName(){ localStorage.removeItem("splash_name"); }
+
+  function setLobbyStatus(text, ok=false){
+    lobbyStatus.textContent = text;
+    lobbyStatus.style.borderColor = ok ? "rgba(126,231,135,.5)" : "rgba(255,255,255,.14)";
+  }
+
   function showLobby(){
     gameView.style.display = "none";
     lobbyView.style.display = "flex";
@@ -561,26 +716,6 @@
   function showGame(){
     lobbyView.style.display = "none";
     gameView.style.display = "flex";
-  }
-
-  function setLobbyStatus(text, ok=false){
-    lobbyStatus.textContent = text;
-    lobbyStatus.style.borderColor = ok ? "rgba(126,231,135,.5)" : "rgba(255,255,255,.14)";
-  }
-
-  function saveConnectionInfo(room, name){
-    localStorage.setItem("splash_room", room);
-    localStorage.setItem("splash_name", name);
-  }
-  function loadConnectionInfo(){
-    return {
-      room: localStorage.getItem("splash_room"),
-      name: localStorage.getItem("splash_name")
-    };
-  }
-  function clearConnectionInfo(){
-    localStorage.removeItem("splash_room");
-    localStorage.removeItem("splash_name");
   }
 
   function logLine(text, tone=""){
@@ -591,25 +726,27 @@
     logEl.prepend(div);
   }
 
-  // ---------- WebSocket ----------
-  function mpConnect(room){
-    mpRoom = room.toUpperCase();
-    roomPill.textContent = `ROOM: ${mpRoom}`;
-    setLobbyStatus(`Connecting to ${mpRoom}…`, false);
+  /* =========================
+     WS CONNECT
+     ========================= */
+  function mpConnect(){
+    const nm = (nameInput.value || "").trim();
+    if (!nm) return alert("Enter your name");
+    saveName(nm);
 
-    mpWs = new WebSocket(`${WS_BASE}?room=${mpRoom}`);
+    roomPill.textContent = `ROOM: ${FIXED_ROOM}`;
+    setLobbyStatus(`Connecting to ${FIXED_ROOM}…`, false);
 
-    const nm = (nameInput.value || "Player").trim();
-    saveConnectionInfo(mpRoom, nm);
+    mpWs = new WebSocket(`${WS_BASE}?room=${FIXED_ROOM}`);
 
     mpWs.onopen = () => {
       mpConnected = true;
       reconnectAttempts = 0;
-      setLobbyStatus(`Connected: ${mpRoom}`, true);
+      setLobbyStatus(`Connected: ${FIXED_ROOM}`, true);
 
       mpWs.send(JSON.stringify({ type:"join", id: mpClientId, name: nm }));
       showGame();
-      logLine(`Connected to room ${mpRoom}`, "ok");
+      logLine(`Connected to room ${FIXED_ROOM}`, "ok");
     };
 
     mpWs.onmessage = (ev) => {
@@ -637,7 +774,7 @@
     mpWs.onclose = () => {
       mpConnected = false;
       setLobbyStatus("Disconnected", false);
-      handleReconnect(room);
+      handleReconnect();
     };
 
     mpWs.onerror = () => {
@@ -652,7 +789,7 @@
     }, 30000);
   }
 
-  function handleReconnect(room){
+  function handleReconnect(){
     if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
       logLine("Failed to reconnect", "bad");
       return;
@@ -660,10 +797,9 @@
     reconnectAttempts++;
     const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000);
     setLobbyStatus(`Reconnecting… (${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`, false);
-    reconnectTimer = setTimeout(() => mpConnect(room), delay);
+    reconnectTimer = setTimeout(() => mpConnect(), delay);
   }
 
-  // server-authoritative action sender
   function mpSendAction(actionType, nextState){
     if (!mpWs || mpWs.readyState !== WebSocket.OPEN) {
       logLine("Cannot sync - not connected", "warn");
@@ -680,9 +816,7 @@
     if (mpWs) mpWs.close();
     mpWs = null;
     mpConnected = false;
-    mpRoom = null;
     mySeat = null;
-    clearConnectionInfo();
     selected.clear();
     resetLocalState();
     render();
@@ -691,41 +825,9 @@
     logLine("Left room", "warn");
   }
 
-  // lobby buttons
-  document.getElementById("hostBtn").onclick = () => {
-    const nm = (nameInput.value || "").trim();
-    if (!nm) return alert("Enter your name");
-    const code = Math.random().toString(36).slice(2, 8).toUpperCase();
-    roomInput.value = code;
-    mpConnect(code);
-    alert("Room code: " + code + "\nShare this with others to join!");
-  };
-  document.getElementById("joinBtn").onclick = () => {
-    const nm = (nameInput.value || "").trim();
-    const code = (roomInput.value || "").trim();
-    if (!nm) return alert("Enter your name");
-    if (!code) return alert("Enter room code");
-    mpConnect(code);
-  };
-
-  // game buttons
-  leaveBtn.onclick = mpLeave;
-  clearSelBtn.onclick = () => { selected.clear(); renderSelectionPill(); render(); };
-  playBtn.onclick = () => { animateSelectedToPile(); playSelected(); };
-  pickupBtn.onclick = pickup;
-  newGameBtn.onclick = newGame;
-
-  // restore saved info
-  window.addEventListener("load", () => {
-    const info = loadConnectionInfo();
-    if (info.name) nameInput.value = info.name;
-    if (info.room) roomInput.value = info.room;
-    showLobby();
-    setLobbyStatus("Not connected", false);
-    logLine("Welcome! Host or join a room.", "ok");
-  });
-
-  // ---------- Game model helpers ----------
+  /* =========================
+     GAME LOGIC (original)
+     ========================= */
   function ensurePlayersFromServer(players) {
     while (state.players.length < players.length) {
       const idx = state.players.length;
@@ -786,9 +888,7 @@
     const d = [];
     for (let k = 0; k < 2; k++) {
       for (const s of SUITS) {
-        for (const r of RANKS) {
-          d.push({ id: crypto.randomUUID(), rank: r, suit: s });
-        }
+        for (const r of RANKS) d.push({ id: crypto.randomUUID(), rank: r, suit: s });
       }
     }
     for (let j = 0; j < 4; j++) d.push({ id: crypto.randomUUID(), rank: "JOKER", suit: "★" });
@@ -857,14 +957,8 @@
     if (!chosen.length) return;
 
     const rank = chosen[0].card.rank;
-    if (!chosen.every(x => x.card.rank === rank)) {
-      logLine("Must play same rank", "bad");
-      return;
-    }
-    if (!canPlayOnTop(rank)) {
-      logLine("Illegal play - cannot play " + rank + " on " + topRank(), "bad");
-      return;
-    }
+    if (!chosen.every(x => x.card.rank === rank)) { logLine("Must play same rank", "bad"); return; }
+    if (!canPlayOnTop(rank)) { logLine("Illegal play - cannot play " + rank + " on " + topRank(), "bad"); return; }
 
     chosen.forEach(x => {
       if (x.zone === "hand") me.hand = me.hand.filter(c => c.id !== x.card.id);
@@ -917,7 +1011,9 @@
     render();
   }
 
-  // ---------- Grouping ----------
+  /* =========================
+     HAND GROUPING
+     ========================= */
   function groupByRank(cards){
     const m = new Map();
     for (const c of cards){
@@ -941,7 +1037,9 @@
     selPill.textContent = anyCard ? `Selected: ${anyCard.rank} × ${selected.size}` : `Selected: ${selected.size}`;
   }
 
-  // ---------- Snap animation ----------
+  /* =========================
+     SNAP ANIMATION
+     ========================= */
   function animateElementToPile(fromEl){
     if (!fromEl) return;
     const from = fromEl.getBoundingClientRect();
@@ -960,7 +1058,7 @@
     const ty = (to.top + to.height/2) - (from.top + from.height/2);
 
     requestAnimationFrame(() => {
-      clone.style.transform = `translate(${tx}px, ${ty}px) scale(.7)`;
+      clone.style.transform = `translate(${tx}px, ${ty}px) scale(.72)`;
       clone.style.opacity = "0";
     });
 
@@ -968,15 +1066,17 @@
   }
 
   function animateSelectedToPile(){
-    // prefer stack element (hand) if exists
-    const stack = handStacks.querySelector(".c.selected")?.parentElement; // cardStack container
+    // selected stack (preferred)
+    const stack = handStacks.querySelector(".c.selected")?.parentElement;
     if (stack) { animateElementToPile(stack); return; }
-    // else try table card selected
+    // selected table card
     const card = yourTable.querySelector(".c.selected");
     if (card) animateElementToPile(card);
   }
 
-  // ---------- Drag to pile ----------
+  /* =========================
+     DRAG TO PILE
+     ========================= */
   function isOverPile(x,y){
     const r = pileVisual.getBoundingClientRect();
     return x>=r.left && x<=r.right && y>=r.top && y<=r.bottom;
@@ -1002,7 +1102,6 @@
     pileVisual.classList.remove("dragOver");
     try{ drag.el.releasePointerCapture(drag.pid); }catch{}
     if(drag.moved && isOverPile(x,y)){
-      // snap animation
       animateElementToPile(drag.el);
       selected.clear();
       drag.ids.forEach(id => selected.add(id));
@@ -1012,7 +1111,9 @@
     drag.active=false; drag.ids=null; drag.el=null; drag.pid=null; drag.moved=false;
   }
 
-  // ---------- Rendering ----------
+  /* =========================
+     RENDER
+     ========================= */
   function cardHTML(c){
     return `<div class="corner top">${c.rank}<br>${c.suit}</div>
             <div class="pip">${c.suit}</div>
@@ -1060,7 +1161,7 @@
     yourTable.innerHTML = "";
 
     if (mySeat === null || !state.players[mySeat]) {
-      handStacks.innerHTML = '<div class="muted" style="padding:10px;text-align:center;">Join a room to see your cards</div>';
+      handStacks.innerHTML = '<div class="muted" style="padding:10px;text-align:center;">Join to see your cards</div>';
       renderSelectionPill();
       return;
     }
@@ -1072,7 +1173,6 @@
     groups.forEach(g => {
       const ids = g.cards.map(c => c.id);
       const top = g.cards[g.cards.length - 1];
-      const legal = true; // allow select; legality handled on play
 
       const stack = document.createElement("div");
       stack.className = "cardStack";
@@ -1092,7 +1192,6 @@
 
       const card = document.createElement("div");
       card.className = "c";
-      card.dataset.rank = g.rank;
       card.innerHTML = cardHTML(top);
 
       const selectedThisRank = ids.some(id => selected.has(id));
@@ -1108,11 +1207,9 @@
         stack.appendChild(badge);
       }
 
-      // tap stack: toggle select whole rank (one rank at a time)
       stack.onclick = () => {
         if (!isMyTurn()) { logLine("Wait for your turn", "warn"); return; }
         if (!canPlayOnTop(g.rank)) { logLine("Cannot play " + g.rank + " on " + topRank(), "bad"); return; }
-
         const anySelected = ids.some(id => selected.has(id));
         selected.clear();
         if (!anySelected) ids.forEach(id => selected.add(id));
@@ -1120,7 +1217,6 @@
         render();
       };
 
-      // drag stack to pile
       stack.addEventListener("pointerdown", (e) => {
         if (!isMyTurn()) return;
         if (!canPlayOnTop(g.rank)) return;
@@ -1136,7 +1232,13 @@
       handStacks.appendChild(stack);
     });
 
-    // tableUp cards (must play hand first)
+    // Show/hide table cards on mobile when hand not empty
+    const isSmall = window.matchMedia("(max-width: 600px)").matches;
+    const showTable = !isSmall || (me.hand.length === 0);
+    yourTable.classList.toggle("hidden", !showTable);
+    tableTitle.classList.toggle("hidden", !showTable);
+
+    // tableUp cards (only meaningful when hand empty)
     for (let i = 0; i < 4; i++){
       const up = me.tableUp[i];
       if (up){
@@ -1144,14 +1246,12 @@
         d.className = "c";
         if (!canPlayOnTop(up.rank)) d.classList.add("illegal");
         if (selected.has(up.id)) d.classList.add("selected");
-        d.dataset.id = up.id;
         d.innerHTML = cardHTML(up);
 
         d.onclick = () => {
           if (!isMyTurn()) { logLine("Wait for your turn", "warn"); return; }
           if (me.hand.length > 0) { logLine("Must play hand first", "warn"); return; }
           if (!canPlayOnTop(up.rank)) { logLine("Cannot play " + up.rank + " on " + topRank(), "bad"); return; }
-
           selected.clear();
           selected.add(up.id);
           renderSelectionPill();
@@ -1180,7 +1280,7 @@
         yourTable.appendChild(empty);
       }
     }
-    // filler to keep 5 columns stable
+    // filler for 5 columns
     const filler = document.createElement("div");
     filler.style.width = "var(--card-w)";
     filler.style.height = "var(--card-h)";
@@ -1195,6 +1295,35 @@
     renderSelectionPill();
   }
 
+  /* =========================
+     UI WIRING
+     ========================= */
+  enterBtn.onclick = mpConnect;
+  resetNameBtn.onclick = () => { clearName(); nameInput.value = ""; };
+
+  leaveBtn.onclick = mpLeave;
+  clearSelBtn.onclick = () => { selected.clear(); renderSelectionPill(); render(); };
+  playBtn.onclick = () => { animateSelectedToPile(); playSelected(); };
+  pickupBtn.onclick = pickup;
+  newGameBtn.onclick = newGame;
+
+  themeSelectLobby.onchange = () => applyTheme(themeSelectLobby.value);
+  themeSelectGame.onchange = () => applyTheme(themeSelectGame.value);
+
+  window.addEventListener("resize", () => render());
+
+  /* =========================
+     INIT
+     ========================= */
+  const savedTheme = localStorage.getItem("splash_theme") || "ocean";
+  applyTheme(savedTheme);
+
+  const savedName = loadName();
+  if (savedName) nameInput.value = savedName;
+
+  setLobbyStatus("Not connected", false);
+  showLobby();
+  logLine("Welcome! Enter your name and tap Enter Game.", "ok");
 })();
 </script>
 </body>
