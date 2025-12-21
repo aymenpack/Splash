@@ -3,9 +3,9 @@ export interface Env {
 }
 
 export default {
-  async fetch(req: Request, env: Env) {
+  async fetch(req: Request, env: Env): Promise<Response> {
     const url = new URL(req.url);
-    const room = url.searchParams.get("room") || "FAMILY";
+    const room = (url.searchParams.get("room") || "FAMILY").toUpperCase();
     const id = env.ROOM.idFromName(room);
     return env.ROOM.get(id).fetch(req);
   }
@@ -27,7 +27,7 @@ export class Room {
     this.state = state;
   }
 
-  async fetch(req: Request) {
+  async fetch(req: Request): Promise<Response> {
     if (req.headers.get("Upgrade") !== "websocket") {
       return new Response("Expected WebSocket", { status: 426 });
     }
@@ -42,57 +42,59 @@ export class Room {
     ws.accept();
     let clientId: string | null = null;
 
-    ws.addEventListener("message", evt => {
+    ws.addEventListener("message", (evt) => {
       let msg: any;
-      try { msg = JSON.parse(evt.data); } catch { return; }
+      try { msg = JSON.parse(evt.data as any); } catch { return; }
 
-      /* JOIN */
+      // JOIN
       if (msg.type === "join") {
         clientId = msg.id;
 
         let player = this.players.find(p => p.id === clientId);
         if (!player) {
-          player = {
-            id: clientId,
-            name: msg.name || "Player",
-            seat: this.players.length
-          };
+          player = { id: clientId, name: msg.name || "Player", seat: this.players.length };
           this.players.push(player);
+        } else {
+          player.name = msg.name || player.name;
         }
 
         this.sockets.set(clientId, ws);
 
-        // 🔑 SEND SEAT EXPLICITLY (FIX)
-        ws.send(JSON.stringify({
-          type: "welcome",
-          seat: player.seat
-        }));
+        // ✅ Explicit seat assignment (fixes “Player 2 doesn’t see their hand”)
+        ws.send(JSON.stringify({ type: "welcome", seat: player.seat }));
 
-        this.broadcastPlayers();
-        if (this.gameState) this.sendState(ws);
+        this.broadcast({ type: "players", players: this.players });
+
+        if (this.gameState) {
+          ws.send(JSON.stringify({ type: "state", payload: { state: this.gameState } }));
+        }
         return;
       }
 
       if (!clientId) return;
 
-      /* ACTIONS */
+      // ACTIONS (server-authoritative)
       if (msg.type === "action") {
         const player = this.players.find(p => p.id === clientId);
         if (!player) return;
 
-        if (msg.action.type === "START") {
+        // Host-only START
+        if (msg.action?.type === "START") {
           if (player.seat !== 0) return;
           this.gameState = msg.action.state;
-          this.broadcastState();
+          this.broadcast({ type: "state", payload: { state: this.gameState } });
           return;
         }
 
         if (!this.gameState) return;
+
+        // Turn enforcement
         if (player.seat !== this.gameState.currentPlayer) return;
 
-        if (msg.action.type === "UPDATE") {
+        if (msg.action?.type === "UPDATE") {
           this.gameState = msg.action.state;
-          this.broadcastState();
+          this.broadcast({ type: "state", payload: { state: this.gameState } });
+          return;
         }
       }
 
@@ -104,27 +106,10 @@ export class Room {
     ws.addEventListener("close", () => {
       if (!clientId) return;
       this.sockets.delete(clientId);
-    });
-  }
 
-  broadcastPlayers() {
-    this.broadcast({
-      type: "players",
-      players: this.players
-    });
-  }
-
-  sendState(ws: WebSocket) {
-    ws.send(JSON.stringify({
-      type: "state",
-      payload: { state: this.gameState }
-    }));
-  }
-
-  broadcastState() {
-    this.broadcast({
-      type: "state",
-      payload: { state: this.gameState }
+      // Keep players stable to avoid seat reshuffles.
+      // (Cleanup policy can be added later.)
+      this.broadcast({ type: "players", players: this.players });
     });
   }
 
