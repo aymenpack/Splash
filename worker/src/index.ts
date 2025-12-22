@@ -11,11 +11,7 @@ export default {
   }
 };
 
-type Player = {
-  id: string;
-  name: string;
-  seat: number;
-};
+type Player = { id: string; name: string; seat: number };
 
 export class Room {
   state: DurableObjectState;
@@ -23,15 +19,10 @@ export class Room {
   players: Player[] = [];
   gameState: any = null;
 
-  constructor(state: DurableObjectState) {
-    this.state = state;
-  }
+  constructor(state: DurableObjectState) { this.state = state; }
 
   async fetch(req: Request): Promise<Response> {
-    if (req.headers.get("Upgrade") !== "websocket") {
-      return new Response("Expected WebSocket", { status: 426 });
-    }
-
+    if (req.headers.get("Upgrade") !== "websocket") return new Response("Expected WebSocket", { status: 426 });
     const pair = new WebSocketPair();
     const [client, server] = Object.values(pair);
     this.handleSocket(server);
@@ -46,50 +37,42 @@ export class Room {
       let msg: any;
       try { msg = JSON.parse(evt.data as any); } catch { return; }
 
-      // JOIN
       if (msg.type === "join") {
         clientId = msg.id;
 
-        let player = this.players.find(p => p.id === clientId);
-        if (!player) {
-          player = { id: clientId, name: msg.name || "Player", seat: this.players.length };
-          this.players.push(player);
+        let p = this.players.find(x => x.id === clientId);
+        if (!p) {
+          p = { id: clientId, name: msg.name || "Player", seat: this.players.length };
+          this.players.push(p);
         } else {
-          player.name = msg.name || player.name;
+          p.name = msg.name || p.name;
         }
 
         this.sockets.set(clientId, ws);
 
-        // ✅ Explicit seat assignment (fixes “Player 2 doesn’t see their hand”)
-        ws.send(JSON.stringify({ type: "welcome", seat: player.seat }));
+        // ✅ Seat is explicit (fixes Player 2)
+        ws.send(JSON.stringify({ type: "welcome", seat: p.seat }));
 
         this.broadcast({ type: "players", players: this.players });
-
-        if (this.gameState) {
-          ws.send(JSON.stringify({ type: "state", payload: { state: this.gameState } }));
-        }
+        if (this.gameState) ws.send(JSON.stringify({ type: "state", payload: { state: this.gameState } }));
         return;
       }
 
       if (!clientId) return;
 
-      // ACTIONS (server-authoritative)
       if (msg.type === "action") {
-        const player = this.players.find(p => p.id === clientId);
-        if (!player) return;
+        const p = this.players.find(x => x.id === clientId);
+        if (!p) return;
 
-        // Host-only START
         if (msg.action?.type === "START") {
-          if (player.seat !== 0) return;
+          if (p.seat !== 0) return; // host only
           this.gameState = msg.action.state;
           this.broadcast({ type: "state", payload: { state: this.gameState } });
           return;
         }
 
         if (!this.gameState) return;
-
-        // Turn enforcement
-        if (player.seat !== this.gameState.currentPlayer) return;
+        if (p.seat !== this.gameState.currentPlayer) return; // turn enforcement
 
         if (msg.action?.type === "UPDATE") {
           this.gameState = msg.action.state;
@@ -98,17 +81,13 @@ export class Room {
         }
       }
 
-      if (msg.type === "ping") {
-        ws.send(JSON.stringify({ type: "pong" }));
-      }
+      if (msg.type === "ping") ws.send(JSON.stringify({ type: "pong" }));
     });
 
     ws.addEventListener("close", () => {
       if (!clientId) return;
       this.sockets.delete(clientId);
-
-      // Keep players stable to avoid seat reshuffles.
-      // (Cleanup policy can be added later.)
+      // keep players stable (no reshuffle)
       this.broadcast({ type: "players", players: this.players });
     });
   }
