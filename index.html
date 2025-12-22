@@ -1,136 +1,116 @@
-console.log("ui.js module loaded");
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Splash</title>
-
-  <!-- Styles -->
   <link rel="stylesheet" href="./styles.css" />
 </head>
 
 <body class="theme-purple">
   <div id="app">
 
-    <!-- ================= LOBBY ================= -->
+    <!-- LOBBY -->
     <section id="lobbyView">
-      <div class="lobbyCard">
-        <div class="lobbyTop">
-          <div class="brand">
-            <h1>🃏 Splash</h1>
-            <div class="sub">
-              Family room (<b>FAMILY</b>) · Pick a theme · Play together
-            </div>
-          </div>
-          <span class="pill" id="lobbyStatus">Not connected</span>
-        </div>
-
-        <div class="lobbyGrid">
+      <div class="card">
+        <div class="brandRow">
           <div>
-            <label>Your name</label>
-            <input id="nameInput" placeholder="Name" />
+            <div class="brandTitle">🃏 Splash</div>
+            <div class="brandSub">Family room: <b>FAMILY</b></div>
           </div>
-          <div>
-            <label>Theme</label>
-            <select id="themeSelectLobby">
-              <option value="purple">Purple</option>
-              <option value="ocean">Ocean</option>
-              <option value="emerald">Emerald</option>
-              <option value="desert">Desert</option>
-            </select>
-          </div>
+          <div id="lobbyStatus" class="badge">Not connected</div>
         </div>
 
-        <div class="lobbyActions">
-          <button id="enterBtn" class="primary">Enter Game</button>
-          <button id="resetNameBtn">Reset Name</button>
+        <label class="label">Your name</label>
+        <input id="nameInput" class="input" placeholder="Name" />
+
+        <label class="label" style="margin-top:10px;">Theme</label>
+        <select id="themeSelectLobby" class="input">
+          <option value="purple" selected>Purple</option>
+          <option value="ocean">Ocean</option>
+          <option value="emerald">Emerald</option>
+          <option value="desert">Desert</option>
+        </select>
+
+        <div class="row" style="margin-top:12px;">
+          <button id="enterBtn" class="btn primary">Enter Game</button>
+          <button id="resetNameBtn" class="btn">Reset</button>
         </div>
 
-        <div class="lobbyFooter">
-          <div class="muted">
-            Each player only sees their own cards.
-          </div>
-        </div>
+        <div class="hint">You only see your own cards. Drag a stack to the pile to play.</div>
       </div>
     </section>
 
-    <!-- ================= GAME ================= -->
+    <!-- GAME -->
     <section id="gameView">
-      <header>
-        <div class="left">
-          <div class="title">🃏 Splash</div>
-          <span class="pill">ROOM: FAMILY</span>
-          <span class="pill" id="turnInfo">Turn: —</span>
+      <header class="topbar">
+        <div class="topLeft">
+          <div class="topTitle">Splash</div>
+          <div class="badge">ROOM: FAMILY</div>
+          <div id="turnInfo" class="badge">Turn: —</div>
         </div>
-        <div class="right">
-          <select id="themeSelectGame">
-            <option value="purple">Purple</option>
+
+        <div class="topRight">
+          <select id="themeSelectGame" class="input small">
+            <option value="purple" selected>Purple</option>
             <option value="ocean">Ocean</option>
             <option value="emerald">Emerald</option>
             <option value="desert">Desert</option>
           </select>
-          <button id="newGameBtn" class="primary">New Game</button>
-          <button id="leaveBtn" class="danger">Leave</button>
+          <button id="newGameBtn" class="btn primary">New Game</button>
+          <button id="leaveBtn" class="btn danger">Leave</button>
         </div>
       </header>
 
-      <main>
-        <div class="table">
-          <div id="playersRow" class="playersRow"></div>
+      <main class="stage">
+        <div id="playersRow" class="players"></div>
 
-          <div class="pileBox">
-            <div class="pileRow">
-              <div class="pileStats">
-                <span class="pill">Deck: <span id="deckCount">—</span></span>
-                <span class="pill">Discard: <span id="discardCount">—</span></span>
-                <span class="pill">Pile: <span id="pileCount">—</span></span>
-              </div>
-              <div class="pileTop">
-                <span class="muted">Top:</span>
-                <span class="pill" id="topValue">—</span>
-              </div>
+        <div class="pileBox">
+          <div class="pileMeta">
+            <div class="mini">
+              Deck <span id="deckCount">—</span>
             </div>
-
-            <div id="pileVisual" class="pileVisual"></div>
+            <div class="mini">
+              Discard <span id="discardCount">—</span>
+            </div>
+            <div class="mini">
+              Pile <span id="pileCount">—</span>
+            </div>
+            <div class="mini" style="margin-left:auto;">
+              Top <span id="topValue">—</span>
+            </div>
           </div>
 
-          <div class="zoneTitle">
-            <span>Your hand</span>
-            <span class="muted" id="turnHint">—</span>
-          </div>
-
-          <div id="handStacks" class="handStacks"></div>
-
-          <div class="zoneTitle" id="tableTitle">
-            <span>Your table cards</span>
-          </div>
-
-          <div id="yourTable" class="tableCards"></div>
+          <div id="pileVisual" class="pile"></div>
+          <div id="turnHint" class="turnHint">—</div>
         </div>
+
+        <div class="sectionTitle">Your hand</div>
+        <div id="handStacks" class="hand"></div>
+
+        <div id="tableTitle" class="sectionTitle">Your table cards</div>
+        <div id="yourTable" class="tableCards"></div>
       </main>
 
-      <div class="panel">
-        <div class="row">
-          <button id="playBtn" class="primary">Play Selected</button>
-          <button id="pickupBtn" class="danger">Pick Up</button>
-        </div>
+      <footer class="actions">
+        <button id="playBtn" class="btn primary">Play</button>
+        <button id="pickupBtn" class="btn danger">Pickup</button>
+        <button id="clearSelBtn" class="btn">Clear</button>
+        <button id="toggleLogBtn" class="btn">Log</button>
+      </footer>
 
-        <div class="metaRow">
-          <button id="clearSelBtn">Clear</button>
-          <span class="pill" id="selPill">Selected: —</span>
+      <div id="logDrawer" class="logDrawer">
+        <div class="logHeader">
+          <div>Game Log</div>
+          <button id="closeLogBtn" class="btn small">Close</button>
         </div>
-
-        <div class="logWrap">
-          <div class="logHead">Game Log</div>
-          <div id="log" class="logBody"></div>
-        </div>
+        <div id="log" class="logBody"></div>
       </div>
     </section>
 
   </div>
 
-  <!-- Scripts -->
+  <!-- IMPORTANT: module entry -->
   <script type="module" src="./ui.js"></script>
 </body>
 </html>
