@@ -16,9 +16,9 @@
         <div class="brandRow">
           <div>
             <div class="brandTitle">🃏 Splash</div>
-            <div class="brandSub">Family room: <b>FAMILY</b></div>
+            <div class="brandSub">Deterministic local card engine demo</div>
           </div>
-          <div id="lobbyStatus" class="badge">Not connected</div>
+          <div id="lobbyStatus" class="badge">Configure a game and press Start</div>
         </div>
 
         <label class="label">Your name</label>
@@ -32,12 +32,26 @@
           <option value="desert">Desert</option>
         </select>
 
+        <label class="label" style="margin-top:10px;">Players (you + AI)</label>
+        <select id="playerCountSelect" class="input">
+          <option value="1">1 player (solo)</option>
+          <option value="2" selected>2 players</option>
+          <option value="3">3 players</option>
+          <option value="4">4 players</option>
+          <option value="5">5 players</option>
+        </select>
+
+        <label class="label" style="margin-top:10px;">Random seed (optional, for deterministic replays)</label>
+        <input id="seedInput" class="input" placeholder="Leave blank for auto seed" />
+
         <div class="row" style="margin-top:12px;">
-          <button id="enterBtn" class="btn primary">Enter Game</button>
+          <button id="enterBtn" class="btn primary">Start Game</button>
           <button id="resetNameBtn" class="btn">Reset</button>
         </div>
 
-        <div class="hint">You only see your own cards. Drag a stack to the pile to play.</div>
+        <div class="hint">
+          You play against up to 4 AI opponents. The engine enforces all SPLASH rules deterministically.
+        </div>
       </div>
     </section>
 
@@ -46,7 +60,7 @@
       <header class="topbar">
         <div class="topLeft">
           <div class="topTitle">Splash</div>
-          <div class="badge">ROOM: FAMILY</div>
+          <div class="badge">Mode: Local deterministic</div>
           <div id="turnInfo" class="badge">Turn: —</div>
         </div>
 
@@ -111,6 +125,6 @@
   </div>
 
   <!-- IMPORTANT: module entry -->
-  <script type="module" src="./ui.js"></script>
+  <script type="module" src="./app.js"></script>
 </body>
 </html>
